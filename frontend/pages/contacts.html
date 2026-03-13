@@ -1,0 +1,166 @@
+<section class="nf-contacts-page" aria-label="Контакты">
+  <header class="nf-contacts-hero">
+    <div class="nf-contacts-hero-badge">Связь</div>
+    <h1 class="nf-contacts-hero-title">Контакты НаноФарм</h1>
+    <p class="nf-contacts-hero-subtitle">
+      Напишите или позвоните — мы ответим в ближайшее время и поможем с подбором оборудования и КП.
+    </p>
+  </header>
+
+  <div class="nf-contacts-layout">
+    <div class="nf-contacts-left">
+      <div class="nf-contacts-tabs">
+        <button type="button" class="nf-tab-btn nf-tab-btn-active" data-clients-tab="order">Как заказать</button>
+        <button type="button" class="nf-tab-btn" data-clients-tab="support">Сервис и поддержка</button>
+        <button type="button" class="nf-tab-btn" data-clients-tab="warranty">Гарантийные условия</button>
+        <button type="button" class="nf-tab-btn" data-clients-tab="faq">Ответы на вопросы</button>
+      </div>
+
+      <div class="nf-contacts-info-extra">
+        <article class="nf-contacts-info-panel nf-tab-active" data-clients-panel="order">
+          <h2>Как оформить заказ</h2>
+          <ol>
+            <li>Выберите интересующие модели в каталоге и добавьте их в «Запрос».</li>
+            <li>Заполните форму быстрого запроса или форму на этой странице.</li>
+            <li>Получите коммерческое предложение с вариантами комплектаций и сроками.</li>
+            <li>Согласуйте конфигурацию, подпишите договор и счёт.</li>
+          </ol>
+        </article>
+
+        <article class="nf-contacts-info-panel" data-clients-panel="support">
+          <h2>Сервис и поддержка</h2>
+          <p>Мы сопровождаем оборудование на всём сроке службы:</p>
+          <ul>
+            <li>пуско‑наладка и обучение персонала;</li>
+            <li>регламентное обслуживание и диагностика неисправностей;</li>
+            <li>поставка расходных материалов и запасных частей;</li>
+            <li>консультации инженеров по телефону и онлайн.</li>
+          </ul>
+        </article>
+
+        <article class="nf-contacts-info-panel" data-clients-panel="warranty">
+          <h2>Гарантийные условия</h2>
+          <p>Гарантийные сроки определяются производителем и прописываются в договоре и КП.</p>
+          <p>Наиболее типичные условия:</p>
+          <ul>
+            <li>гарантийное обслуживание при соблюдении правил эксплуатации;</li>
+            <li>выезд инженера в пределах согласованного региона;</li>
+            <li>использование оригинальных комплектующих и расходников.</li>
+          </ul>
+        </article>
+
+        <article class="nf-contacts-info-panel" data-clients-panel="faq">
+          <h2>Ответы на вопросы</h2>
+          <ul>
+            <li><strong>Можно ли обновить существующее оборудование?</strong> Да, часто возможен апгрейд без полной замены комплекса.</li>
+            <li><strong>Вы помогаете с проектированием помещений?</strong> Да, подготавливаем схемы размещения и технические требования.</li>
+            <li><strong>Работаете ли вы с госзакупками?</strong> Да, помогаем подготовить спецификации и комплектацию под конкурс.</li>
+          </ul>
+        </article>
+      </div>
+
+      <div class="nf-contacts-cards">
+        <div class="nf-contact-card nf-contact-card-phone">
+          <span class="nf-contact-card-icon" aria-hidden="true"></span>
+          <div class="nf-contact-card-content">
+            <span class="nf-contact-card-label">Телефон</span>
+            <span class="nf-contact-card-phones">
+              <a href="tel:+77273550470" class="nf-contact-card-value">+7 (727) 355-04-70</a>,
+              <a href="tel:+77273550471" class="nf-contact-card-value">355-04-71</a>
+            </span>
+          </div>
+          <a href="tel:+77273550470" class="nf-btn nf-btn-small nf-btn-primary">Позвонить</a>
+        </div>
+        <div class="nf-contact-card nf-contact-card-email">
+          <span class="nf-contact-card-icon" aria-hidden="true"></span>
+          <div class="nf-contact-card-content">
+            <span class="nf-contact-card-label">Email</span>
+            <a href="mailto:info@nanopharm.kz" class="nf-contact-card-value">info@nanopharm.kz</a>
+          </div>
+          <a href="mailto:info@nanopharm.kz" class="nf-btn nf-btn-small nf-btn-secondary">Написать</a>
+        </div>
+        <div class="nf-contact-card nf-contact-card-address">
+          <span class="nf-contact-card-icon" aria-hidden="true"></span>
+          <div class="nf-contact-card-content">
+            <span class="nf-contact-card-label">Адрес</span>
+            <span class="nf-contact-card-addresses">
+              г. Алматы, Бостандыкский район, ул. Еділ Ерғожин, 28
+              <span class="nf-contact-card-address-alt">также: ул. Экспериментальная, 3а</span>
+            </span>
+          </div>
+          <a href="https://go.2gis.com/nnmVR" target="_blank" rel="noopener" class="nf-btn nf-btn-small nf-btn-ghost">Открыть в 2ГИС</a>
+        </div>
+      </div>
+
+      <div class="nf-contacts-form-card">
+        <h2 class="nf-contacts-form-title">Отправить заявку</h2>
+        <p class="nf-contacts-form-desc">Оставьте контакты и тип запроса — мы подготовим КП или перезвоним.</p>
+        <form id="contactForm" class="nf-form nf-form-contacts" novalidate>
+          <div class="nf-form-row">
+            <label>
+              Имя
+              <input name="name" type="text" class="nf-input" required placeholder="Ваше имя" />
+              <span class="nf-field-error"></span>
+            </label>
+          </div>
+          <div class="nf-form-row">
+            <label>
+              Компания
+              <input name="company" type="text" class="nf-input" required placeholder="Название организации" />
+              <span class="nf-field-error"></span>
+            </label>
+          </div>
+          <div class="nf-form-row nf-form-row-cols">
+            <label>
+              Телефон
+              <input name="phone" type="tel" class="nf-input" required placeholder="+7 (___) ___‑__‑__" />
+              <span class="nf-field-error"></span>
+            </label>
+            <label>
+              Email
+              <input name="email" type="email" class="nf-input" required placeholder="name@company.com" />
+              <span class="nf-field-error"></span>
+            </label>
+          </div>
+          <div class="nf-form-row">
+            <label>
+              <span data-i18n="contacts.form.typeLabel">Тип запроса</span>
+              <select name="type" class="nf-select">
+                <option value="kp" data-i18n="contacts.form.typeQuote">Запрос КП</option>
+                <option value="tech" data-i18n="contacts.form.typeTech">Тех. консультация</option>
+                <option value="service" data-i18n="contacts.form.typeService">Сервисное обслуживание</option>
+              </select>
+              <span class="nf-field-error"></span>
+            </label>
+          </div>
+          <div class="nf-form-row">
+            <label>
+              Сообщение
+              <textarea name="message" class="nf-textarea" rows="4" placeholder="Опишите задачу или интересующее оборудование…" required></textarea>
+              <span class="nf-field-error"></span>
+            </label>
+          </div>
+          <button type="submit" class="nf-btn nf-btn-primary nf-btn-full">Отправить запрос</button>
+          <div id="contactFormSuccess" class="nf-form-success" hidden>
+            Заявка отправлена. Мы свяжемся с вами в ближайшее время.
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="nf-contacts-map-wrap" aria-label="Карта">
+      <div class="nf-map-card">
+        <div class="nf-map-card-header">
+          <span class="nf-map-card-title">Офис НаноФарм</span>
+          <span class="nf-map-card-tag">ул. Еділ Ерғожин, 28 — Алматы</span>
+        </div>
+        <div class="nf-map-card-body">
+          <div id="nfContactsMap" class="nf-map-leaflet" aria-label="Карта: ул. Еділ Ерғожин, 28"></div>
+          <a href="https://go.2gis.com/nnmVR" target="_blank" rel="noopener" class="nf-map-card-open-link">
+            Открыть в 2ГИС
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

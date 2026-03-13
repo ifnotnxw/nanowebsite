@@ -1,0 +1,135 @@
+<!-- HERO -->
+<section class="nf-hero">
+  <div class="container nf-hero__grid">
+    <div class="nf-hero__content">
+      <h1 data-i18n="home.hero.title">Комплексные поставки медицинского оборудования</h1>
+      <p data-i18n="home.hero.text">
+        Оснащение клиник, лабораторий и диагностических центров.
+        Проектирование, поставка, монтаж и сервисное сопровождение.
+      </p>
+      <div class="nf-hero__actions">
+        <a href="#catalog" data-route="catalog" class="btn btn-primary" data-i18n="home.hero.toCatalog">Перейти в каталог</a>
+        <a href="#contacts" data-route="contacts" class="btn btn-outline" data-i18n="home.hero.contact">Связаться с нами</a>
+      </div>
+    </div>
+    <div class="nf-hero__visual">
+      <div class="nf-hero__image" aria-hidden="true">
+        <div class="nf-hero-chip-card nf-hero-chip-card--clinic">
+          <span class="nf-hero-chip-icon nf-hero-chip-icon--clinic"></span>
+          <span class="nf-hero-chip-text">Клиники и госпитали</span>
+        </div>
+        <div class="nf-hero-chip-card nf-hero-chip-card--lab">
+          <span class="nf-hero-chip-icon nf-hero-chip-icon--lab"></span>
+          <span class="nf-hero-chip-text">Лаборатории и диагностика</span>
+        </div>
+        <div class="nf-hero-chip-card nf-hero-chip-card--service">
+          <span class="nf-hero-chip-icon nf-hero-chip-icon--service"></span>
+          <span class="nf-hero-chip-text">Сервис и обучение</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ПРЕИМУЩЕСТВА -->
+<section class="nf-advantages">
+  <div class="container nf-advantages__grid">
+    <div class="nf-adv">
+      <h3 data-i18n="home.adv.years.title">15+ лет</h3>
+      <p data-i18n="home.adv.years.text">Успешной работы на рынке медицинских технологий</p>
+    </div>
+    <div class="nf-adv">
+      <h3 data-i18n="home.adv.projects.title">200+ проектов</h3>
+      <p data-i18n="home.adv.projects.text">Оснащённых клиник и диагностических центров</p>
+    </div>
+    <div class="nf-adv">
+      <h3 data-i18n="home.adv.partners.title">Официальные партнёры</h3>
+      <p data-i18n="home.adv.partners.text">Поставки от мировых производителей оборудования</p>
+    </div>
+    <div class="nf-adv">
+      <h3 data-i18n="home.adv.full.title">Полный цикл</h3>
+      <p data-i18n="home.adv.full.text">Проектирование → монтаж → сервис → обучение персонала</p>
+    </div>
+  </div>
+</section>
+
+<section class="nf-popular" aria-label="Популярное оборудование">
+  <div class="container">
+    <div class="section-head nf-popular__head">
+      <h2 data-i18n="home.popular.title">Популярное оборудование</h2>
+      <a
+        href="#catalog"
+        data-route="catalog"
+        class="nf-popular__all-link"
+        data-i18n="home.popular.all"
+      >
+        Весь каталог →
+      </a>
+    </div>
+
+    <div class="nf-popular__carousel-wrap">
+      <div class="nf-popular__viewport" aria-hidden="false">
+        <div id="popularTrack" class="nf-popular__track" aria-live="polite"></div>
+      </div>
+      <div class="nf-popular__nav" aria-label="Листание карусели">
+        <button type="button" id="popularPrev" class="nf-popular__nav-btn" aria-label="Предыдущий">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+        </button>
+        <button type="button" id="popularNext" class="nf-popular__nav-btn" aria-label="Следующий">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- КАТЕГОРИИ -->
+<section class="nf-categories">
+  <div class="container">
+    <div class="section-head">
+      <h2 data-i18n="home.categories.title">Категории оборудования</h2>
+    </div>
+    <div id="homeCategories" class="nf-categories__grid" aria-label="Категории каталога">
+      <!-- Заполняется из API/данных в app.js -->
+    </div>
+  </div>
+</section>
+
+<!-- ПАРТНЁРЫ -->
+<section class="nf-partners">
+  <div class="container">
+    <div class="section-head">
+      <h2 data-i18n="home.partners.title">Наши партнёры</h2>
+    </div>
+
+    <div id="homePartnersGrid" class="nf-partners__grid" aria-label="Партнёры">
+      <!-- Партнёры будут вставляться JS -->
+    </div>
+  </div>
+</section>
+
+<!-- НОВОСТИ -->
+<section class="nf-news">
+  <div class="container">
+    <div class="section-head">
+      <h2 data-i18n="home.news.title">Новости компании</h2>
+      <a href="#news" data-route="news" data-i18n="home.news.all">Все новости</a>
+    </div>
+    <div id="homeNews" class="nf-news-layout" aria-label="Новости">
+      <!-- Заполняется из NF_DATA.news в app.js (nfRenderHomeNews) -->
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="nf-cta">
+  <div class="container nf-cta__box">
+    <div>
+      <h2 data-i18n="home.cta.title">Подберём оборудование под ваш проект</h2>
+      <p data-i18n="home.cta.text">Оставьте заявку — наш специалист свяжется с вами.</p>
+    </div>
+    <a href="#contacts" data-route="contacts" class="btn btn-primary" data-i18n="home.cta.button">
+      Получить консультацию
+    </a>
+  </div>
+</section>

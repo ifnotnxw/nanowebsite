@@ -1,0 +1,17 @@
+{
+  "name": "nanopharm",
+  "version": "1.0.0",
+  "description": "НаноФарм — медицинское оборудование",
+  "private": true,
+  "scripts": {
+    "start": "node backend/server.js",
+    "dev": "npm start",
+    "build": "echo \"Nanopharm: static frontend, nothing to build\"",
+    "run": "npm install && npm start",
+    "postinstall": "cd backend && npm install",
+    "install:backend": "cd backend && npm install"
+  },
+  "engines": {
+  "node": ">=20"
+  }
+}

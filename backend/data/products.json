@@ -1,0 +1,954 @@
+[
+  {
+    "id": "ardo-medical-main",
+    "name": "Решение Ardo Medical AG",
+    "article": "NF001",
+    "model": "",
+    "categoryId": "anesteziologiya-reanimaciya",
+    "partnerId": "ardo-medical",
+    "price": 1000000,
+    "currency": "KZT",
+    "popular": true,
+    "isPopular": true,
+    "isNew": false,
+    "isHidden": false,
+    "status": "in_stock",
+    "sortOrder": 0,
+    "manufacturer": "",
+    "shortDesc": "Базовое решение от Ardo Medical AG для неонатологии и ухода за пациентами.",
+    "description": "Комплект оборудования Ardo Medical AG для неонатологии и отделений интенсивной терапии. Включает основные устройства и сервисную поддержку.",
+    "specs": [],
+    "serviceSteps": [],
+    "image": "/uploads/products/1773129147482-apparat-ivl-sv300-mindray-mini.png",
+    "images": [
+      "/uploads/products/1773129147482-apparat-ivl-sv300-mindray-mini.png"
+    ],
+    "photos": [
+      {
+        "id": "ph-mmkbbaen-fry4",
+        "url": "/uploads/products/1773129147482-apparat-ivl-sv300-mindray-mini.png",
+        "order": 0,
+        "isMain": true
+      }
+    ],
+    "attributes": [],
+    "docs": [],
+    "relatedProductIds": [],
+    "seo": {
+      "metaTitle": "Решение Ardo Medical AG",
+      "metaDescription": "Базовое решение НаноФарм с оборудованием Ardo Medical AG для неонатологии и интенсивной терапии.",
+      "slug": "ardo-medical-main",
+      "ogTitle": "Решение Ardo Medical AG",
+      "ogDescription": "Базовое решение НаноФарм с оборудованием Ardo Medical AG для неонатологии и интенсивной терапии.",
+      "ogImage": "/uploads/products/1773129147482-apparat-ivl-sv300-mindray-mini.png"
+    },
+    "roomRequirements": [
+      "Температура: +18°C до +25°C",
+      "Влажность: 30–75% без конденсата",
+      "Площадь: от 15 м²",
+      "Высота потолков: от 2,5 м"
+    ],
+    "engineerRequirements": [
+      "Электропитание: 220В / 50Гц",
+      "Заземление",
+      "Интернет‑подключение (по необходимости)",
+      "Вентиляция помещения"
+    ]
+  },
+  {
+    "id": "fujifilm-main",
+    "name": "Решение Fujifilm Corporation",
+    "article": "NF006",
+    "model": "",
+    "categoryId": "radiologiya",
+    "partnerId": "fujifilm",
+    "price": null,
+    "currency": "KZT",
+    "popular": true,
+    "isPopular": true,
+    "isNew": false,
+    "isHidden": false,
+    "status": "in_stock",
+    "sortOrder": 0,
+    "manufacturer": "",
+    "shortDesc": "Базовый комплекс визуализации и эндоскопии от Fujifilm.",
+    "description": "Комплексное решение Fujifilm для радиологии и эндоскопии: системы визуализации, рабочие станции и сервисное сопровождение.",
+    "specs": [],
+    "serviceSteps": [],
+    "image": "/uploads/products/1773130475300-__20250620095642.png",
+    "images": [
+      "/uploads/products/1773130475300-__20250620095642.png"
+    ],
+    "photos": [
+      {
+        "id": "ph-mmkc3qy4-jxdk",
+        "url": "/uploads/products/1773130475300-__20250620095642.png",
+        "order": 0,
+        "isMain": true
+      }
+    ],
+    "attributes": [],
+    "docs": [],
+    "relatedProductIds": [],
+    "seo": {
+      "metaTitle": "Решение Fujifilm Corporation",
+      "metaDescription": "Базовый комплекс визуализации и эндоскопии от Fujifilm в каталоге НаноФарм.",
+      "slug": "fujifilm-main",
+      "ogTitle": "Решение Fujifilm Corporation",
+      "ogDescription": "Базовый комплекс визуализации и эндоскопии от Fujifilm в каталоге НаноФарм.",
+      "ogImage": "/uploads/products/1773130475300-__20250620095642.png"
+    },
+    "roomRequirements": [
+      "Температура: +18°C до +25°C",
+      "Влажность: 30–75% без конденсата",
+      "Площадь: от 15 м²",
+      "Высота потолков: от 2,5 м"
+    ],
+    "engineerRequirements": [
+      "Электропитание: 220В / 50Гц",
+      "Заземление",
+      "Интернет‑подключение (по необходимости)",
+      "Вентиляция помещения"
+    ]
+  },
+  {
+    "id": "ganshorn-main",
+    "name": "Решение Ganshorn Medizin Electronic",
+    "article": "NF007",
+    "model": "",
+    "categoryId": "functionalnaya-diagnostika",
+    "partnerId": "ganshorn",
+    "price": null,
+    "currency": "KZT",
+    "popular": true,
+    "isPopular": true,
+    "isNew": false,
+    "isHidden": false,
+    "status": "in_stock",
+    "sortOrder": 0,
+    "manufacturer": "",
+    "shortDesc": "Система функциональной диагностики дыхания от Ganshorn.",
+    "description": "Базовый комплекс Ganshorn для функциональной диагностики лёгких и дыхательных путей с интеграцией в ИТ‑инфраструктуру клиники.",
+    "specs": [],
+    "serviceSteps": [],
+    "image": "/uploads/products/1773130741199-produckphoto-300x300.png",
+    "images": [
+      "/uploads/products/1773130741199-produckphoto-300x300.png"
+    ],
+    "photos": [
+      {
+        "id": "ph-mmkc9g42-h13a",
+        "url": "/uploads/products/1773130741199-produckphoto-300x300.png",
+        "order": 0,
+        "isMain": true
+      }
+    ],
+    "attributes": [],
+    "docs": [],
+    "relatedProductIds": [],
+    "seo": {
+      "metaTitle": "Решение Ganshorn Medizin Electronic",
+      "metaDescription": "Система функциональной диагностики дыхания Ganshorn для пульмонологии и функциональной диагностики.",
+      "slug": "ganshorn-main",
+      "ogTitle": "Решение Ganshorn Medizin Electronic",
+      "ogDescription": "Система функциональной диагностики дыхания Ganshorn для пульмонологии и функциональной диагностики.",
+      "ogImage": "/uploads/products/1773130741199-produckphoto-300x300.png"
+    },
+    "roomRequirements": [
+      "Температура: +18°C до +25°C",
+      "Влажность: 30–75% без конденсата",
+      "Площадь: от 15 м²",
+      "Высота потолков: от 2,5 м"
+    ],
+    "engineerRequirements": [
+      "Электропитание: 220В / 50Гц",
+      "Заземление",
+      "Интернет‑подключение (по необходимости)",
+      "Вентиляция помещения"
+    ]
+  },
+  {
+    "id": "inceler-medikal-main",
+    "name": "Решение Inceler Medikal",
+    "article": "NF008",
+    "model": "",
+    "categoryId": "urologiya",
+    "partnerId": "inceler-medikal",
+    "price": null,
+    "currency": "KZT",
+    "popular": true,
+    "isPopular": true,
+    "isNew": false,
+    "isHidden": false,
+    "status": "in_stock",
+    "sortOrder": 0,
+    "manufacturer": "",
+    "shortDesc": "Электрохирургическое решение для урологии и общей хирургии.",
+    "description": "Комплект решений Inceler Medikal для урологических и общих хирургических вмешательств, включающий электрохирургические генераторы и аксессуары.",
+    "specs": [],
+    "serviceSteps": [],
+    "image": "/uploads/products/1773131159150-i-48-1024x1024.webp",
+    "images": [
+      "/uploads/products/1773131159150-i-48-1024x1024.webp"
+    ],
+    "photos": [
+      {
+        "id": "ph-mmkcielv-k6jt",
+        "url": "/uploads/products/1773131159150-i-48-1024x1024.webp",
+        "order": 0,
+        "isMain": true
+      }
+    ],
+    "attributes": [],
+    "docs": [],
+    "relatedProductIds": [],
+    "seo": {
+      "metaTitle": "Решение Inceler Medikal",
+      "metaDescription": "Электрохирургическое решение Inceler Medikal для урологии и хирургии.",
+      "slug": "inceler-medikal-main",
+      "ogTitle": "Решение Inceler Medikal",
+      "ogDescription": "Электрохирургическое решение Inceler Medikal для урологии и хирургии.",
+      "ogImage": "/uploads/products/1773131159150-i-48-1024x1024.webp"
+    },
+    "roomRequirements": [
+      "Температура: +18°C до +25°C",
+      "Влажность: 30–75% без конденсата",
+      "Площадь: от 15 м²",
+      "Высота потолков: от 2,5 м"
+    ],
+    "engineerRequirements": [
+      "Электропитание: 220В / 50Гц",
+      "Заземление",
+      "Интернет‑подключение (по необходимости)",
+      "Вентиляция помещения"
+    ]
+  },
+  {
+    "id": "fritz-stephan-main",
+    "name": "Решение Fritz Stephan",
+    "article": "NF005",
+    "model": "",
+    "categoryId": "anesteziologiya-reanimaciya",
+    "partnerId": "fritz-stephan",
+    "price": null,
+    "currency": "KZT",
+    "popular": true,
+    "isPopular": true,
+    "isNew": false,
+    "isHidden": false,
+    "status": "in_stock",
+    "sortOrder": 0,
+    "manufacturer": "",
+    "shortDesc": "Неонатальные и реанимационные решения Fritz Stephan.",
+    "description": "Комплект аппаратов ИВЛ и реанимационного оборудования Fritz Stephan для отделений интенсивной терапии и неонатологии.",
+    "specs": [],
+    "serviceSteps": [],
+    "image": "/uploads/products/1773131226588-2c7ecb03d477afb89e332d4d557eef8c.webp",
+    "images": [
+      "/uploads/products/1773131226588-2c7ecb03d477afb89e332d4d557eef8c.webp"
+    ],
+    "photos": [
+      {
+        "id": "ph-mmkcjun2-cdet",
+        "url": "/uploads/products/1773131226588-2c7ecb03d477afb89e332d4d557eef8c.webp",
+        "order": 0,
+        "isMain": true
+      }
+    ],
+    "attributes": [],
+    "docs": [],
+    "relatedProductIds": [],
+    "seo": {
+      "metaTitle": "Решение Fritz Stephan",
+      "metaDescription": "Решение НаноФарм на базе аппаратов ИВЛ Fritz Stephan для неонатологии и реанимации.",
+      "slug": "fritz-stephan-main",
+      "ogTitle": "Решение Fritz Stephan",
+      "ogDescription": "Решение НаноФарм на базе аппаратов ИВЛ Fritz Stephan для неонатологии и реанимации.",
+      "ogImage": "/uploads/products/1773131226588-2c7ecb03d477afb89e332d4d557eef8c.webp"
+    },
+    "roomRequirements": [
+      "Температура: +18°C до +25°C",
+      "Влажность: 30–75% без конденсата",
+      "Площадь: от 15 м²",
+      "Высота потолков: от 2,5 м"
+    ],
+    "engineerRequirements": [
+      "Электропитание: 220В / 50Гц",
+      "Заземление",
+      "Интернет‑подключение (по необходимости)",
+      "Вентиляция помещения"
+    ]
+  },
+  {
+    "id": "schiller-main",
+    "name": "Решение Schiller AG",
+    "article": "NF013",
+    "model": "",
+    "categoryId": "elektrokardiostimulyaciya",
+    "partnerId": "schiller",
+    "price": null,
+    "currency": "KZT",
+    "popular": true,
+    "isPopular": true,
+    "isNew": false,
+    "isHidden": false,
+    "status": "in_stock",
+    "sortOrder": 0,
+    "manufacturer": "",
+    "shortDesc": "Кардиологическое решение Schiller для ЭКГ и мониторинга.",
+    "description": "Комплексное кардиологическое решение Schiller: ЭКГ‑системы, мониторы и вспомогательное оборудование для кардиологии и интенсивной терапии.",
+    "specs": [],
+    "serviceSteps": [],
+    "image": "/uploads/products/1773131265821-3.jpg",
+    "images": [
+      "/uploads/products/1773131265821-3.jpg"
+    ],
+    "photos": [
+      {
+        "id": "ph-mmkckoww-tl49",
+        "url": "/uploads/products/1773131265821-3.jpg",
+        "order": 0,
+        "isMain": true
+      }
+    ],
+    "attributes": [],
+    "docs": [],
+    "relatedProductIds": [],
+    "seo": {
+      "metaTitle": "Решение Schiller AG",
+      "metaDescription": "Кардиологическое решение Schiller AG для диагностики и мониторинга пациентов.",
+      "slug": "schiller-main",
+      "ogTitle": "Решение Schiller AG",
+      "ogDescription": "Кардиологическое решение Schiller AG для диагностики и мониторинга пациентов.",
+      "ogImage": "/uploads/products/1773131265821-3.jpg"
+    },
+    "roomRequirements": [
+      "Температура: +18°C до +25°C",
+      "Влажность: 30–75% без конденсата",
+      "Площадь: от 15 м²",
+      "Высота потолков: от 2,5 м"
+    ],
+    "engineerRequirements": [
+      "Электропитание: 220В / 50Гц",
+      "Заземление",
+      "Интернет‑подключение (по необходимости)",
+      "Вентиляция помещения"
+    ]
+  },
+  {
+    "id": "tecme-main",
+    "name": "Решение Tecme",
+    "article": "NF015",
+    "model": "",
+    "categoryId": "anesteziologiya-reanimaciya",
+    "partnerId": "tecme",
+    "price": null,
+    "currency": "KZT",
+    "popular": true,
+    "isPopular": true,
+    "isNew": false,
+    "isHidden": false,
+    "status": "in_stock",
+    "sortOrder": 0,
+    "manufacturer": "",
+    "shortDesc": "Решение на базе аппаратов ИВЛ Tecme.",
+    "description": "Аппараты искусственной вентиляции лёгких Tecme для реанимации взрослых и новорождённых, с сервисной поддержкой и обучением персонала.",
+    "specs": [],
+    "serviceSteps": [],
+    "image": "/uploads/products/1773131297183-nda.webp",
+    "images": [
+      "/uploads/products/1773131297183-nda.webp"
+    ],
+    "photos": [
+      {
+        "id": "ph-mmkcld4y-yxoe",
+        "url": "/uploads/products/1773131297183-nda.webp",
+        "order": 0,
+        "isMain": true
+      }
+    ],
+    "attributes": [],
+    "docs": [],
+    "relatedProductIds": [],
+    "seo": {
+      "metaTitle": "Решение Tecme",
+      "metaDescription": "Аппараты ИВЛ Tecme в составе решения НаноФарм для реанимации.",
+      "slug": "tecme-main",
+      "ogTitle": "Решение Tecme",
+      "ogDescription": "Аппараты ИВЛ Tecme в составе решения НаноФарм для реанимации.",
+      "ogImage": "/uploads/products/1773131297183-nda.webp"
+    },
+    "roomRequirements": [
+      "Температура: +18°C до +25°C",
+      "Влажность: 30–75% без конденсата",
+      "Площадь: от 15 м²",
+      "Высота потолков: от 2,5 м"
+    ],
+    "engineerRequirements": [
+      "Электропитание: 220В / 50Гц",
+      "Заземление",
+      "Интернет‑подключение (по необходимости)",
+      "Вентиляция помещения"
+    ]
+  },
+  {
+    "id": "tekto-medical-main",
+    "name": "Решение Tekto-Medical",
+    "article": "NF016",
+    "model": "",
+    "categoryId": "neyrohirurgiya",
+    "partnerId": "tekto-medical",
+    "price": null,
+    "currency": "KZT",
+    "popular": true,
+    "isPopular": true,
+    "isNew": false,
+    "isHidden": false,
+    "status": "in_stock",
+    "sortOrder": 0,
+    "manufacturer": "",
+    "shortDesc": "Нейрохирургическая оптика и инструменты Tekto-Medical.",
+    "description": "Комплект нейрохирургической оптики и инструментов Tekto-Medical для операционных блоков и нейрохирургических центров.",
+    "specs": [],
+    "serviceSteps": [],
+    "image": "/uploads/products/1773131415898-6hf8k87re02x3az3y4o0703rhfthy8tj.jpg",
+    "images": [
+      "/uploads/products/1773131415898-6hf8k87re02x3az3y4o0703rhfthy8tj.jpg"
+    ],
+    "photos": [
+      {
+        "id": "ph-mmkcnwpr-6q21",
+        "url": "/uploads/products/1773131415898-6hf8k87re02x3az3y4o0703rhfthy8tj.jpg",
+        "order": 0,
+        "isMain": true
+      }
+    ],
+    "attributes": [],
+    "docs": [],
+    "relatedProductIds": [],
+    "seo": {
+      "metaTitle": "Решение Tekto-Medical",
+      "metaDescription": "Нейрохирургическое решение Tekto-Medical с оптикой и инструментами.",
+      "slug": "tekto-medical-main",
+      "ogTitle": "Решение Tekto-Medical",
+      "ogDescription": "Нейрохирургическое решение Tekto-Medical с оптикой и инструментами.",
+      "ogImage": "/uploads/products/1773131415898-6hf8k87re02x3az3y4o0703rhfthy8tj.jpg"
+    },
+    "roomRequirements": [
+      "Температура: +18°C до +25°C",
+      "Влажность: 30–75% без конденсата",
+      "Площадь: от 15 м²",
+      "Высота потолков: от 2,5 м"
+    ],
+    "engineerRequirements": [
+      "Электропитание: 220В / 50Гц",
+      "Заземление",
+      "Интернет‑подключение (по необходимости)",
+      "Вентиляция помещения"
+    ]
+  },
+  {
+    "id": "emos-technology-main",
+    "name": "Решение EMOS Technology",
+    "article": "NF004",
+    "model": "",
+    "categoryId": "serdechno-sosudistaya-hirurgiya",
+    "partnerId": "emos-technology",
+    "price": null,
+    "currency": "KZT",
+    "popular": true,
+    "isPopular": true,
+    "isNew": false,
+    "isHidden": false,
+    "status": "in_stock",
+    "sortOrder": 0,
+    "manufacturer": "",
+    "shortDesc": "Электрохирургическое решение EMOS для кардио‑ и сосудистой хирургии.",
+    "description": "Комплекс электрохирургических систем EMOS для открытой и эндоваскулярной хирургии, с необходимыми аксессуарами и расходными материалами.",
+    "specs": [],
+    "serviceSteps": [],
+    "image": "/uploads/products/1773131504766-186525877_w300_h300_zazhimy-s-atravmaticheskoj.webp",
+    "images": [
+      "/uploads/products/1773131504766-186525877_w300_h300_zazhimy-s-atravmaticheskoj.webp"
+    ],
+    "photos": [
+      {
+        "id": "ph-mmkcpta9-j8ze",
+        "url": "/uploads/products/1773131504766-186525877_w300_h300_zazhimy-s-atravmaticheskoj.webp",
+        "order": 0,
+        "isMain": true
+      }
+    ],
+    "attributes": [],
+    "docs": [],
+    "relatedProductIds": [],
+    "seo": {
+      "metaTitle": "Решение EMOS Technology",
+      "metaDescription": "Электрохирургическое решение EMOS Technology для сердечно‑сосудистой хирургии.",
+      "slug": "emos-technology-main",
+      "ogTitle": "Решение EMOS Technology",
+      "ogDescription": "Электрохирургическое решение EMOS Technology для сердечно‑сосудистой хирургии.",
+      "ogImage": "/uploads/products/1773131504766-186525877_w300_h300_zazhimy-s-atravmaticheskoj.webp"
+    },
+    "roomRequirements": [
+      "Температура: +18°C до +25°C",
+      "Влажность: 30–75% без конденсата",
+      "Площадь: от 15 м²",
+      "Высота потолков: от 2,5 м"
+    ],
+    "engineerRequirements": [
+      "Электропитание: 220В / 50Гц",
+      "Заземление",
+      "Интернет‑подключение (по необходимости)",
+      "Вентиляция помещения"
+    ]
+  },
+  {
+    "id": "bissinger-main",
+    "name": "Решение Bissinger",
+    "article": "NF003",
+    "model": "",
+    "categoryId": "neyrohirurgiya",
+    "partnerId": "bissinger",
+    "price": null,
+    "currency": "KZT",
+    "popular": true,
+    "isPopular": true,
+    "isNew": false,
+    "isHidden": false,
+    "status": "in_stock",
+    "sortOrder": 0,
+    "manufacturer": "",
+    "shortDesc": "Набор микрохирургических инструментов Bissinger.",
+    "description": "Решение Bissinger с набором высокоточных микрохирургических инструментов для нейрохирургии и сосудистой хирургии.",
+    "specs": [],
+    "serviceSteps": [],
+    "image": "/uploads/products/1773131458942-main.png",
+    "images": [
+      "/uploads/products/1773131458942-main.png"
+    ],
+    "photos": [
+      {
+        "id": "ph-mmkcotxe-lgyo",
+        "url": "/uploads/products/1773131458942-main.png",
+        "order": 0,
+        "isMain": true
+      }
+    ],
+    "attributes": [],
+    "docs": [],
+    "relatedProductIds": [],
+    "seo": {
+      "metaTitle": "Решение Bissinger",
+      "metaDescription": "Микрохирургические инструменты Bissinger в составе решения НаноФарм.",
+      "slug": "bissinger-main",
+      "ogTitle": "Решение Bissinger",
+      "ogDescription": "Микрохирургические инструменты Bissinger в составе решения НаноФарм.",
+      "ogImage": "/uploads/products/1773131458942-main.png"
+    },
+    "roomRequirements": [
+      "Температура: +18°C до +25°C",
+      "Влажность: 30–75% без конденсата",
+      "Площадь: от 15 м²",
+      "Высота потолков: от 2,5 м"
+    ],
+    "engineerRequirements": [
+      "Электропитание: 220В / 50Гц",
+      "Заземление",
+      "Интернет‑подключение (по необходимости)",
+      "Вентиляция помещения"
+    ]
+  },
+  {
+    "id": "kogent-surgical-main",
+    "name": "Решение Kogent Surgical",
+    "article": "NF010",
+    "model": "",
+    "categoryId": "neyrohirurgiya",
+    "partnerId": "kogent-surgical",
+    "price": null,
+    "currency": "KZT",
+    "popular": true,
+    "isPopular": true,
+    "isNew": false,
+    "isHidden": false,
+    "status": "in_stock",
+    "sortOrder": 0,
+    "manufacturer": "",
+    "shortDesc": "Расходные материалы и инструменты Kogent Surgical для нейрохирургии.",
+    "description": "Комплект расходных материалов и инструментов Kogent Surgical для нейрохирургических операций и интраоперационного мониторинга.",
+    "specs": [],
+    "serviceSteps": [],
+    "image": "/uploads/products/1773131595822-dison_ors-photoroom.png",
+    "images": [
+      "/uploads/products/1773131595822-dison_ors-photoroom.png"
+    ],
+    "photos": [
+      {
+        "id": "ph-mmkcrrjv-n33n",
+        "url": "/uploads/products/1773131595822-dison_ors-photoroom.png",
+        "order": 0,
+        "isMain": true
+      }
+    ],
+    "attributes": [],
+    "docs": [],
+    "relatedProductIds": [],
+    "seo": {
+      "metaTitle": "Решение Kogent Surgical",
+      "metaDescription": "Нейрохирургическое решение Kogent Surgical с расходными материалами и инструментами.",
+      "slug": "kogent-surgical-main",
+      "ogTitle": "Решение Kogent Surgical",
+      "ogDescription": "Нейрохирургическое решение Kogent Surgical с расходными материалами и инструментами.",
+      "ogImage": "/uploads/products/1773131595822-dison_ors-photoroom.png"
+    },
+    "roomRequirements": [
+      "Температура: +18°C до +25°C",
+      "Влажность: 30–75% без конденсата",
+      "Площадь: от 15 м²",
+      "Высота потолков: от 2,5 м"
+    ],
+    "engineerRequirements": [
+      "Электропитание: 220В / 50Гц",
+      "Заземление",
+      "Интернет‑подключение (по необходимости)",
+      "Вентиляция помещения"
+    ]
+  },
+  {
+    "id": "lemaitre-main",
+    "name": "Решение LeMaitre Vascular",
+    "article": "NF011",
+    "model": "",
+    "categoryId": "serdechno-sosudistaya-hirurgiya",
+    "partnerId": "lemaitre",
+    "price": null,
+    "currency": "KZT",
+    "popular": true,
+    "isPopular": true,
+    "isNew": false,
+    "isHidden": false,
+    "status": "in_stock",
+    "sortOrder": 0,
+    "manufacturer": "",
+    "shortDesc": "Сосудистое решение LeMaitre для открытых и эндоваскулярных вмешательств.",
+    "description": "Решение LeMaitre с сосудистыми протезами, стентами и сопутствующими инструментами для кардио‑ и сосудистой хирургии.",
+    "specs": [],
+    "serviceSteps": [],
+    "image": "/uploads/products/1773131542249-941c3393e0e7412715d00f13a178b02c.jpg",
+    "images": [
+      "/uploads/products/1773131542249-941c3393e0e7412715d00f13a178b02c.jpg"
+    ],
+    "photos": [
+      {
+        "id": "ph-mmkcqm7g-ksae",
+        "url": "/uploads/products/1773131542249-941c3393e0e7412715d00f13a178b02c.jpg",
+        "order": 0,
+        "isMain": true
+      }
+    ],
+    "attributes": [],
+    "docs": [],
+    "relatedProductIds": [],
+    "seo": {
+      "metaTitle": "Решение LeMaitre Vascular",
+      "metaDescription": "Сосудистое решение LeMaitre Vascular для сердечно‑сосудистой хирургии.",
+      "slug": "lemaitre-main",
+      "ogTitle": "Решение LeMaitre Vascular",
+      "ogDescription": "Сосудистое решение LeMaitre Vascular для сердечно‑сосудистой хирургии.",
+      "ogImage": "/uploads/products/1773131542249-941c3393e0e7412715d00f13a178b02c.jpg"
+    },
+    "roomRequirements": [
+      "Температура: +18°C до +25°C",
+      "Влажность: 30–75% без конденсата",
+      "Площадь: от 15 м²",
+      "Высота потолков: от 2,5 м"
+    ],
+    "engineerRequirements": [
+      "Электропитание: 220В / 50Гц",
+      "Заземление",
+      "Интернет‑подключение (по необходимости)",
+      "Вентиляция помещения"
+    ]
+  },
+  {
+    "id": "japan-lifeline-main",
+    "name": "Решение Japan LifeLine",
+    "article": "NF009",
+    "model": "",
+    "categoryId": "elektrokardiostimulyaciya",
+    "partnerId": "japan-lifeline",
+    "price": null,
+    "currency": "KZT",
+    "popular": true,
+    "isPopular": true,
+    "isNew": false,
+    "isHidden": false,
+    "status": "in_stock",
+    "sortOrder": 0,
+    "manufacturer": "",
+    "shortDesc": "Решение Japan LifeLine для электрофизиологии и кардиостимуляции.",
+    "description": "Комплексное решение Japan LifeLine для инвазивной кардиологии и электрофизиологии с катетерами, проводниками и оборудованием.",
+    "specs": [],
+    "serviceSteps": [],
+    "image": "/uploads/products/1773131637047-320_320_resize_6_5e9554ec72485.jpg",
+    "images": [
+      "/uploads/products/1773131637047-320_320_resize_6_5e9554ec72485.jpg"
+    ],
+    "photos": [
+      {
+        "id": "ph-mmkcsncp-fjwq",
+        "url": "/uploads/products/1773131637047-320_320_resize_6_5e9554ec72485.jpg",
+        "order": 0,
+        "isMain": true
+      }
+    ],
+    "attributes": [],
+    "docs": [],
+    "relatedProductIds": [],
+    "seo": {
+      "metaTitle": "Решение Japan LifeLine",
+      "metaDescription": "Решение Japan LifeLine для электрофизиологии и кардиостимуляции.",
+      "slug": "japan-lifeline-main",
+      "ogTitle": "Решение Japan LifeLine",
+      "ogDescription": "Решение Japan LifeLine для электрофизиологии и кардиостимуляции.",
+      "ogImage": "/uploads/products/1773131637047-320_320_resize_6_5e9554ec72485.jpg"
+    },
+    "roomRequirements": [
+      "Температура: +18°C до +25°C",
+      "Влажность: 30–75% без конденсата",
+      "Площадь: от 15 м²",
+      "Высота потолков: от 2,5 м"
+    ],
+    "engineerRequirements": [
+      "Электропитание: 220В / 50Гц",
+      "Заземление",
+      "Интернет‑подключение (по необходимости)",
+      "Вентиляция помещения"
+    ]
+  },
+  {
+    "id": "biovic-main",
+    "name": "Решение Biovic",
+    "article": "NF002",
+    "model": "",
+    "categoryId": "esteticheskaya-medicina",
+    "partnerId": "biovic",
+    "price": null,
+    "currency": "KZT",
+    "popular": true,
+    "isPopular": true,
+    "isNew": false,
+    "isHidden": false,
+    "status": "in_stock",
+    "sortOrder": 0,
+    "manufacturer": "",
+    "shortDesc": "Лабораторное решение Biovic для диагностики и подготовки проб.",
+    "description": "Решение Biovic с лабораторным оборудованием и расходными материалами для клинических и научных лабораторий.",
+    "specs": [],
+    "serviceSteps": [],
+    "image": "/uploads/products/1773131712392-legend-pro-premium-catalogue-images-1280x720-1-1024x576.jpg",
+    "images": [
+      "/uploads/products/1773131712392-legend-pro-premium-catalogue-images-1280x720-1-1024x576.jpg"
+    ],
+    "photos": [
+      {
+        "id": "ph-mmkcu9hn-i4ed",
+        "url": "/uploads/products/1773131712392-legend-pro-premium-catalogue-images-1280x720-1-1024x576.jpg",
+        "order": 0,
+        "isMain": true
+      }
+    ],
+    "attributes": [],
+    "docs": [],
+    "relatedProductIds": [],
+    "seo": {
+      "metaTitle": "Решение Biovic",
+      "metaDescription": "Лабораторное решение Biovic для диагностики и подготовки проб.",
+      "slug": "biovic-main",
+      "ogTitle": "Решение Biovic",
+      "ogDescription": "Лабораторное решение Biovic для диагностики и подготовки проб.",
+      "ogImage": "/uploads/products/1773131712392-legend-pro-premium-catalogue-images-1280x720-1-1024x576.jpg"
+    },
+    "roomRequirements": [
+      "Температура: +18°C до +25°C",
+      "Влажность: 30–75% без конденсата",
+      "Площадь: от 15 м²",
+      "Высота потолков: от 2,5 м"
+    ],
+    "engineerRequirements": [
+      "Электропитание: 220В / 50Гц",
+      "Заземление",
+      "Интернет‑подключение (по необходимости)",
+      "Вентиляция помещения"
+    ]
+  },
+  {
+    "id": "medprin-main",
+    "name": "Решение Medprin",
+    "article": "NF012",
+    "model": "",
+    "categoryId": "neyrohirurgiya",
+    "partnerId": "medprin",
+    "price": null,
+    "currency": "KZT",
+    "popular": true,
+    "isPopular": true,
+    "isNew": false,
+    "isHidden": false,
+    "status": "in_stock",
+    "sortOrder": 0,
+    "manufacturer": "",
+    "shortDesc": "Нейрохирургическое решение Medprin с имплантатами и материалами.",
+    "description": "Комплекс нейрохирургических имплантатов и материалов Medprin для реконструктивных вмешательств и нейрохирургии.",
+    "specs": [],
+    "serviceSteps": [],
+    "image": "/uploads/products/1773131755700-sonastar.png",
+    "images": [
+      "/uploads/products/1773131755700-sonastar.png"
+    ],
+    "photos": [
+      {
+        "id": "ph-mmkcv6wm-hwi3",
+        "url": "/uploads/products/1773131755700-sonastar.png",
+        "order": 0,
+        "isMain": true
+      }
+    ],
+    "attributes": [],
+    "docs": [],
+    "relatedProductIds": [],
+    "seo": {
+      "metaTitle": "Решение Medprin",
+      "metaDescription": "Нейрохирургическое решение Medprin с имплантатами и материалами.",
+      "slug": "medprin-main",
+      "ogTitle": "Решение Medprin",
+      "ogDescription": "Нейрохирургическое решение Medprin с имплантатами и материалами.",
+      "ogImage": "/uploads/products/1773131755700-sonastar.png"
+    },
+    "roomRequirements": [
+      "Температура: +18°C до +25°C",
+      "Влажность: 30–75% без конденсата",
+      "Площадь: от 15 м²",
+      "Высота потолков: от 2,5 м"
+    ],
+    "engineerRequirements": [
+      "Электропитание: 220В / 50Гц",
+      "Заземление",
+      "Интернет‑подключение (по необходимости)",
+      "Вентиляция помещения"
+    ]
+  },
+  {
+    "id": "sophysa-main",
+    "name": "Решение Sophysa",
+    "article": "NF014",
+    "model": "",
+    "categoryId": "neyrohirurgiya",
+    "partnerId": "sophysa",
+    "price": null,
+    "currency": "KZT",
+    "popular": true,
+    "isPopular": true,
+    "isNew": false,
+    "isHidden": false,
+    "status": "in_stock",
+    "sortOrder": 0,
+    "manufacturer": "",
+    "shortDesc": "Решение Sophysa для шунтирующих систем и нейрохирургии.",
+    "description": "Комплект Sophysa с шунтирующими системами и аксессуарами для лечения гидроцефалии и других нейрохирургических патологий.",
+    "specs": [],
+    "serviceSteps": [],
+    "image": "/uploads/products/1773131780851-philips-zenition-90__01.jpg",
+    "images": [
+      "/uploads/products/1773131780851-philips-zenition-90__01.jpg"
+    ],
+    "photos": [
+      {
+        "id": "ph-mmkcvqba-zqtv",
+        "url": "/uploads/products/1773131780851-philips-zenition-90__01.jpg",
+        "order": 0,
+        "isMain": true
+      }
+    ],
+    "attributes": [],
+    "docs": [],
+    "relatedProductIds": [],
+    "seo": {
+      "metaTitle": "Решение Sophysa",
+      "metaDescription": "Нейрохирургическое решение Sophysa с шунтирующими системами.",
+      "slug": "sophysa-main",
+      "ogTitle": "Решение Sophysa",
+      "ogDescription": "Нейрохирургическое решение Sophysa с шунтирующими системами.",
+      "ogImage": "/uploads/products/1773131780851-philips-zenition-90__01.jpg"
+    },
+    "roomRequirements": [
+      "Температура: +18°C до +25°C",
+      "Влажность: 30–75% без конденсата",
+      "Площадь: от 15 м²",
+      "Высота потолков: от 2,5 м"
+    ],
+    "engineerRequirements": [
+      "Электропитание: 220В / 50Гц",
+      "Заземление",
+      "Интернет‑подключение (по необходимости)",
+      "Вентиляция помещения"
+    ]
+  },
+  {
+    "id": "elestim-cardio-main",
+    "name": "Решение Элестим-Кардио",
+    "article": "NF017",
+    "model": "",
+    "categoryId": "serdechno-sosudistaya-hirurgiya",
+    "partnerId": "elestim-cardio",
+    "price": null,
+    "currency": "KZT",
+    "popular": true,
+    "isPopular": true,
+    "isNew": false,
+    "isHidden": false,
+    "status": "in_stock",
+    "sortOrder": 0,
+    "manufacturer": "",
+    "shortDesc": "Решение Элестим-Кардио с расходными материалами для кардиологии и реанимации.",
+    "description": "Базовый набор электродов и расходных материалов Элестим-Кардио для отделений реанимации и кардиологии.",
+    "specs": [],
+    "serviceSteps": [],
+    "image": "/uploads/products/1773131852048-b59e535d2e90e97b7ae8448866d6f768.jpg",
+    "images": [
+      "/uploads/products/1773131852048-b59e535d2e90e97b7ae8448866d6f768.jpg"
+    ],
+    "photos": [
+      {
+        "id": "ph-mmkcx99p-pu3y",
+        "url": "/uploads/products/1773131852048-b59e535d2e90e97b7ae8448866d6f768.jpg",
+        "order": 0,
+        "isMain": true
+      }
+    ],
+    "attributes": [],
+    "docs": [],
+    "relatedProductIds": [],
+    "seo": {
+      "metaTitle": "Решение Элестим-Кардио",
+      "metaDescription": "Расходные материалы Элестим-Кардио для кардиологии и реанимации.",
+      "slug": "elestim-cardio-main",
+      "ogTitle": "Решение Элестим-Кардио",
+      "ogDescription": "Расходные материалы Элестим-Кардио для кардиологии и реанимации.",
+      "ogImage": "/uploads/products/1773131852048-b59e535d2e90e97b7ae8448866d6f768.jpg"
+    },
+    "roomRequirements": [
+      "Температура: +18°C до +25°C",
+      "Влажность: 30–75% без конденсата",
+      "Площадь: от 15 м²",
+      "Высота потолков: от 2,5 м"
+    ],
+    "engineerRequirements": [
+      "Электропитание: 220В / 50Гц",
+      "Заземление",
+      "Интернет‑подключение (по необходимости)",
+      "Вентиляция помещения"
+    ]
+  }
+]

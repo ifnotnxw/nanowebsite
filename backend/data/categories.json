@@ -1,0 +1,99 @@
+[
+  {
+    "id": "anesteziologiya-reanimaciya",
+    "name": "Анестезиология и реанимация",
+    "description": "Оборудование для анестезии, ИВЛ и интенсивной терапии",
+    "count": 3,
+    "sortOrder": 0,
+    "isHidden": false,
+    "seo": {
+      "metaTitle": "",
+      "metaDescription": "",
+      "slug": ""
+    },
+    "name_en": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  22 HOURS 59 MINUTES 56 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+    "name_kz": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  22 HOURS 59 MINUTES 56 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+    "description_en": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  22 HOURS 59 MINUTES 56 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+    "description_kz": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  22 HOURS 59 MINUTES 56 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
+  },
+  {
+    "id": "radiologiya",
+    "name": "Радиология",
+    "description": "КТ, МРТ, рентген и системы визуализации",
+    "count": 1,
+    "name_en": "Radiology",
+    "name_kz": "Радиология",
+    "description_en": "CT, MRI, X-ray and imaging systems",
+    "description_kz": "КТ, МРТ, рентген және кескіндеу жүйелері"
+  },
+  {
+    "id": "neyrohirurgiya",
+    "name": "Нейрохирургия",
+    "description": "Оборудование и инструменты для нейрохирургии",
+    "count": 5,
+    "name_en": "Nörocerrahi",
+    "name_kz": "Нейрохирургия",
+    "description_en": "Neurosurgical equipment and instruments",
+    "description_kz": "Нейрохирургиялық жабдықтар мен құралдар"
+  },
+  {
+    "id": "ortopediya",
+    "name": "Ортопедия",
+    "description": "Ортопедическое и травматологическое оборудование",
+    "count": 1,
+    "name_en": "Orthopedics.",
+    "name_kz": "Ортопедия",
+    "description_en": "Orthopaedic and trauma equipment",
+    "description_kz": "Ортопедиялық және жарақаттық жабдықтар"
+  },
+  {
+    "id": "urologiya",
+    "name": "Урология",
+    "description": "Урологическое и эндоскопическое оборудование",
+    "count": 1,
+    "name_en": "Urology",
+    "name_kz": "Урология",
+    "description_en": "Urological and endoscopic equipment",
+    "description_kz": "Урологиялық және эндоскопиялық жабдық"
+  },
+  {
+    "id": "esteticheskaya-medicina",
+    "name": "Эстетическая медицина",
+    "description": "Оборудование для эстетической и восстановительной медицины",
+    "count": 1,
+    "name_en": "Aesthetic Medicine",
+    "name_kz": "Эстетикалық медицина",
+    "description_en": "Equipment for aesthetic and restorative medicine",
+    "description_kz": "Эстетикалық және қалпына келтіретін дәрі-дәрмектерге арналған жабдық"
+  },
+  {
+    "id": "elektrokardiostimulyaciya",
+    "name": "Электрокардиостимуляция",
+    "description": "Кардиостимуляторы и электрофизиология",
+    "count": 1,
+    "name_en": "Pacing",
+    "name_kz": "Бекіту",
+    "description_en": "Pacemakers & Electrophysiology",
+    "description_kz": "ПАЦЕМАКЕРЛЕР ЖӘНЕ ЭЛЕКТРОФИ"
+  },
+  {
+    "id": "functionalnaya-diagnostika",
+    "name": "Функциональная диагностика",
+    "description": "Системы функциональной и респираторной диагностики",
+    "count": 1,
+    "name_en": "Functional diagnostics",
+    "name_kz": "Функционалдық диагностика",
+    "description_en": "Functional and respiratory diagnostic systems",
+    "description_kz": "Функционалдық және респираторлық диагностикалық жүйелер"
+  },
+  {
+    "id": "serdechno-sosudistaya-hirurgiya",
+    "name": "Сердечно-сосудистая хирургия",
+    "description": "Оборудование для кардио- и сосудистой хирургии",
+    "count": 3,
+    "name_en": "Cardiovascular surgery",
+    "name_kz": "Жүрек-қантамыр хирургиясы",
+    "description_en": "Cardiac and Vascular Surgery Equipment",
+    "description_kz": "Жүрек және қантамыр хирургиясы жабдығы"
+  }
+]

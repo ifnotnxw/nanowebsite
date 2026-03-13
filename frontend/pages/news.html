@@ -1,0 +1,36 @@
+<section class="nf-main news-page">
+  <div class="news-page-container">
+    <div class="news-page-hero">
+      <h1 class="news-page-title">Новости и события</h1>
+      <p class="news-page-subtitle">
+        Проекты, партнёрства и сервисные обновления компании НаноФарм — всё, что помогает
+        клиникам и лабораториям быть на шаг впереди.
+      </p>
+    </div>
+
+    <div class="nf-news-filters news-page-controls">
+      <select id="newsDateFilter" class="nf-select">
+        <option value="all">За всё время</option>
+        <option value="recent">Сначала новые</option>
+        <option value="old">Сначала старые</option>
+      </select>
+
+      <input
+        id="newsSearchInput"
+        class="nf-input"
+        type="search"
+        placeholder="Поиск по новостям…"
+      />
+    </div>
+
+    <div class="nf-news-layout">
+      <div id="newsList" class="news-list-grid">
+        <!-- Список новостей заполняется nfRenderNews() -->
+      </div>
+
+      <div id="newsDetails" class="nf-news-article">
+        <!-- Подробная новость больше не используется, новости открываются в модальном окне -->
+      </div>
+    </div>
+  </div>
+</section>
