@@ -414,6 +414,7 @@ const NF_CATALOG_BATCH_STEP = 16;
 const NF_STATE = {
   currentPage: "home",
   lang: "ru",
+  catalogPhase: "hub",
   cart: [],
   pendingCatalogProductId: null,
   /** Кэш отфильтрованного списка и прогресс рендера (см. nfRenderCatalog / nfCatalogAppendNextBatch) */
@@ -4579,24 +4580,26 @@ function nfRenderCatalog() {
   const f = NF_STATE.filters;
 
   if (activeFilters) {
-    f.categoryIds.forEach((id) => {
-      const c = NF_DATA.categories.find((x) => x.id === id);
-      if (!c) return;
-      const chip = nfCreateEl("div", "nf-filter-chip");
-      const label = nfCreateEl("span", "nf-filter-chip__text");
-      label.textContent = nfT("catalog.filter.category", "Категория: {value}", { value: c.name });
-      const rm = document.createElement("button");
-      rm.type = "button";
-      rm.className = "nf-filter-chip__remove";
-      rm.setAttribute("aria-label", nfT("catalog.filter.removeAria", "Убрать фильтр"));
-      rm.textContent = "×";
-      rm.addEventListener("click", () => {
-        f.categoryIds.delete(id);
-        nfApplyCatalogFilters(f, { navigateToCatalog: false });
+    if (NF_STATE.catalogPhase !== "explorer") {
+      f.categoryIds.forEach((id) => {
+        const c = NF_DATA.categories.find((x) => x.id === id);
+        if (!c) return;
+        const chip = nfCreateEl("div", "nf-filter-chip");
+        const label = nfCreateEl("span", "nf-filter-chip__text");
+        label.textContent = nfT("catalog.filter.category", "Категория: {value}", { value: c.name });
+        const rm = document.createElement("button");
+        rm.type = "button";
+        rm.className = "nf-filter-chip__remove";
+        rm.setAttribute("aria-label", nfT("catalog.filter.removeAria", "Убрать фильтр"));
+        rm.textContent = "×";
+        rm.addEventListener("click", () => {
+          f.categoryIds.delete(id);
+          nfApplyCatalogFilters(f, { navigateToCatalog: false });
+        });
+        chip.append(label, rm);
+        activeFilters.appendChild(chip);
       });
-      chip.append(label, rm);
-      activeFilters.appendChild(chip);
-    });
+    }
 
     f.partnerIds.forEach((id) => {
       const p = NF_DATA.partners.find((x) => x.id === id);
@@ -9883,33 +9886,300 @@ function nfInitHomeAdvantageCardsAnimation() {
   });
 }
 
-function nfInitCategoryPage() {
-  const cat = NF_DATA.categories.find((c) => c.id === NF_STATE.categoryDetailId);
-  const titleEl = nfEl("categoryPageTitle");
-  const descEl = nfEl("categoryPageDesc");
-  const grid = nfEl("categoryPageProducts");
-  if (!cat || !titleEl || !grid) {
-    nfGoPath("/catalog");
-    return;
+/* ═══════════════════════════════════════════════════════════════
+   SECTOR GATEWAY — Equipment Hub + Explorer phase navigation
+═══════════════════════════════════════════════════════════════ */
+
+function nfRenderCatalogHub() {
+  const grid = nfEl("catalogHubGrid");
+  if (!grid) return;
+  grid.innerHTML = "";
+
+  const allProducts = NF_DATA.products || [];
+  NF_DATA.categories.forEach((c, i) => {
+    const count = allProducts.filter((p) => p.categoryId === c.id && !p.isHidden).length;
+    const card = nfCreateEl("article", "nf-sector-card nf-vp-reveal");
+    card.setAttribute("role", "listitem");
+    card.setAttribute("tabindex", "0");
+    card.setAttribute("aria-label", c.name);
+    card.setAttribute("aria-expanded", "false");
+    card.style.setProperty("--nf-vp-stagger", `${Math.min(i, 14) * 40}ms`);
+    card.innerHTML = `
+      <div class="nf-sector-card__top">
+        <span class="nf-sector-card__index" aria-hidden="true">${String(i + 1).padStart(2, "0")}</span>
+        <h2 class="nf-sector-card__title">${nfEscapeHtml(c.name)}</h2>
+        <span class="nf-sector-card__chevron" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+            <path d="M4.5 6.75L9 11.25L13.5 6.75" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </span>
+      </div>
+      <div class="nf-sector-card__panel" aria-hidden="true">
+        <p class="nf-sector-card__desc">${nfEscapeHtml(c.description || "")}</p>
+        <div class="nf-sector-card__panel-footer">
+          <span class="nf-sector-card__count">${nfEscapeHtml(nfItemsCountLabel(count))}</span>
+          <button type="button" class="nf-sector-card__cta">
+            Открыть каталог
+            <svg width="13" height="13" viewBox="0 0 13 13" fill="none" aria-hidden="true">
+              <path d="M2.5 6.5H10.5M10.5 6.5L7 3M10.5 6.5L7 10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    `;
+
+    const top = card.querySelector(".nf-sector-card__top");
+    const panel = card.querySelector(".nf-sector-card__panel");
+    const cta = card.querySelector(".nf-sector-card__cta");
+
+    const toggleCard = () => {
+      const isExpanded = card.classList.contains("is-expanded");
+      grid.querySelectorAll(".nf-sector-card.is-expanded").forEach((other) => {
+        if (other !== card) {
+          other.classList.remove("is-expanded");
+          other.setAttribute("aria-expanded", "false");
+          const op = other.querySelector(".nf-sector-card__panel");
+          if (op) op.setAttribute("aria-hidden", "true");
+        }
+      });
+      card.classList.toggle("is-expanded", !isExpanded);
+      card.setAttribute("aria-expanded", String(!isExpanded));
+      panel.setAttribute("aria-hidden", String(isExpanded));
+    };
+
+    top.addEventListener("click", toggleCard);
+    card.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggleCard(); }
+    });
+    cta.addEventListener("click", (e) => {
+      e.stopPropagation();
+      nfEnterCatalogExplorer(c.id, { fromHub: true });
+    });
+
+    grid.appendChild(card);
+  });
+
+  nfInitViewportReveal(grid);
+}
+
+function nfShowCatalogHub() {
+  const hubEl = nfEl("catalogHub");
+  const explorerEl = nfEl("catalogExplorer");
+  if (!hubEl) return;
+  NF_STATE.catalogPhase = "hub";
+  if (explorerEl) explorerEl.hidden = true;
+  hubEl.hidden = false;
+  nfRenderCatalogHub();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function nfEnterCatalogExplorer(categoryId, opts = {}) {
+  const { replace = false } = opts;
+  const cat = (NF_DATA.categories || []).find((c) => c.id === categoryId);
+  if (!cat) return;
+
+  NF_STATE.filters.categoryIds = new Set([categoryId]);
+  NF_STATE.filters.partnerIds = new Set();
+  NF_STATE.filters.model = "";
+  NF_STATE.filters.page = 1;
+  NF_STATE.catalogPhase = "explorer";
+
+  const newUrl = `/catalog?cat=${encodeURIComponent(categoryId)}`;
+  if (replace) {
+    history.replaceState({ page: "catalog" }, "", newUrl);
+  } else {
+    history.pushState({ page: "catalog" }, "", newUrl);
   }
+
+  nfShowCatalogExplorer(cat);
+}
+
+function nfShowCatalogExplorer(cat) {
+  const hubEl = nfEl("catalogHub");
+  const explorerEl = nfEl("catalogExplorer");
+  if (!explorerEl) return;
+  NF_STATE.catalogPhase = "explorer";
+
+  if (hubEl) hubEl.hidden = true;
+  explorerEl.hidden = false;
+
+  const titleEl = nfEl("catalogExplorerTitle");
+  const descEl  = nfEl("catalogExplorerDesc");
+  if (titleEl) titleEl.textContent = cat.name;
+  if (descEl)  descEl.textContent  = cat.description || "";
+
   nfUpdateSeo({
     title: nfT("seo.category.title", "{name} — каталог НаноФарм", { name: cat.name }),
-    description: cat.description || nfT("seo.category.descriptionFallback", "Оборудование: {name}", { name: cat.name }),
+    description: cat.description || cat.name,
     ogType: "website",
   });
-  titleEl.textContent = cat.name;
-  const crumb = nfEl("categoryPageCrumb");
-  if (crumb) crumb.textContent = cat.name;
-  if (descEl) descEl.textContent = cat.description || "";
 
-  const products = (NF_DATA.products || []).filter((p) => p.categoryId === cat.id && !p.isHidden);
-  grid.innerHTML = "";
-  grid.className = "nf-products-grid nf-catalog-grid nf-products-grid-mode";
-  products.forEach((p, i) => {
-    const staggerMs = i < 8 ? i * 42 : 0;
-    grid.appendChild(nfCreateCatalogProductCard(p, staggerMs > 0 ? { staggerMs } : null));
+  nfRenderCatalogStrip(cat.id);
+  nfApplyCatalogFilters(NF_STATE.filters, { navigateToCatalog: false });
+  nfInitCatalogExplorerControls();
+}
+
+function nfRenderCatalogStrip(activeCategoryId) {
+  const itemsEl = nfEl("catalogStripItems");
+  const backBtn = nfEl("catalogStripBack");
+  if (!itemsEl) return;
+
+  if (backBtn) backBtn.onclick = () => nfReturnToCatalogHub();
+
+  itemsEl.innerHTML = "";
+  (NF_DATA.categories || []).forEach((c) => {
+    const isActive = c.id === activeCategoryId;
+    const btn = nfCreateEl("button", `nf-catalog-strip__item${isActive ? " is-active" : ""}`);
+    btn.type = "button";
+    btn.setAttribute("role", "listitem");
+    btn.setAttribute("aria-current", isActive ? "true" : "false");
+    btn.textContent = c.name;
+    if (!isActive) {
+      btn.addEventListener("click", () => {
+        const newCat = (NF_DATA.categories || []).find((x) => x.id === c.id);
+        if (!newCat) return;
+        NF_STATE.filters.categoryIds = new Set([c.id]);
+        NF_STATE.filters.partnerIds = new Set();
+        NF_STATE.filters.model = "";
+        NF_STATE.filters.page = 1;
+        history.replaceState({ page: "catalog" }, "", `/catalog?cat=${encodeURIComponent(c.id)}`);
+        const titleEl = nfEl("catalogExplorerTitle");
+        const descEl  = nfEl("catalogExplorerDesc");
+        if (titleEl) titleEl.textContent = newCat.name;
+        if (descEl)  descEl.textContent  = newCat.description || "";
+        nfUpdateSeo({
+          title: nfT("seo.category.title", "{name} — каталог НаноФарм", { name: newCat.name }),
+          description: newCat.description || newCat.name,
+          ogType: "website",
+        });
+        nfRenderCatalogStrip(c.id);
+        nfApplyCatalogFilters(NF_STATE.filters, { navigateToCatalog: false });
+      });
+    }
+    itemsEl.appendChild(btn);
   });
-  nfCatalogObserveAddedCards(Array.from(grid.querySelectorAll(".nf-vp-reveal")));
+}
+
+function nfReturnToCatalogHub() {
+  NF_STATE.filters.categoryIds = new Set();
+  NF_STATE.filters.partnerIds = new Set();
+  NF_STATE.filters.model = "";
+  NF_STATE.filters.page = 1;
+  NF_STATE.catalogPhase = "hub";
+  history.pushState({ page: "catalog" }, "", "/catalog");
+  const explorerEl = nfEl("catalogExplorer");
+  if (explorerEl) explorerEl.hidden = true;
+  nfShowCatalogHub();
+}
+
+function nfInitCatalogExplorerControls() {
+  const explorerEl = nfEl("catalogExplorer");
+  if (!explorerEl || explorerEl.dataset.controlsInited) return;
+  explorerEl.dataset.controlsInited = "1";
+
+  const modelInput = nfEl("filterModelInput");
+  const resetBtn   = nfEl("filtersResetBtn");
+  const sortSelect = nfEl("catalogSort") || nfEl("sortSelect");
+
+  if (modelInput) {
+    modelInput.value = NF_STATE.filters.model || "";
+    modelInput.addEventListener("input", nfDebounce((e) => {
+      NF_STATE.filters.model = e.target.value.trim();
+      NF_STATE.filters.page = 1;
+      nfApplyCatalogFilters(NF_STATE.filters, { navigateToCatalog: false });
+    }, 220));
+  }
+
+  if (resetBtn) {
+    resetBtn.onclick = () => {
+      NF_STATE.filters.partnerIds = new Set();
+      NF_STATE.filters.model = "";
+      NF_STATE.filters.page = 1;
+      if (modelInput) modelInput.value = "";
+      nfApplyCatalogFilters(NF_STATE.filters, { navigateToCatalog: false });
+    };
+  }
+
+  if (sortSelect) {
+    nfEnhanceSelectDropdown(sortSelect);
+    sortSelect.value = NF_STATE.filters.sort;
+    sortSelect.dispatchEvent(new CustomEvent("nf-enhanced-select-sync", { bubbles: false }));
+    sortSelect.onchange = (e) => {
+      NF_STATE.filters.sort = e.target.value;
+      NF_STATE.filters.page = 1;
+      nfApplyCatalogFilters(NF_STATE.filters, { navigateToCatalog: false });
+    };
+  }
+
+  const syncViewButtons = () => {
+    document.querySelectorAll(".nf-view-switch-btn").forEach((btn) => {
+      const isActive = btn.dataset.viewmode === NF_STATE.filters.viewMode;
+      btn.classList.toggle("nf-view-switch-btn-active", isActive);
+      btn.classList.toggle("is-active", isActive);
+    });
+  };
+  document.querySelectorAll(".nf-view-switch-btn").forEach((btn) => {
+    btn.onclick = () => {
+      const nextMode = btn.dataset.viewmode || "grid";
+      if (NF_STATE.filters.viewMode === nextMode) return;
+      NF_STATE.filters.viewMode = nextMode;
+      NF_STATE.filters.page = 1;
+      syncViewButtons();
+      nfApplyCatalogFilters(NF_STATE.filters, { navigateToCatalog: false });
+    };
+  });
+  syncViewButtons();
+
+  const filtersSheetBtn = nfEl("catalogFiltersSheetBtn");
+  const catalogLayout = document.querySelector(".nf-catalog-layout");
+  if (filtersSheetBtn && catalogLayout) {
+    const initDesktopFiltersState = () => {
+      const isDesktop = window.matchMedia("(min-width: 1025px)").matches;
+      if (!isDesktop) {
+        catalogLayout.classList.remove("is-filters-collapsed");
+        filtersSheetBtn.classList.remove("is-active");
+        filtersSheetBtn.removeAttribute("aria-expanded");
+        return;
+      }
+      const initialCollapsed = localStorage.getItem(NF_CATALOG_FILTERS_COLLAPSED_KEY) === "1";
+      if (typeof nfCatalogApplyFiltersCollapsedUI === "function") {
+        nfCatalogApplyFiltersCollapsedUI(initialCollapsed, { noReflowEvent: false });
+      }
+    };
+    filtersSheetBtn.onclick = () => {
+      const isDesktop = window.matchMedia("(min-width: 1025px)").matches;
+      if (isDesktop) {
+        const collapsed = !catalogLayout.classList.contains("is-filters-collapsed");
+        if (typeof nfCatalogApplyFiltersCollapsedUI === "function") {
+          nfCatalogApplyFiltersCollapsedUI(collapsed, { noReflowEvent: false });
+        }
+        localStorage.setItem(NF_CATALOG_FILTERS_COLLAPSED_KEY, collapsed ? "1" : "0");
+      } else {
+        if (typeof nfOpenCatalogFiltersSheet === "function") nfOpenCatalogFiltersSheet();
+      }
+    };
+    initDesktopFiltersState();
+    window.addEventListener("resize", nfDebounce(initDesktopFiltersState, 160), { passive: true });
+  }
+
+  const partnerSelect = nfEl("filterPartnerSelect");
+  if (partnerSelect) {
+    nfRenderCatalogFilters();
+    nfEnhanceSelectDropdown(partnerSelect);
+    partnerSelect.value = NF_STATE.filters.partnerIds.size === 1 ? [...NF_STATE.filters.partnerIds][0] : "";
+    partnerSelect.dispatchEvent(new CustomEvent("nf-enhanced-select-sync", { bubbles: false }));
+    partnerSelect.onchange = (e) => {
+      NF_STATE.filters.partnerIds = e.target.value ? new Set([e.target.value]) : new Set();
+      NF_STATE.filters.page = 1;
+      nfApplyCatalogFilters(NF_STATE.filters, { navigateToCatalog: false });
+    };
+  }
+}
+
+function nfInitCategoryPage() {
+  const cat = NF_DATA.categories.find((c) => c.id === NF_STATE.categoryDetailId);
+  if (!cat) { nfGoPath("/catalog"); return; }
+  nfGoPath(`/catalog?cat=${encodeURIComponent(cat.id)}`);
 }
 
 function nfBuildNewsArticleProseHtml(item) {
@@ -10193,108 +10463,20 @@ function nfInitCatalogPage() {
     ),
     ogType: "website",
   });
+
   nfCatalogApplyFiltersFromLocationSearch();
-  nfApplyCatalogFilters(NF_STATE.filters, { navigateToCatalog: false });
+  const catParam = new URLSearchParams(window.location.search || "").get("cat");
+  const cat = catParam ? (NF_DATA.categories || []).find((c) => c.id === catParam) : null;
 
-  const catRoot = document.querySelector(".nf-page-catalog");
-  if (catRoot) {
-    catRoot.querySelectorAll(".nf-filters, .nf-catalog-main").forEach((el, i) => {
-      el.classList.add("nf-vp-reveal");
-      el.style.setProperty("--nf-vp-stagger", `${i * 55}ms`);
-    });
+  if (cat) {
+    NF_STATE.filters.categoryIds = new Set([cat.id]);
+    NF_STATE.catalogPhase = "explorer";
+    nfShowCatalogExplorer(cat);
+  } else {
+    NF_STATE.filters.categoryIds = new Set();
+    NF_STATE.catalogPhase = "hub";
+    nfShowCatalogHub();
   }
-
-  const modelInput = nfEl("filterModelInput");
-  const resetBtn = nfEl("filtersResetBtn");
-  const sortSelect = nfEl("catalogSort") || nfEl("sortSelect");
-
-  if (modelInput) {
-    modelInput.value = NF_STATE.filters.model || "";
-    modelInput.addEventListener(
-      "input",
-      nfDebounce((e) => {
-        NF_STATE.filters.model = e.target.value.trim();
-        NF_STATE.filters.page = 1;
-        nfApplyCatalogFilters(NF_STATE.filters, { navigateToCatalog: false });
-      }, 220)
-    );
-  }
-
-  if (resetBtn) {
-    resetBtn.onclick = () => {
-      nfCatalogResetFiltersState();
-      if (modelInput) modelInput.value = "";
-      nfApplyCatalogFilters(NF_STATE.filters, { navigateToCatalog: false });
-    };
-  }
-
-  if (sortSelect) {
-    nfEnhanceSelectDropdown(sortSelect);
-    sortSelect.value = NF_STATE.filters.sort;
-    sortSelect.dispatchEvent(new CustomEvent("nf-enhanced-select-sync", { bubbles: false }));
-    sortSelect.onchange = (e) => {
-      NF_STATE.filters.sort = e.target.value;
-      NF_STATE.filters.page = 1;
-      console.log("[catalog] sort =", NF_STATE.filters.sort);
-      nfApplyCatalogFilters(NF_STATE.filters, { navigateToCatalog: false });
-    };
-  }
-
-  const syncCatalogViewButtons = () => {
-    document.querySelectorAll(".nf-view-switch-btn").forEach((btn) => {
-      const isActive = btn.dataset.viewmode === NF_STATE.filters.viewMode;
-      btn.classList.toggle("nf-view-switch-btn-active", isActive);
-      btn.classList.toggle("is-active", isActive);
-    });
-  };
-
-  document.querySelectorAll(".nf-view-switch-btn").forEach((btn) => {
-    btn.onclick = () => {
-      const nextMode = btn.dataset.viewmode || "grid";
-      if (NF_STATE.filters.viewMode === nextMode) return;
-      NF_STATE.filters.viewMode = nextMode;
-      NF_STATE.filters.page = 1;
-      console.log("[catalog] viewMode =", NF_STATE.filters.viewMode);
-      console.log("[catalog] sort =", NF_STATE.filters.sort);
-      syncCatalogViewButtons();
-      nfApplyCatalogFilters(NF_STATE.filters, { navigateToCatalog: false });
-    };
-  });
-
-  syncCatalogViewButtons();
-
-  // Управление фильтрами каталога (desktop: сворачивание панели, mobile: bottom-sheet)
-  const filtersSheetBtn = nfEl("catalogFiltersSheetBtn");
-  const catalogLayout = document.querySelector(".nf-catalog-layout");
-
-  const initDesktopFiltersState = () => {
-    if (!catalogLayout || !filtersSheetBtn) return;
-    const isDesktop = window.matchMedia("(min-width: 1025px)").matches;
-    if (!isDesktop) {
-      catalogLayout.classList.remove("is-filters-collapsed");
-      filtersSheetBtn.classList.remove("is-active");
-      filtersSheetBtn.removeAttribute("aria-expanded");
-      return;
-    }
-    const initialCollapsed = localStorage.getItem(NF_CATALOG_FILTERS_COLLAPSED_KEY) === "1";
-    nfCatalogApplyFiltersCollapsedUI(initialCollapsed, { noReflowEvent: false });
-  };
-
-  if (filtersSheetBtn) {
-    filtersSheetBtn.onclick = () => {
-      const isDesktop = window.matchMedia("(min-width: 1025px)").matches;
-      if (isDesktop) {
-        const collapsed = !catalogLayout?.classList.contains("is-filters-collapsed");
-        nfCatalogApplyFiltersCollapsedUI(collapsed, { noReflowEvent: false });
-        localStorage.setItem(NF_CATALOG_FILTERS_COLLAPSED_KEY, collapsed ? "1" : "0");
-      }
-    };
-  }
-
-  nfDisconnectCatalogLayoutResize();
-  initDesktopFiltersState();
-  window.addEventListener("resize", nfCatalogDesktopFiltersSyncFromWindow);
-  NF_CATALOG_LAYOUT_RESIZE_BOUND = true;
 }
 
 function nfClearPdpLoadingMask(pageRoot) {

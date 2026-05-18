@@ -16,7 +16,6 @@ const UPLOAD_DIRS = {
 
 const PUBLIC_ENTITY_TYPES = ["categories", "partners", "products", "news", "pages"];
 const PUBLIC_STATUSES = new Set(["published"]);
-const ADMIN_STATUSES = new Set(["draft", "published", "hidden", "archived"]);
 const NEWS_TYPES = new Set(["news", "project", "site-update", "other"]);
 
 module.exports = {
@@ -28,6 +27,5 @@ module.exports = {
   UPLOAD_DIRS,
   PUBLIC_ENTITY_TYPES,
   PUBLIC_STATUSES,
-  ADMIN_STATUSES,
   NEWS_TYPES,
 };

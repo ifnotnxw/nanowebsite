@@ -2,7 +2,6 @@ const fs = require("fs");
 const path = require("path");
 const sqlite3 = require("sqlite3");
 const { open } = require("sqlite");
-const bcrypt = require("bcryptjs");
 const { DATA_DIR, DB_PATH } = require("./constants");
 const { ensureSeo, nowIso, parseJson, slugify, toId } = require("./utils");
 
@@ -28,14 +27,6 @@ async function createDb() {
 
 async function applySchema(db) {
   await db.exec(`
-    CREATE TABLE IF NOT EXISTS users (
-      id TEXT PRIMARY KEY,
-      login TEXT NOT NULL UNIQUE,
-      password_hash TEXT NOT NULL,
-      role TEXT NOT NULL DEFAULT 'admin',
-      created_at TEXT NOT NULL
-    );
-
     CREATE TABLE IF NOT EXISTS content_entities (
       id TEXT PRIMARY KEY,
       entity_type TEXT NOT NULL,
@@ -396,21 +387,6 @@ async function seedEntityType(db, entityType, items) {
   }
 }
 
-async function seedUsers(db) {
-  const total = await db.get("SELECT COUNT(*) as total FROM users");
-  if (total && total.total > 0) return;
-  const fallbackLogin = process.env.ADMIN_LOGIN || "admin";
-  const fallbackPassword = process.env.ADMIN_PASSWORD || "admin";
-  const passwordHash = process.env.ADMIN_PASSWORD_BCRYPT || bcrypt.hashSync(fallbackPassword, 10);
-  await db.run(
-    "INSERT INTO users(id, login, password_hash, role, created_at) VALUES (?, ?, ?, ?, ?)",
-    toId("usr"),
-    fallbackLogin,
-    passwordHash,
-    "admin",
-    nowIso()
-  );
-}
 
 async function seedMetrics(db) {
   const row = await db.get("SELECT COUNT(*) as total FROM site_metrics");
@@ -458,7 +434,6 @@ async function seedDatabase(db) {
   await seedEntityType(db, "partners", partners);
   await seedEntityType(db, "products", products);
   await seedEntityType(db, "news", news);
-  await seedUsers(db);
   await seedMetrics(db);
 }
 

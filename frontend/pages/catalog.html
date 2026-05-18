@@ -1,120 +1,126 @@
-  <section class="nf-page-catalog nf-content-visibility-section" aria-label="Каталог" data-i18n="catalog.aria" data-i18n-attr="aria-label">
-    <div class="nf-container nf-catalog-layout nf-page-container--wide">
-      <aside id="nf-catalog-filters-aside" class="nf-filters">
-        <div class="nf-filters-header">
-          <h2 data-i18n="catalog.filters.title">Фильтры</h2>
-        </div>
+<section class="nf-page-catalog" aria-label="Каталог оборудования" data-i18n="catalog.aria" data-i18n-attr="aria-label">
 
-        <div class="nf-filter-block">
-          <label class="nf-filter-label" for="filterCategorySelect" data-i18n="catalog.filter.groupLabel">Группа оборудования</label>
-          <select id="filterCategorySelect" class="nf-select">
-            <option value="">Все группы</option>
-          </select>
-        </div>
+  <!-- ═══ PHASE 1 · EQUIPMENT HUB ═══ -->
+  <div class="nf-catalog-hub" id="catalogHub" hidden>
+    <div class="nf-container nf-catalog-hub__container">
+      <div class="nf-catalog-hub__grid" id="catalogHubGrid" role="list" aria-label="Клинические направления"></div>
+    </div>
+  </div>
 
-        <div class="nf-filter-block">
-          <label class="nf-filter-label" for="filterPartnerSelect" data-i18n="catalog.filter.brandLabel">Бренд</label>
-          <select id="filterPartnerSelect" class="nf-select">
-            <option value="">Все бренды</option>
-          </select>
-        </div>
+  <!-- ═══ PHASE 2 · EXPLORER ═══ -->
+  <div class="nf-catalog-explorer" id="catalogExplorer" hidden>
 
-        <div class="nf-filter-block">
-          <label class="nf-filter-label" for="filterModelInput" data-i18n="catalog.filter.modelLabel">Поиск по модели</label>
-          <input id="filterModelInput" class="nf-input" type="search" placeholder="Введите модель…" data-i18n="catalog.filter.modelPlaceholder" data-i18n-attr="placeholder" />
-        </div>
-
-        <button type="button" id="filtersResetBtn" class="nf-btn nf-btn-secondary nf-filters-reset-btn" data-i18n="catalog.resetFilters">
-          Сбросить фильтры
+    <!-- Context strip: back + category pills -->
+    <div class="nf-catalog-strip" id="catalogStrip" role="navigation" aria-label="Навигация по направлениям">
+      <div class="nf-container nf-catalog-strip__inner">
+        <button type="button" class="nf-catalog-strip__back" id="catalogStripBack">
+          <svg class="nf-catalog-strip__back-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path d="M10 12L6 8L10 4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span data-i18n="catalog.hub.title">Каталог</span>
         </button>
-      </aside>
-  
-      <section class="nf-catalog-main nf-content-visibility-section">
-        <div class="nf-catalog-toolbar">
-          <div>
-            <span id="catalogCountLabel" class="nf-catalog-count"></span>
-            <div id="catalogActiveFilters" class="nf-active-filters"></div>
-          </div>
-          <div class="catalog-toolbar">
-            <button
-              type="button"
-              id="catalogFiltersSheetBtn"
-              class="catalog-filter-toggle"
-              aria-expanded="false"
-              aria-controls="nf-catalog-filters-aside"
-            >
-              <span data-i18n="catalog.filters.button">Фильтры</span>
-              <span class="catalog-filter-toggle__arrow" aria-hidden="true">
-                <svg viewBox="0 0 20 20" fill="none" width="12" height="12">
-                  <path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-              </span>
-            </button>
+        <span class="nf-catalog-strip__sep" aria-hidden="true"></span>
+        <div class="nf-catalog-strip__scroll" role="list" aria-label="Направления">
+          <div class="nf-catalog-strip__items" id="catalogStripItems"></div>
+        </div>
+      </div>
+    </div>
 
-            <div class="catalog-sort">
-              <span id="catalogSortLabel" class="catalog-sort__label" data-i18n="catalog.sort.label">Сортировка</span>
-              <div class="catalog-sort__control">
-                <select id="catalogSort" class="catalog-sort__select" aria-labelledby="catalogSortLabel">
-                  <option value="popular" data-i18n="catalog.sort.popular">По популярности</option>
-                  <option value="name-asc" data-i18n="catalog.sort.nameAsc">По названию (А–Я)</option>
-                  <option value="name-desc" data-i18n="catalog.sort.nameDesc">По названию (Я–А)</option>
-                  <option value="price-asc" data-i18n="catalog.sort.priceAsc">По цене (возр.)</option>
-                  <option value="price-desc" data-i18n="catalog.sort.priceDesc">По цене (убыв.)</option>
-                </select>
+    <!-- Sidebar + product grid -->
+    <div class="nf-catalog-explorer__content">
+      <div class="nf-container nf-catalog-layout nf-page-container--wide">
+
+        <aside id="nf-catalog-filters-aside" class="nf-filters">
+          <div class="nf-filters-header">
+            <h2 data-i18n="catalog.filters.title">Фильтры</h2>
+          </div>
+          <div class="nf-filter-block">
+            <label class="nf-filter-label" for="filterPartnerSelect" data-i18n="catalog.filter.brandLabel">Бренд</label>
+            <select id="filterPartnerSelect" class="nf-select">
+              <option value="">Все бренды</option>
+            </select>
+          </div>
+          <div class="nf-filter-block">
+            <label class="nf-filter-label" for="filterModelInput" data-i18n="catalog.filter.modelLabel">Поиск по модели</label>
+            <input id="filterModelInput" class="nf-input" type="search"
+              placeholder="Введите модель…"
+              data-i18n="catalog.filter.modelPlaceholder"
+              data-i18n-attr="placeholder" />
+          </div>
+          <button type="button" id="filtersResetBtn" class="nf-btn nf-btn-secondary nf-filters-reset-btn" data-i18n="catalog.resetFilters">
+            Сбросить фильтры
+          </button>
+        </aside>
+
+        <section class="nf-catalog-main nf-content-visibility-section">
+
+          <div class="nf-catalog-explorer__head" id="catalogExplorerHead">
+            <h2 class="nf-catalog-explorer__title" id="catalogExplorerTitle"></h2>
+            <p class="nf-catalog-explorer__desc" id="catalogExplorerDesc"></p>
+          </div>
+
+          <div class="nf-catalog-toolbar">
+            <div>
+              <span id="catalogCountLabel" class="nf-catalog-count"></span>
+              <div id="catalogActiveFilters" class="nf-active-filters"></div>
+            </div>
+            <div class="catalog-toolbar">
+              <button type="button" id="catalogFiltersSheetBtn" class="catalog-filter-toggle"
+                aria-expanded="false" aria-controls="nf-catalog-filters-aside">
+                <span data-i18n="catalog.filters.button">Фильтры</span>
+                <span class="catalog-filter-toggle__arrow" aria-hidden="true">
+                  <svg viewBox="0 0 20 20" fill="none" width="12" height="12">
+                    <path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </span>
+              </button>
+              <div class="catalog-sort">
+                <span id="catalogSortLabel" class="catalog-sort__label" data-i18n="catalog.sort.label">Сортировка</span>
+                <div class="catalog-sort__control">
+                  <select id="catalogSort" class="catalog-sort__select" aria-labelledby="catalogSortLabel">
+                    <option value="popular"    data-i18n="catalog.sort.popular">По популярности</option>
+                    <option value="name-asc"   data-i18n="catalog.sort.nameAsc">По названию (А–Я)</option>
+                    <option value="name-desc"  data-i18n="catalog.sort.nameDesc">По названию (Я–А)</option>
+                    <option value="price-asc"  data-i18n="catalog.sort.priceAsc">По цене (возр.)</option>
+                    <option value="price-desc" data-i18n="catalog.sort.priceDesc">По цене (убыв.)</option>
+                  </select>
+                </div>
+              </div>
+              <div class="catalog-view-toggle" aria-label="Вид каталога" data-i18n="catalog.view.aria" data-i18n-attr="aria-label">
+                <button type="button" class="catalog-view-toggle__btn nf-view-switch-btn nf-view-switch-btn-active is-active"
+                  data-viewmode="grid" aria-label="Сетка" data-i18n="catalog.view.gridAria" data-i18n-attr="aria-label">
+                  <svg viewBox="0 0 20 20" fill="none">
+                    <rect x="3"  y="3"  width="5" height="5" rx="1.2" fill="currentColor"/>
+                    <rect x="12" y="3"  width="5" height="5" rx="1.2" fill="currentColor"/>
+                    <rect x="3"  y="12" width="5" height="5" rx="1.2" fill="currentColor"/>
+                    <rect x="12" y="12" width="5" height="5" rx="1.2" fill="currentColor"/>
+                  </svg>
+                </button>
+                <button type="button" class="catalog-view-toggle__btn nf-view-switch-btn"
+                  data-viewmode="list" aria-label="Список" data-i18n="catalog.view.listAria" data-i18n-attr="aria-label">
+                  <svg viewBox="0 0 20 20" fill="none">
+                    <rect x="4" y="5"    width="12" height="1.8" rx="0.9" fill="currentColor"/>
+                    <rect x="4" y="9.1"  width="12" height="1.8" rx="0.9" fill="currentColor"/>
+                    <rect x="4" y="13.2" width="12" height="1.8" rx="0.9" fill="currentColor"/>
+                  </svg>
+                </button>
               </div>
             </div>
-
-            <div class="catalog-view-toggle" aria-label="Вид каталога" data-i18n="catalog.view.aria" data-i18n-attr="aria-label">
-              <button
-                type="button"
-                class="catalog-view-toggle__btn nf-view-switch-btn nf-view-switch-btn-active is-active"
-                data-viewmode="grid"
-                aria-label="Сетка"
-                data-i18n="catalog.view.gridAria"
-                data-i18n-attr="aria-label"
-              >
-                <svg viewBox="0 0 20 20" fill="none">
-                  <rect x="3" y="3" width="5" height="5" rx="1.2" fill="currentColor"/>
-                  <rect x="12" y="3" width="5" height="5" rx="1.2" fill="currentColor"/>
-                  <rect x="3" y="12" width="5" height="5" rx="1.2" fill="currentColor"/>
-                  <rect x="12" y="12" width="5" height="5" rx="1.2" fill="currentColor"/>
-                </svg>
-              </button>
-
-              <button
-                type="button"
-                class="catalog-view-toggle__btn nf-view-switch-btn"
-                data-viewmode="list"
-                aria-label="Список"
-                data-i18n="catalog.view.listAria"
-                data-i18n-attr="aria-label"
-              >
-                <svg viewBox="0 0 20 20" fill="none">
-                  <rect x="4" y="5" width="12" height="1.8" rx="0.9" fill="currentColor"/>
-                  <rect x="4" y="9.1" width="12" height="1.8" rx="0.9" fill="currentColor"/>
-                  <rect x="4" y="13.2" width="12" height="1.8" rx="0.9" fill="currentColor"/>
-                </svg>
-              </button>
-            </div>
           </div>
-        </div>
-        <div id="catalogProducts" class="nf-products-grid nf-catalog-grid"></div>
-        <button
-          type="button"
-          id="catalogLoadMoreBtn"
-          class="nf-catalog-load-more nf-hidden"
-          hidden
-        >
-          <span data-i18n="catalog.loadMore">Показать ещё</span>
-        </button>
-        <div
-          id="catalogPagination"
-          class="nf-catalog-pagination"
-          aria-label="Навигация по страницам каталога"
-          data-i18n="catalog.paginationAria"
-          data-i18n-attr="aria-label"
-          hidden
-        ></div>
-      </section>
+
+          <div id="catalogProducts" class="nf-products-grid nf-catalog-grid"></div>
+
+          <button type="button" id="catalogLoadMoreBtn" class="nf-catalog-load-more nf-hidden" hidden>
+            <span data-i18n="catalog.loadMore">Показать ещё</span>
+          </button>
+          <div id="catalogPagination" class="nf-catalog-pagination"
+            aria-label="Навигация по страницам каталога"
+            data-i18n="catalog.paginationAria" data-i18n-attr="aria-label" hidden></div>
+
+        </section>
+      </div>
     </div>
-  </section>
+
+  </div><!-- /nf-catalog-explorer -->
+
+</section>
