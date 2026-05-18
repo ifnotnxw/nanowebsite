@@ -1,170 +1,191 @@
-<section class="nf-product-page" aria-label="Карточка товара">
-  <div class="nf-product-page-header-row">
-    <button
-      type="button"
-      class="nf-product-page-back"
-      data-page="catalog"
-      aria-label="Вернуться в каталог"
-    >
-      ← В каталог
+<section class="nf-pdp nf-pdp--v3" aria-label="Карточка товара" data-i18n="product.page.aria" data-i18n-attr="aria-label">
+  <!-- Toolbar -->
+  <div class="nf-pdp-toolbar" data-pdp-reveal style="--pdp-d: 0ms">
+    <button type="button" class="nf-pdp-back" data-page="catalog" aria-label="Вернуться в каталог" data-i18n="product.backToCatalogAria" data-i18n-attr="aria-label">
+      ← <span data-i18n="product.backToCatalog">В каталог</span>
     </button>
   </div>
 
-  <div class="nf-product-page-layout">
-    <aside class="nf-product-page-gallery">
-      <div class="nf-product-page-main-image">
-        <div class="nf-product-page-image-stage">
-          <img id="productPageImage" src="" alt="" />
-        </div>
-        <div class="nf-product-page-image-hint">Фото по запросу</div>
-        <div id="productPageImageCounter" class="nf-product-page-image-counter"></div>
-      </div>
-      <div id="productPageThumbs" class="nf-product-page-thumbs"></div>
-    </aside>
-
-    <section class="nf-product-page-main">
-      <header class="nf-product-page-header">
-        <h1 id="productPageTitle"></h1>
-        <p id="productPageShortDesc" class="nf-product-page-subtitle"></p>
-        <div id="productPageMeta" class="nf-product-page-meta"></div>
-      </header>
-
-      <div class="nf-product-page-purchase">
-        <div class="nf-product-page-qty">
-          <span class="nf-product-page-qty-label">Количество</span>
-          <div class="nf-product-page-qty-input">
-            <button type="button" data-role="qty-minus" aria-label="Уменьшить количество">−</button>
-            <input
-              id="productPageQty"
-              type="number"
-              min="1"
-              value="1"
-              inputmode="numeric"
-              aria-label="Количество"
-            />
-            <button type="button" data-role="qty-plus" aria-label="Увеличить количество">+</button>
+  <!-- ProductHero: первый экран -->
+  <header class="nf-pdp-hero nf-pdp-component-product-hero" data-component="product-hero" data-pdp-reveal style="--pdp-d: 40ms">
+    <div class="nf-pdp-hero-shell">
+      <div class="nf-pdp-hero__media nf-pdp-hero-media nf-pdp-product-hero-media">
+        <div class="nf-pdp-gallery-sticky">
+          <div class="nf-pdp-media-glass nf-pdp-gallery nf-pdp-gallery--product" data-component="product-gallery">
+            <div id="productPageThumbs" class="nf-pdp-thumbs nf-pdp-thumbs--vertical" hidden></div>
+            <div class="nf-pdp-media-frame">
+              <button
+                type="button"
+                class="nf-pdp-media-nav nf-pdp-media-nav--prev"
+                id="productPageNavPrev"
+                aria-label="Предыдущее фото"
+                data-i18n="product.prevPhoto"
+                data-i18n-attr="aria-label"
+                hidden
+              >
+                ‹
+              </button>
+              <div class="nf-pdp-media-stage">
+                <div class="nf-pdp-media-imgwrap">
+                  <img id="productPageImage" class="nf-pdp-media-img" src="" alt="" />
+                </div>
+                <span class="nf-pdp-media-hint" data-i18n="product.photoOnRequest">Фото по запросу</span>
+                <span id="productPageImageCounter" class="nf-pdp-media-count" hidden></span>
+                <span class="nf-pdp-zoom-badge" aria-hidden="true" data-i18n="product.pdpZoomHint">Просмотр</span>
+              </div>
+              <button
+                type="button"
+                class="nf-pdp-media-nav nf-pdp-media-nav--next"
+                id="productPageNavNext"
+                aria-label="Следующее фото"
+                data-i18n="product.nextPhoto"
+                data-i18n-attr="aria-label"
+                hidden
+              >
+                ›
+              </button>
+            </div>
           </div>
         </div>
+      </div>
 
-        <div class="nf-product-page-price">
-          <div id="productPagePrice" class="nf-product-page-price-line"></div>
-          <div id="productPageTotal" class="nf-product-page-total"></div>
+      <div class="nf-pdp-hero__panel nf-pdp-hero-panel nf-pdp-product-hero-content">
+        <section class="nf-pdp-product-hero-info" aria-label="Ключевая информация">
+          <p id="productPageHeroKicker" class="nf-pdp-hero-kicker"></p>
+          <h1 id="productPageTitle" class="nf-pdp-title nf-pdp-hero-title"></h1>
+          <p id="productPageShortDesc" class="nf-pdp-hero-vp"></p>
+          <div id="productPageHeroBadges" class="nf-pdp-hero-badges" aria-label=""></div>
+          <div id="productPageHeroSpecGrid" class="nf-pdp-hero-spec-grid" data-component="specs-grid-mini"></div>
+        </section>
+
+        <section class="nf-pdp-product-hero-actions" aria-label="Действия">
+          <div class="nf-pdp-commerce-card nf-pdp-hero-commerce">
+            <div class="nf-pdp-commerce nf-pdp-commerce--card-inner">
+              <div class="nf-pdp-qty-block">
+                <span class="nf-pdp-qty-label" data-i18n="product.qtyLabel">Количество</span>
+                <div class="nf-pdp-qty">
+                  <button type="button" data-role="qty-minus" aria-label="Уменьшить количество" data-i18n="product.qtyDecreaseAria" data-i18n-attr="aria-label">−</button>
+                  <input
+                    id="productPageQty"
+                    type="number"
+                    min="1"
+                    value="1"
+                    inputmode="numeric"
+                    aria-label="Количество"
+                    data-i18n="product.qtyInputAria"
+                    data-i18n-attr="aria-label"
+                  />
+                  <button type="button" data-role="qty-plus" aria-label="Увеличить количество" data-i18n="product.qtyIncreaseAria" data-i18n-attr="aria-label">+</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="nf-pdp-actions nf-pdp-actions--hero">
+              <button type="button" id="productPagePrimaryBtn" class="nf-btn nf-btn-primary nf-pdp-cta-primary">
+                <span data-i18n="common.addToRequest">В запрос</span>
+              </button>
+              <button type="button" id="productPageSecondaryBtn" class="nf-btn nf-btn-secondary nf-pdp-cta-secondary">
+                <span data-i18n="product.requestPriceShort">Запросить цену</span>
+              </button>
+            </div>
+
+            <div class="nf-pdp-meta-compact">
+              <span id="productPageSku" class="nf-pdp-meta-sku"></span>
+              <span id="productPageBrand" class="nf-pdp-brand-inline"></span>
+            </div>
+
+            <p class="nf-pdp-hero-trust" data-i18n="product.hero.trustLine">Поставка, установка и сервис под ключ</p>
+          </div>
+        </section>
+      </div>
+    </div>
+  </header>
+
+  <!-- StickyNav: после hero -->
+  <nav class="nf-pdp-subnav nf-pdp-component-sticky-nav" aria-label="Разделы страницы" data-component="sticky-nav" data-pdp-reveal style="--pdp-d: 70ms">
+    <div class="nf-pdp-subnav-inner">
+      <a href="#pdp-description" class="nf-pdp-subnav-link" data-pdp-section-link="description" data-i18n="product.nav.description">Описание</a>
+      <a href="#pdp-specs" class="nf-pdp-subnav-link" data-pdp-section-link="specs" data-i18n="product.nav.specs">Характеристики</a>
+      <a href="#pdp-kit" class="nf-pdp-subnav-link" data-pdp-section-link="kit" data-i18n="product.nav.kit">Комплектация</a>
+      <a href="#pdp-install" class="nf-pdp-subnav-link" data-pdp-section-link="install" data-i18n="product.nav.install">Установка</a>
+      <a href="#pdp-service" class="nf-pdp-subnav-link" data-pdp-section-link="service" data-i18n="product.nav.service">Сервис</a>
+    </div>
+  </nav>
+
+  <div class="nf-pdp-main">
+    <!-- Описание -->
+    <section id="pdp-description" class="nf-pdp-section nf-pdp-section--description" data-pdp-section data-pdp-reveal data-pdp-reveal-scroll style="--pdp-d: 80ms">
+      <div class="nf-pdp-section-head">
+        <p class="nf-pdp-section-eyebrow" data-i18n="product.section.overviewEyebrow">Обзор решения</p>
+        <h2 class="nf-pdp-section-title" data-i18n="product.section.description">Описание</h2>
+      </div>
+      <div id="productPageDescCallout" class="nf-pdp-callout" hidden></div>
+      <div id="productPageDescription" class="nf-pdp-prose nf-pdp-prose--rich" data-pdp-section-body></div>
+    </section>
+
+    <!-- Характеристики: grid -->
+    <section id="pdp-specs" class="nf-pdp-section nf-pdp-section--specs" data-pdp-section data-pdp-reveal data-pdp-reveal-scroll style="--pdp-d: 95ms">
+      <div class="nf-pdp-section-head">
+        <p class="nf-pdp-section-eyebrow" data-i18n="product.section.specsEyebrow">Технические параметры</p>
+        <h2 class="nf-pdp-section-title" data-i18n="product.specsTitle">Характеристики</h2>
+      </div>
+      <div id="productPageSpecsGrid" class="nf-pdp-specs-grid nf-pdp-component-specs-grid" data-component="specs-grid"></div>
+    </section>
+
+    <!-- Комплектация -->
+    <section id="pdp-kit" class="nf-pdp-section nf-pdp-section--kit" data-pdp-section data-pdp-reveal data-pdp-reveal-scroll style="--pdp-d: 110ms">
+      <div class="nf-pdp-section-head">
+        <p class="nf-pdp-section-eyebrow" data-i18n="product.section.kitEyebrow">Состав поставки</p>
+        <h2 class="nf-pdp-section-title" data-i18n="product.section.kit">Комплектация</h2>
+      </div>
+      <div id="productPageKitBody" class="nf-pdp-kit-body" data-pdp-section-body></div>
+    </section>
+
+    <!-- Установка: env + timeline -->
+    <section id="pdp-install" class="nf-pdp-section nf-pdp-section--install" data-pdp-section data-pdp-reveal data-pdp-reveal-scroll style="--pdp-d: 125ms">
+      <div class="nf-pdp-section-head">
+        <p class="nf-pdp-section-eyebrow" data-i18n="product.section.installEyebrow">Ввод в эксплуатацию</p>
+        <h2 class="nf-pdp-section-title" data-i18n="product.installTitle">Установка</h2>
+      </div>
+      <div class="nf-pdp-install-env">
+        <div class="nf-pdp-install-env-card">
+          <h3 class="nf-pdp-install-env-h" data-i18n="product.install.roomConditions">Помещение и условия</h3>
+          <ul id="productPageInstallRoom" class="nf-pdp-install-env-list"></ul>
+        </div>
+        <div class="nf-pdp-install-env-card">
+          <h3 class="nf-pdp-install-env-h" data-i18n="product.install.engineering">Инженерные коммуникации</h3>
+          <ul id="productPageInstallEngineer" class="nf-pdp-install-env-list"></ul>
         </div>
       </div>
+      <h3 class="nf-pdp-timeline-title" data-i18n="product.install.stepsTitle">Этапы установки и ввода</h3>
+      <ol id="productPageInstallTimeline" class="nf-pdp-timeline nf-pdp-component-timeline" data-component="timeline"></ol>
+    </section>
 
-      <div class="nf-product-page-actions">
-        <button
-          type="button"
-          id="productPagePrimaryBtn"
-          class="nf-btn nf-btn-primary"
-        >
-          <span class="nf-btn-icon" aria-hidden="true">
-            <svg
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-              aria-hidden="true"
-              focusable="false"
-            >
-              <path
-                d="M5 5h2l1.2 8.4A1.5 1.5 0 0 0 9.7 15h7.1a1.5 1.5 0 0 0 1.47-1.19L19.8 9H8.3"
-                stroke="#0b1f1c"
-                stroke-width="1.6"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              />
-              <circle cx="10" cy="18" r="1.4" fill="#0b1f1c" />
-              <circle cx="17" cy="18" r="1.4" fill="#0b1f1c" />
-            </svg>
-          </span>
-          <span class="nf-btn-label">Добавить в запрос</span>
-        </button>
-        <button
-          type="button"
-          id="productPageSecondaryBtn"
-          class="nf-btn nf-btn-secondary"
-        >
-          <span class="nf-btn-icon" aria-hidden="true">
-            <svg
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-              aria-hidden="true"
-              focusable="false"
-            >
-              <path
-                d="M13 2 6.5 13H12l-1 9 6.5-11H13l1-9Z"
-                fill="#70A9A2"
-                stroke="#70A9A2"
-                stroke-width="1.4"
-                stroke-linejoin="round"
-              />
-            </svg>
-          </span>
-          <span class="nf-btn-label">Быстрый запрос по товару</span>
-        </button>
+    <!-- Сервис: карточки -->
+    <section id="pdp-service" class="nf-pdp-section nf-pdp-section--service" data-pdp-section data-pdp-reveal data-pdp-reveal-scroll style="--pdp-d: 140ms">
+      <div class="nf-pdp-section-head">
+        <p class="nf-pdp-section-eyebrow" data-i18n="product.section.serviceEyebrow">После поставки</p>
+        <h2 class="nf-pdp-section-title" data-i18n="product.maintenanceTitle">Обслуживание</h2>
       </div>
+      <div id="productPageServiceCards" class="nf-pdp-service-cards nf-pdp-component-service-cards" data-component="service-cards"></div>
+    </section>
 
-      <div class="nf-product-page-badges">
-        <span id="productPageCategoryBadge" class="nf-chip"></span>
-        <span id="productPagePartnerBadge" class="nf-chip nf-chip-primary"></span>
+    <!-- Документация (без пункта в sticky nav) -->
+    <section id="pdp-docs" class="nf-pdp-section nf-pdp-section--docs" data-pdp-section data-pdp-reveal data-pdp-reveal-scroll style="--pdp-d: 170ms" hidden>
+      <div class="nf-pdp-section-head">
+        <p class="nf-pdp-section-eyebrow" data-i18n="product.section.docsEyebrow">Файлы и регламенты</p>
+        <h2 class="nf-pdp-section-title" data-i18n="product.section.docs">Документация</h2>
       </div>
+      <div id="productPageDocsBody" class="nf-pdp-docs"></div>
     </section>
   </div>
 
-  <section class="nf-product-page-tabs">
-    <div class="nf-tabs-header">
-      <button
-        type="button"
-        class="nf-tab-btn nf-tab-btn-active"
-        data-tab="productPageTab-specs"
-      >
-        Технические характеристики
+  <div class="nf-pdp-mobile-cta" aria-hidden="false">
+    <div class="nf-pdp-mobile-cta-inner">
+      <button type="button" id="productPageMobilePrimaryBtn" class="nf-btn nf-btn-primary nf-pdp-mobile-cta-main">
+        <span data-i18n="common.addToRequest">В запрос</span>
       </button>
-      <button
-        type="button"
-        class="nf-tab-btn"
-        data-tab="productPageTab-install"
-      >
-        Установка и обслуживание
-      </button>
-      <button
-        type="button"
-        class="nf-tab-btn"
-        data-tab="productPageTab-docs"
-      >
-        Документация
-      </button>
+      <button type="button" id="productPageMobileSecondaryBtn" class="nf-btn nf-btn-secondary nf-pdp-mobile-cta-secondary" data-i18n="product.requestPriceShort">Запросить цену</button>
     </div>
-
-    <div class="nf-tabs-body">
-      <div id="productPageTab-specs" class="nf-tab nf-tab-active"></div>
-      <div id="productPageTab-install" class="nf-tab"></div>
-      <div id="productPageTab-docs" class="nf-tab">
-        Документация по оборудованию доступна по запросу — приложим паспорта и инструкции в составе коммерческого предложения.
-      </div>
-    </div>
-  </section>
-
-  <section class="nf-product-page-secondary">
-    <div class="nf-product-page-secondary-card">
-      <h2>Как мы работаем с проектами</h2>
-      <p>
-        НаноФарм помогает не только с поставкой, но и с полным циклом внедрения:
-        от подбора конфигурации и подготовки помещения до обучения персонала и сервисного сопровождения.
-      </p>
-      <ul>
-        <li>Подбор оптимального решения под задачи клиники или лаборатории</li>
-        <li>Проектирование и проверка инженерных требований</li>
-        <li>Инсталляция, калибровка и тестовый запуск оборудования</li>
-        <li>Обучение врачей и инженеров на месте</li>
-        <li>Регулярное сервисное обслуживание и поддержка 24/7</li>
-      </ul>
-    </div>
-  </section>
+  </div>
 </section>
-

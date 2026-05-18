@@ -1,0 +1,150 @@
+/* Per-logo slow flight: % translate is relative to the mark’s own box — keeps motion subtle at any viewport. */
+@keyframes nfWmFlightA {
+  0%,
+  100% {
+    transform: translate3d(-2.6%, -1.9%, 0) rotate(0deg) scale(1);
+  }
+  25% {
+    transform: translate3d(3.1%, 2.2%, 0) rotate(1.9deg) scale(1.024);
+  }
+  50% {
+    transform: translate3d(1.4%, -3.2%, 0) rotate(-1.5deg) scale(0.991);
+  }
+  75% {
+    transform: translate3d(-2.9%, 2.4%, 0) rotate(1.1deg) scale(1.016);
+  }
+}
+
+@keyframes nfWmFlightB {
+  0%,
+  100% {
+    transform: translate3d(2.2%, -2.4%, 0) rotate(0deg) scale(1);
+  }
+  30% {
+    transform: translate3d(-2.8%, 1.6%, 0) rotate(-2.1deg) scale(1.018);
+  }
+  55% {
+    transform: translate3d(2.5%, 3%, 0) rotate(1.4deg) scale(0.986);
+  }
+  78% {
+    transform: translate3d(-1.2%, -2.7%, 0) rotate(-0.9deg) scale(1.012);
+  }
+}
+
+@keyframes nfWmFlightC {
+  0%,
+  100% {
+    transform: translate3d(-1.8%, 2.6%, 0) rotate(0deg) scale(1);
+  }
+  22% {
+    transform: translate3d(2.9%, -1.3%, 0) rotate(2.2deg) scale(0.993);
+  }
+  48% {
+    transform: translate3d(-3.2%, -2.5%, 0) rotate(-1.7deg) scale(1.028);
+  }
+  72% {
+    transform: translate3d(1.6%, 2.8%, 0) rotate(0.8deg) scale(1.008);
+  }
+}
+
+@keyframes nfWmFlightD {
+  0%,
+  100% {
+    transform: translate3d(2.8%, 1.7%, 0) rotate(0deg) scale(1);
+  }
+  28% {
+    transform: translate3d(-2.2%, -3%, 0) rotate(-1.2deg) scale(1.021);
+  }
+  52% {
+    transform: translate3d(3%, -0.9%, 0) rotate(2.4deg) scale(0.988);
+  }
+  76% {
+    transform: translate3d(-2.6%, 2.1%, 0) rotate(-1.8deg) scale(1.014);
+  }
+}
+
+@keyframes nfWmFlightE {
+  0%,
+  100% {
+    transform: translate3d(-2.1%, -2.8%, 0) rotate(0deg) scale(1);
+  }
+  33% {
+    transform: translate3d(2.6%, 2.5%, 0) rotate(1.6deg) scale(0.995);
+  }
+  58% {
+    transform: translate3d(-1.5%, 3.1%, 0) rotate(-2.3deg) scale(1.026);
+  }
+  82% {
+    transform: translate3d(2.4%, -1.8%, 0) rotate(0.7deg) scale(1.01);
+  }
+}
+
+@keyframes nfWmFlightF {
+  0%,
+  100% {
+    transform: translate3d(1.5%, -2.2%, 0) rotate(0deg) scale(1);
+  }
+  26% {
+    transform: translate3d(-3%, 2%, 0) rotate(-2deg) scale(1.019);
+  }
+  54% {
+    transform: translate3d(2.2%, 2.7%, 0) rotate(1.3deg) scale(0.992);
+  }
+  74% {
+    transform: translate3d(-1.8%, -2.9%, 0) rotate(1.7deg) scale(1.017);
+  }
+}
+
+.nf-hero--brand .nf-hero-wm-fly-a {
+  animation-name: nfWmFlightA;
+  animation-duration: var(--wm-float-dur, 36s);
+  animation-delay: var(--wm-float-del, 0s);
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+}
+
+.nf-hero--brand .nf-hero-wm-fly-b {
+  animation-name: nfWmFlightB;
+  animation-duration: var(--wm-float-dur, 36s);
+  animation-delay: var(--wm-float-del, 0s);
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+}
+
+.nf-hero--brand .nf-hero-wm-fly-c {
+  animation-name: nfWmFlightC;
+  animation-duration: var(--wm-float-dur, 36s);
+  animation-delay: var(--wm-float-del, 0s);
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+}
+
+.nf-hero--brand .nf-hero-wm-fly-d {
+  animation-name: nfWmFlightD;
+  animation-duration: var(--wm-float-dur, 36s);
+  animation-delay: var(--wm-float-del, 0s);
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+}
+
+.nf-hero--brand .nf-hero-wm-fly-e {
+  animation-name: nfWmFlightE;
+  animation-duration: var(--wm-float-dur, 36s);
+  animation-delay: var(--wm-float-del, 0s);
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+}
+
+.nf-hero--brand .nf-hero-wm-fly-f {
+  animation-name: nfWmFlightF;
+  animation-duration: var(--wm-float-dur, 36s);
+  animation-delay: var(--wm-float-del, 0s);
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+}

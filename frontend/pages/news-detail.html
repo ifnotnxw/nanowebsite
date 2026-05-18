@@ -1,0 +1,69 @@
+<section class="nf-news-editorial" data-nf-news-editorial aria-label="Публикация">
+  <div class="nf-news-editorial__shell">
+    <nav class="nf-news-editorial__crumb" aria-label="Навигация">
+      <a href="/news" data-route="news" class="nf-news-editorial__crumb-link" data-i18n="nav.news">Новости</a>
+      <span class="nf-news-editorial__crumb-sep" aria-hidden="true">/</span>
+      <span id="newsArticleCrumbCurrent" class="nf-news-editorial__crumb-current" data-i18n="news.articleFallback">Материал</span>
+    </nav>
+
+    <header class="nf-news-editorial__hero nf-news-editorial__hero--article">
+      <div class="nf-news-editorial__hero-text nf-news-editorial__leadblock">
+        <span id="newsArticleCategory" class="nf-news-editorial__tag" hidden></span>
+        <h1 id="newsArticleTitle" class="nf-news-editorial__title"></h1>
+        <div id="newsArticleMetaRow" class="nf-news-editorial__meta"></div>
+        <p id="newsArticleLead" class="nf-news-editorial__lead"></p>
+      </div>
+
+      <figure class="nf-news-editorial__cover" id="newsArticleCoverFigure">
+        <img id="newsArticleHeroImg" class="nf-news-editorial__cover-img" alt="" hidden decoding="async" />
+        <div id="newsArticleHeroPlaceholder" class="nf-news-editorial__cover-ph" aria-hidden="true">
+          <div class="nf-news-editorial__cover-ph-inner">
+            <span class="nf-news-editorial__cover-ph-eyebrow">NanoFarm</span>
+            <span class="nf-news-editorial__cover-ph-brand">News</span>
+          </div>
+        </div>
+      </figure>
+    </header>
+
+    <div class="nf-news-editorial__grid">
+      <article class="nf-news-editorial__article">
+        <div class="nf-news-editorial__article-main">
+          <div id="newsArticleBody" class="nf-news-editorial__prose"></div>
+
+          <figure id="newsArticleInlineFigure" class="nf-news-editorial__inline-figure" hidden>
+            <div class="nf-news-editorial__inline-figure-frame">
+              <img id="newsArticleInlineImg" class="nf-news-editorial__inline-figure-img" alt="" loading="lazy" decoding="async" />
+            </div>
+            <figcaption id="newsArticleInlineCaption" class="nf-news-editorial__caption"></figcaption>
+          </figure>
+
+          <div id="newsArticleGallery" class="nf-news-editorial__gallery" hidden>
+            <h2 class="nf-news-editorial__gallery-title" data-i18n="news.galleryTitle">Галерея</h2>
+            <div id="newsArticleGalleryGrid" class="nf-news-editorial__gallery-grid"></div>
+          </div>
+
+          <section id="newsArticleRelated" class="nf-news-editorial__related" aria-labelledby="newsRelatedHeading" hidden>
+            <h2 id="newsRelatedHeading" class="nf-news-editorial__related-title" data-i18n="news.relatedTitle">Ещё материалы</h2>
+            <div id="newsArticleRelatedList" class="nf-news-editorial__related-grid"></div>
+          </section>
+        </div>
+      </article>
+
+      <aside class="nf-news-editorial__aside" aria-label="Сводка и действия">
+        <div class="nf-news-editorial__aside-card nf-news-editorial__aside-card--summary">
+          <h3 class="nf-news-editorial__aside-h" data-i18n="news.summaryTitle">Кратко</h3>
+          <p id="newsArticleAsideSummary" class="nf-news-editorial__aside-text"></p>
+        </div>
+        <div class="nf-news-editorial__aside-card nf-news-editorial__aside-card--share">
+          <h3 class="nf-news-editorial__aside-h" data-i18n="news.shareTitle">Поделиться</h3>
+          <button type="button" id="newsArticleCopyLink" class="nf-news-editorial__share-btn" data-i18n="news.copyLink">Скопировать ссылку</button>
+          <p class="nf-news-editorial__share-hint" data-i18n="news.directLinkHint">Прямая ссылка на этот материал.</p>
+        </div>
+        <div id="newsArticleTags" class="nf-news-editorial__tags nf-news-editorial__aside-card nf-news-editorial__aside-card--tags" hidden>
+          <h3 class="nf-news-editorial__aside-h" data-i18n="news.tagsTitle">Теги</h3>
+          <div id="newsArticleTagsInner" class="nf-news-editorial__tags-inner"></div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>

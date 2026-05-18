@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+  <!-- Mark for dark backgrounds: solid white disc + high-contrast teal symbol -->
+  <circle cx="24" cy="24" r="22" fill="#ffffff"/>
+  <rect x="14" y="14" width="20" height="20" rx="5.5" fill="#51a8b1"/>
+  <rect x="21" y="17" width="6" height="14" rx="1.2" fill="#ffffff"/>
+  <rect x="17" y="21" width="14" height="6" rx="1.2" fill="#ffffff"/>
+</svg>

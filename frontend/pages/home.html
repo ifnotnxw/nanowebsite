@@ -1,135 +1,299 @@
-<!-- HERO -->
-<section class="nf-hero">
-  <div class="container nf-hero__grid">
-    <div class="nf-hero__content">
-      <h1 data-i18n="home.hero.title">Комплексные поставки медицинского оборудования</h1>
-      <p data-i18n="home.hero.text">
-        Оснащение клиник, лабораторий и диагностических центров.
-        Проектирование, поставка, монтаж и сервисное сопровождение.
-      </p>
-      <div class="nf-hero__actions">
-        <a href="#catalog" data-route="catalog" class="btn btn-primary" data-i18n="home.hero.toCatalog">Перейти в каталог</a>
-        <a href="#contacts" data-route="contacts" class="btn btn-outline" data-i18n="home.hero.contact">Связаться с нами</a>
+<div
+  class="nf-home-firstscreen nf-first-screen nf-home-layer nf-home-layer--raised nf-home-layer--hero section--hero"
+>
+  <section class="nf-hero nf-hero--brand fade-up" aria-label="Главный экран" data-i18n="home.hero.aria" data-i18n-attr="aria-label">
+    <div
+      id="nf-premium-hero-root"
+      class="relative flex min-h-0 flex-1 flex-col"
+      data-nf-premium-hero
+    >
+      <div class="nf-hero-brand-fullbleed" aria-hidden="true">
+        <div class="nf-hero-brand-fullbleed-inner">
+          <div
+            class="nf-hero-wm-wash absolute inset-0"
+            style="
+              background:
+                radial-gradient(ellipse 118% 88% at 92% 28%, rgba(var(--nf-accent-rgb), 0.11), transparent 55%),
+                radial-gradient(ellipse 70% 50% at 12% 88%, rgba(var(--nf-accent-rgb), 0.045), transparent 62%),
+                linear-gradient(165deg, #ffffff 0%, #f6faf9 42%, #eef6f4 100%);
+            "
+          ></div>
+          <div
+            class="nf-hero-wm-grid absolute inset-0 opacity-[0.085]"
+            style="
+              background-image: linear-gradient(rgba(var(--nf-accent-rgb), 0.034) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(var(--nf-accent-rgb), 0.028) 1px, transparent 1px);
+              background-size: 56px 56px;
+            "
+          ></div>
+          <div class="nf-hero-wm-drift-layer">
+            <div class="nf-hero-wm-layer nf-hero-wm-layer--1" aria-hidden="true"></div>
+            <div class="nf-hero-wm-layer nf-hero-wm-layer--2" aria-hidden="true"></div>
+            <div class="nf-hero-wm-layer nf-hero-wm-layer--3" aria-hidden="true"></div>
+          </div>
+        </div>
+        <div class="nf-hero-brand-viz-scene">
+          <div class="nf-hero-brand-viz-parallax">
+            <div class="nf-hero-brand-viz-layer nf-hero-brand-viz-layer--back" aria-hidden="true"></div>
+            <div class="nf-hero-brand-viz-layer nf-hero-brand-viz-layer--mid" aria-hidden="true"></div>
+            <svg
+              class="nf-hero-brand-svg nf-hero-brand-svg--ambient pointer-events-none overflow-visible"
+              viewBox="0 0 840 920"
+              fill="none"
+              shape-rendering="geometricPrecision"
+              xmlns="http://www.w3.org/2000/svg"
+              aria-hidden="true"
+            >
+              <defs>
+                <linearGradient id="nfHeroBrandSoft" x1="90" y1="50" x2="640" y2="720" gradientUnits="userSpaceOnUse">
+                  <stop stop-color="var(--nf-color-accent)" stop-opacity="0" />
+                  <stop offset="0.38" stop-color="var(--nf-color-accent)" stop-opacity="0.09" />
+                  <stop offset="1" stop-color="var(--nf-color-accent-air)" stop-opacity="0" />
+                </linearGradient>
+                <linearGradient id="nfHeroBrandMist" x1="420" y1="100" x2="760" y2="580" gradientUnits="userSpaceOnUse">
+                  <stop stop-color="var(--nf-color-accent-air)" stop-opacity="0" />
+                  <stop offset="0.5" stop-color="var(--nf-color-accent)" stop-opacity="0.055" />
+                  <stop offset="1" stop-color="var(--nf-color-accent)" stop-opacity="0" />
+                </linearGradient>
+              </defs>
+              <g class="nf-hero-brand-svg__iso">
+                <path
+                  d="M 120 720 Q 280 520 420 620 T 760 560"
+                  stroke="var(--nf-color-accent)"
+                  stroke-opacity="0.08"
+                  stroke-width="1.1"
+                  stroke-linecap="round"
+                  fill="none"
+                />
+                <path
+                  d="M 72 660 C 268 360 520 760 812 400"
+                  stroke="var(--nf-color-accent)"
+                  stroke-opacity="0.1"
+                  stroke-width="1.25"
+                  stroke-linecap="round"
+                />
+              </g>
+              <ellipse cx="400" cy="430" rx="336" ry="252" fill="url(#nfHeroBrandSoft)" transform="rotate(-12 400 430)" />
+              <ellipse cx="548" cy="300" rx="196" ry="152" fill="url(#nfHeroBrandMist)" transform="rotate(9 548 300)" />
+            </svg>
+          </div>
+        </div>
+        <div class="nf-hero-brand-particles" aria-hidden="true"></div>
       </div>
-    </div>
-    <div class="nf-hero__visual">
-      <div class="nf-hero__image" aria-hidden="true">
-        <div class="nf-hero-chip-card nf-hero-chip-card--clinic">
-          <span class="nf-hero-chip-icon nf-hero-chip-icon--clinic"></span>
-          <span class="nf-hero-chip-text">Клиники и госпитали</span>
-        </div>
-        <div class="nf-hero-chip-card nf-hero-chip-card--lab">
-          <span class="nf-hero-chip-icon nf-hero-chip-icon--lab"></span>
-          <span class="nf-hero-chip-text">Лаборатории и диагностика</span>
-        </div>
-        <div class="nf-hero-chip-card nf-hero-chip-card--service">
-          <span class="nf-hero-chip-icon nf-hero-chip-icon--service"></span>
-          <span class="nf-hero-chip-text">Сервис и обучение</span>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ПРЕИМУЩЕСТВА -->
-<section class="nf-advantages">
-  <div class="container nf-advantages__grid">
-    <div class="nf-adv">
-      <h3 data-i18n="home.adv.years.title">15+ лет</h3>
-      <p data-i18n="home.adv.years.text">Успешной работы на рынке медицинских технологий</p>
-    </div>
-    <div class="nf-adv">
-      <h3 data-i18n="home.adv.projects.title">200+ проектов</h3>
-      <p data-i18n="home.adv.projects.text">Оснащённых клиник и диагностических центров</p>
-    </div>
-    <div class="nf-adv">
-      <h3 data-i18n="home.adv.partners.title">Официальные партнёры</h3>
-      <p data-i18n="home.adv.partners.text">Поставки от мировых производителей оборудования</p>
-    </div>
-    <div class="nf-adv">
-      <h3 data-i18n="home.adv.full.title">Полный цикл</h3>
-      <p data-i18n="home.adv.full.text">Проектирование → монтаж → сервис → обучение персонала</p>
-    </div>
-  </div>
-</section>
-
-<section class="nf-popular" aria-label="Популярное оборудование">
-  <div class="container">
-    <div class="section-head nf-popular__head">
-      <h2 data-i18n="home.popular.title">Популярное оборудование</h2>
-      <a
-        href="#catalog"
-        data-route="catalog"
-        class="nf-popular__all-link"
-        data-i18n="home.popular.all"
+      <div
+        class="nf-hero-brand-shell relative z-[2] flex w-full flex-1 flex-col justify-center bg-transparent py-8 sm:py-10 lg:py-12 xl:py-14"
       >
-        Весь каталог →
+        <div
+          class="pointer-events-none absolute bottom-0 left-0 right-0 z-[5] h-10 bg-gradient-to-b from-transparent to-[var(--nf-color-bg)] sm:h-12"
+          aria-hidden="true"
+        ></div>
+        <div class="container relative z-10 flex min-h-0 flex-1 flex-col">
+          <div
+            class="grid flex-1 grid-cols-1 items-stretch gap-12 lg:min-h-0 lg:grid-cols-[minmax(0,0.47fr)_minmax(0,0.53fr)] lg:items-center lg:gap-12 xl:gap-16"
+          >
+            <div
+              class="nf-hero__content nf-hero__content--brand relative flex min-w-0 flex-col justify-center"
+            >
+              <h1 class="nf-hero__title nf-hero__title--brand">
+                <span class="nf-hero__headline-line nf-hero__headline-line--lead" data-i18n="home.hero.brandLineLead">Поставки, данные и сервис — в одном контуре</span>
+                <span class="nf-hero__headline-line nf-hero__headline-line--sub">
+                  <span data-i18n="home.hero.brandLineSub">Для клиник и лабораторий, где критичны стерильность среды, предсказуемость и долгий горизонт партнёрства</span>
+                </span>
+              </h1>
+              <p class="nf-hero__lead nf-hero__lead--brand">
+                <span data-i18n="home.hero.brandLead">Закрываем полный цикл: подбор и поставка оборудования, сопровождение данных и сервисная поддержка. Один ответственный
+                контур вместо разрозненных подрядчиков — спокойный ритм работы без срывов между закупкой, вводом в эксплуатацию и
+                обслуживанием.</span>
+              </p>
+              <p class="nf-hero__note nf-hero__note--brand">
+                <span data-i18n="home.hero.brandNote">Ориентируемся на воспроизводимость процессов и прозрачность поставок — для команд, которым важна надёжность среды и
+                партнёрство на годы, а не разовая сделка.</span>
+              </p>
+              <div class="nf-hero__buttons nf-hero__buttons--brand">
+                <a href="/catalog" data-route="catalog" class="nf-hero-btn nf-hero-btn--primary" data-i18n="nav.catalog">Каталог</a>
+                <a href="/contacts" data-route="contacts" class="nf-hero-btn nf-hero-btn--secondary" data-i18n="nav.contacts">Контакты</a>
+              </div>
+            </div>
+            <div
+              class="nf-hero-medtech-col relative order-2 flex w-full min-h-[min(30vh,260px)] items-center justify-center px-1 pt-4 sm:min-h-[min(34vh,300px)] md:min-h-[min(42vh,400px)] lg:order-none lg:min-h-[min(56vh,720px)] lg:justify-center lg:pl-4 lg:pt-0"
+              aria-hidden="true"
+            >
+              <div class="nf-hero-medtech-sculpture">
+                <div class="nf-hero-medtech-sculpture__gimbal">
+                  <div class="nf-hero-medtech-sculpture__tilt" data-nf-medtech-stage>
+                    <div class="nf-hero-medtech-sculpture__halo" aria-hidden="true"></div>
+                    <div class="nf-hero-medtech-sculpture__deep-glow" aria-hidden="true"></div>
+                    <div class="nf-hero-medtech-sculpture__ring nf-hero-medtech-sculpture__ring--c" aria-hidden="true"></div>
+                    <div class="nf-hero-medtech-sculpture__matte-plinth" aria-hidden="true"></div>
+                    <div class="nf-hero-medtech-sculpture__shell nf-hero-medtech-sculpture__shell--back" aria-hidden="true"></div>
+                    <div class="nf-hero-medtech-sculpture__meniscus" aria-hidden="true"></div>
+                    <div class="nf-hero-medtech-sculpture__core-stack">
+                      <div class="nf-hero-medtech-sculpture__core-glass" aria-hidden="true"></div>
+                      <div class="nf-hero-medtech-sculpture__core-matte" aria-hidden="true"></div>
+                    </div>
+                    <div class="nf-hero-medtech-sculpture__shell nf-hero-medtech-sculpture__shell--front" aria-hidden="true"></div>
+                    <svg
+                      class="nf-hero-medtech-sculpture__tracings"
+                      viewBox="0 0 400 400"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                      aria-hidden="true"
+                    >
+                      <path
+                        class="nf-hero-medtech-sculpture__trace nf-hero-medtech-sculpture__trace--a"
+                        d="M 48 220 Q 120 140 200 200 T 352 180"
+                        stroke="var(--nf-color-accent)"
+                        stroke-width="0.9"
+                        stroke-linecap="round"
+                        opacity="0.35"
+                      />
+                      <path
+                        class="nf-hero-medtech-sculpture__trace nf-hero-medtech-sculpture__trace--b"
+                        d="M 60 260 C 140 200 260 320 340 200"
+                        stroke="var(--nf-color-accent)"
+                        stroke-width="0.75"
+                        stroke-linecap="round"
+                        opacity="0.28"
+                      />
+                      <ellipse
+                        cx="200"
+                        cy="200"
+                        rx="118"
+                        ry="46"
+                        stroke="var(--nf-color-accent)"
+                        stroke-width="0.65"
+                        opacity="0.22"
+                        transform="rotate(-18 200 200)"
+                      />
+                      <path
+                        d="M 200 92 L 200 308 M 92 200 L 308 200"
+                        stroke="var(--nf-color-accent)"
+                        stroke-width="0.5"
+                        opacity="0.18"
+                        stroke-linecap="round"
+                      />
+                    </svg>
+                    <div class="nf-hero-medtech-sculpture__ring nf-hero-medtech-sculpture__ring--b" aria-hidden="true"></div>
+                    <div class="nf-hero-medtech-sculpture__ring nf-hero-medtech-sculpture__ring--a" aria-hidden="true"></div>
+                    <div class="nf-hero-medtech-sculpture__accent-bloom" aria-hidden="true"></div>
+                    <div class="nf-hero-medtech-sculpture__glare" aria-hidden="true"></div>
+                    <div class="nf-hero-medtech-sculpture__specular-arc" aria-hidden="true"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+
+<section
+  class="nf-popular nf-home-section section--lowered section--after-hero section--home-flow-100 fade-up"
+  data-nf-lazy-section="popular"
+  aria-label="Популярное оборудование"
+>
+  <div class="nf-home-section__container">
+    <header class="nf-home-section-head">
+      <div class="nf-home-section-head__text">
+        <h2 class="nf-home-section-head__title" data-i18n="home.popular.title">Популярное оборудование</h2>
+      </div>
+      <a
+        href="/catalog"
+        data-route="catalog"
+        class="nf-home-link-secondary nf-popular__catalog-cta"
+      >
+        <span data-i18n="home.popular.all">Весь каталог</span>
+        <span class="nf-home-link-secondary__arrow" aria-hidden="true">→</span>
       </a>
-    </div>
-
-    <div class="nf-popular__carousel-wrap">
-      <div class="nf-popular__viewport" aria-hidden="false">
-        <div id="popularTrack" class="nf-popular__track" aria-live="polite"></div>
+    </header>
+    <div class="nf-home-section__content">
+      <div class="nf-popular__carousel-wrap">
+        <div
+          class="nf-popular__viewport nf-popular__viewport--carousel"
+          aria-hidden="false"
+          tabindex="0"
+          aria-roledescription="carousel"
+          aria-label="Популярные товары"
+        >
+          <div id="popularTrack" class="nf-popular__track nf-popular__track--carousel" aria-live="polite"></div>
+        </div>
+        <div class="nf-popular__nav" aria-label="Листание карусели">
+          <button type="button" id="popularPrev" class="nf-popular__nav-btn" aria-label="Предыдущий">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+          </button>
+          <button type="button" id="popularNext" class="nf-popular__nav-btn" aria-label="Следующий">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+          </button>
+        </div>
       </div>
-      <div class="nf-popular__nav" aria-label="Листание карусели">
-        <button type="button" id="popularPrev" class="nf-popular__nav-btn" aria-label="Предыдущий">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
-        </button>
-        <button type="button" id="popularNext" class="nf-popular__nav-btn" aria-label="Следующий">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
-        </button>
+    </div>
+  </div>
+</section>
+
+<section
+  class="nf-categories nf-home-section section--layer-clean section--home-flow-100 fade-up"
+  data-nf-lazy-section="categories"
+>
+  <div class="nf-home-section__container">
+    <header class="nf-home-section-head nf-home-section-head--solo">
+      <div class="nf-home-section-head__text">
+        <h2 class="nf-home-section-head__title" data-i18n="home.categories.title">Категории оборудования</h2>
+      </div>
+    </header>
+    <div class="nf-home-section__content">
+      <div class="nf-categories__ecosystem" data-nf-categories-wrap>
+        <svg
+          class="nf-categories__flow"
+          data-nf-categories-flow
+          xmlns="http://www.w3.org/2000/svg"
+          aria-hidden="true"
+          focusable="false"
+        ></svg>
+        <div
+          id="homeCategories"
+          class="nf-categories__grid nf-categories__grid--trunk"
+          aria-label="Категории каталога"
+        ></div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- КАТЕГОРИИ -->
-<section class="nf-categories">
-  <div class="container">
-    <div class="section-head">
-      <h2 data-i18n="home.categories.title">Категории оборудования</h2>
-    </div>
-    <div id="homeCategories" class="nf-categories__grid" aria-label="Категории каталога">
-      <!-- Заполняется из API/данных в app.js -->
-    </div>
-  </div>
-</section>
-
-<!-- ПАРТНЁРЫ -->
-<section class="nf-partners">
-  <div class="container">
-    <div class="section-head">
-      <h2 data-i18n="home.partners.title">Наши партнёры</h2>
-    </div>
-
-    <div id="homePartnersGrid" class="nf-partners__grid" aria-label="Партнёры">
-      <!-- Партнёры будут вставляться JS -->
+<section
+  class="nf-partners nf-home-section section--layer-showcase section--home-flow-100 fade-up"
+  data-nf-lazy-section="partners"
+>
+  <div class="nf-home-section__container">
+    <header class="nf-home-section-head nf-home-section-head--solo">
+      <div class="nf-home-section-head__text">
+        <h2 class="nf-home-section-head__title" data-i18n="home.partners.title">Наши партнёры</h2>
+      </div>
+    </header>
+    <div class="nf-home-section__content">
+      <div id="homePartnersGrid" class="nf-partners__grid" aria-label="Партнёры"></div>
     </div>
   </div>
 </section>
 
-<!-- НОВОСТИ -->
-<section class="nf-news">
-  <div class="container">
-    <div class="section-head">
-      <h2 data-i18n="home.news.title">Новости компании</h2>
-      <a href="#news" data-route="news" data-i18n="home.news.all">Все новости</a>
+<section
+  class="nf-news nf-home-section section--layer-editorial section--home-flow-100 section--last fade-up"
+  data-nf-lazy-section="news"
+>
+  <div class="nf-home-section__container">
+    <header class="nf-home-section-head">
+      <div class="nf-home-section-head__text">
+        <h2 class="nf-home-section-head__title" data-i18n="home.news.title">Новости компании</h2>
+      </div>
+      <a href="/news" data-route="news" class="nf-home-link-secondary nf-news__all-cta">
+        <span data-i18n="home.news.all">Все новости</span>
+        <span class="nf-home-link-secondary__arrow" aria-hidden="true">→</span>
+      </a>
+    </header>
+    <div class="nf-home-section__content">
+      <div id="homeNews" class="nf-news-layout" aria-label="Новости"></div>
     </div>
-    <div id="homeNews" class="nf-news-layout" aria-label="Новости">
-      <!-- Заполняется из NF_DATA.news в app.js (nfRenderHomeNews) -->
-    </div>
-  </div>
-</section>
-
-<!-- CTA -->
-<section class="nf-cta">
-  <div class="container nf-cta__box">
-    <div>
-      <h2 data-i18n="home.cta.title">Подберём оборудование под ваш проект</h2>
-      <p data-i18n="home.cta.text">Оставьте заявку — наш специалист свяжется с вами.</p>
-    </div>
-    <a href="#contacts" data-route="contacts" class="btn btn-primary" data-i18n="home.cta.button">
-      Получить консультацию
-    </a>
   </div>
 </section>

@@ -1,8 +1,16 @@
-<section aria-label="Партнёры" data-i18n="partners.aria">
-    <header class="nf-view-header">
-      <h1 data-i18n="partners.title">Партнёрские бренды</h1>
-      <p data-i18n="partners.subtitle">Международные производители диагностического и медицинского оборудования.</p>
+<section class="nf-partners-page" aria-label="Партнёры" data-i18n="partners.aria" data-i18n-attr="aria-label">
+  <div class="nf-partners-page__atmos" aria-hidden="true"></div>
+  <div class="nf-page-container nf-partners-page__shell">
+    <header class="nf-partners-hero">
+      <h1 class="nf-partners-hero__title" data-i18n="partners.title">Партнёрские бренды</h1>
+      <p class="nf-partners-hero__lede" data-i18n="partners.subtitle">
+        Международные производители диагностического и медицинского оборудования.
+      </p>
+      <p class="nf-partners-hero__kicker" id="partnersHeroMeta" aria-live="polite"></p>
     </header>
-    <div id="partnersList" class="nf-partners-grid nf-partners-grid-detailed"></div>
+    <div class="nf-partners-gallery">
+      <div id="partnersList" class="nf-partners-grid"></div>
+    </div>
     <section id="partnerDetail" class="nf-partner-detail"></section>
-  </section>
+  </div>
+</section>

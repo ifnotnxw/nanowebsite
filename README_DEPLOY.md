@@ -1,121 +1,136 @@
-Nanopharm — запуск и работа с сайтом
-====================================
+Nanopharm — production deploy на Ubuntu (Nginx + PM2)
+======================================================
 
-## 1. Требования
+## 1. Что важно про архитектуру
 
-- Node.js **20+** (проверить командой `node -v`).
-- Доступ к файловой системе проекта (`nanobananoo`).
+- Приложение запускается Node.js-процессом: `node backend/server.js`.
+- Frontend (HTML/CSS/Vanilla JS) раздается Express из `frontend`.
+- API доступно по относительным путям `/api/...`.
+- Рекомендуемая схема: `Nginx (80/443) -> proxy -> 127.0.0.1:3000 (Node.js)`.
 
-Пример для Ubuntu 22.04: установить Node.js 20 через nvm или репозиторий NodeSource.
-
-## 2. Установка зависимостей
-
-На сервере (в нужной директории):
+## 2. Подготовка сервера
 
 ```bash
-cd /var/www/nanobananoo
-npm install
+sudo apt update
+sudo apt install -y nginx git curl
 ```
 
-## 3. Настройка окружения
-
-Создайте файл `.env` в корне проекта на основе `.env.example`:
-
-```bash
-cd /var/www/nanobananoo
-cp .env.example .env
-```
-
-В `.env` задайте как минимум:
-
-- `PORT` — порт сервера (по умолчанию 3000).
-- `NODE_ENV=production`
-- `ADMIN_LOGIN` — логин администратора.
-- `ADMIN_PASSWORD_BCRYPT` — bcrypt‑хэш пароля администратора (рекомендуется).
-- `JWT_ACCESS_SECRET`, `JWT_REFRESH_SECRET` — свои случайные строки для токенов.
-
-Для быстрой проверки можно временно использовать `ADMIN_PASSWORD`, но в продакшене лучше использовать только хэш.
-
-## 4. Запуск (одиночный процесс)
-
-```bash
-cd /var/www/nanobananoo
-npm start
-```
-
-Сайт будет доступен по адресу:
-
-- Публичный сайт: `http://SERVER_IP:3000`
-- Админ‑панель: `http://SERVER_IP:3000/#admin`
-
-## 5. Доступ в админку
-
-1. Откройте `http://localhost:3000/#admin`.
-2. Введите логин и пароль администратора:
-   - логин берётся из переменной `ADMIN_LOGIN` в `.env`,
-   - пароль — это тот, из которого вы посчитали хэш `ADMIN_PASSWORD_BCRYPT` или `ADMIN_PASSWORD_HASH` (или значение `ADMIN_PASSWORD`, если используется открытый пароль).
-3. После успешного входа создаётся защищённая сессия:
-   - токен хранится в памяти сервера,
-   - в браузер ставится HttpOnly‑cookie `nf_admin`.
-
-### Как поменять пароль безопасно
-
-1. Сгенерировать новый bcrypt‑хэш (например, отдельным скриптом Node.js):
-
-   ```js
-   const bcrypt = require("bcryptjs");
-   console.log(bcrypt.hashSync("НовыйСильныйПароль", 10));
-   ```
-
-2. Вставить полученное значение в `.env` в `ADMIN_PASSWORD_BCRYPT`.
-3. Перезапустить сервер (`Ctrl + C`, затем `npm start`).
-
-## 6. Что где редактировать
-
-- **Товары** — раздел «Товары» в админке:
-  - добавление, редактирование и удаление позиций;
-  - изменения сохраняются в `backend/data/products.json` и сразу отображаются на сайте.
-- **Категории** — раздел «Категории»:
-  - изменения сохраняются в `backend/data/categories.json`.
-- **Партнёры** — раздел «Партнёры»:
-  - изменения сохраняются в `backend/data/partners.json`.
-- **Новости** — раздел «Новости»:
-  - изменения сохраняются в `backend/data/news.json` и выводятся на сайте.
-- **Заявки** — раздел «Заявки»:
-  - все отправленные формы с сайта автоматически появляются здесь.
-
-## 7. Troubleshooting
-
-### Порт 3000 занят
-
-Если при запуске появляется сообщение о занятости порта 3000, сервер автоматически попробует запуститься на следующем порту (3001). В консоли будет указано, на каком порту сервер успешно поднялся:
-
-- `НаноФарм: http://localhost:3000` или `http://localhost:3001`.
-
-Используйте указанный адрес для входа на сайт и в админку (например, `http://localhost:3001/#admin`).
-
-### Неверная версия Node.js
-
-Если при запуске возникают ошибки, убедитесь, что версия Node.js не ниже 20:
+Установите Node.js 20+ (через nvm или NodeSource), затем проверьте:
 
 ```bash
 node -v
+npm -v
 ```
 
-Если версия старше 18 — рекомендуется обновить Node.js до актуальной LTS‑версии.
+## 3. Первый запуск проекта
 
-### Сервер не стартует / падает с ошибкой
+```bash
+cd /var/www
+sudo git clone <YOUR_REPO_URL> nanopharm
+sudo chown -R $USER:$USER /var/www/nanopharm
+cd /var/www/nanopharm
+npm install
+cp .env.example .env
+```
 
-1. Убедитесь, что все зависимости установлены:
-   ```bash
-   cd /var/www/nanobananoo
-   npm install
-   ```
-2. Проверьте корректность файла `.env` (нет лишних кавычек, все строки формата `KEY=VALUE`).
-3. Попробуйте запустить в dev‑режиме, чтобы увидеть ошибки:
-   ```bash
-   cd /var/www/nanobananoo
-   npm run dev
-   ```
-4. Если ошибка указывает на bcrypt‑хэш, временно удалите значение `ADMIN_PASSWORD_BCRYPT` и используйте `ADMIN_PASSWORD` для входа, затем настроите хэш заново.
+Заполните `.env` (минимум):
+
+- `PORT=3000`
+- `NODE_ENV=production`
+- `ADMIN_LOGIN=...`
+- `ADMIN_PASSWORD_BCRYPT=...`
+- `JWT_ACCESS_SECRET=...`
+- `JWT_REFRESH_SECRET=...`
+- `CORS_ORIGINS=https://example.com,https://shop.example.com`
+
+Если нужно временно разрешить любые origin: `CORS_ORIGINS=*` (используйте осознанно).
+
+## 4. Запуск через PM2
+
+Установка PM2:
+
+```bash
+sudo npm install -g pm2
+```
+
+Запуск:
+
+```bash
+cd /var/www/nanopharm
+pm2 start ecosystem.config.js --env production
+pm2 save
+pm2 startup
+```
+
+Проверка:
+
+```bash
+pm2 status
+pm2 logs nanopharm
+```
+
+## 5. Nginx reverse proxy (домен или поддомен)
+
+Создайте конфиг, пример для `nano.domain.kz`:
+
+```nginx
+server {
+    listen 80;
+    server_name nano.domain.kz;
+
+    location / {
+        proxy_pass http://127.0.0.1:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+    }
+}
+```
+
+Включите сайт:
+
+```bash
+sudo ln -s /etc/nginx/sites-available/nanopharm /etc/nginx/sites-enabled/nanopharm
+sudo nginx -t
+sudo systemctl reload nginx
+```
+
+## 6. HTTPS (Let's Encrypt)
+
+```bash
+sudo apt install -y certbot python3-certbot-nginx
+sudo certbot --nginx -d nano.domain.kz
+```
+
+После выпуска сертификата certbot автоматически добавит SSL-конфигурацию.
+
+## 7. Обновление проекта через git pull
+
+После каждого обновления кода:
+
+```bash
+cd /var/www/nanopharm
+git pull
+npm install
+pm2 restart nanopharm
+pm2 logs nanopharm --lines 100
+```
+
+Если менялся Nginx-конфиг:
+
+```bash
+sudo nginx -t && sudo systemctl reload nginx
+```
+
+## 8. Проверки после деплоя
+
+- Сайт открывается по `https://your-domain`.
+- API отвечает по `https://your-domain/api/...`.
+- Админка доступна по `https://your-domain/#admin`.
+- Cookies авторизации ставятся и работают в `NODE_ENV=production` (Secure + HttpOnly).
+- Статика (`/styles.css`, `/app.js`, `/img/...`, `/i18n/...`) грузится без `localhost`.
 

@@ -1,17 +1,22 @@
-/* ==================================================
-   NANOPHARM — app.js (FULL READY / CRASH-PROOF)
-   ✅ No ReferenceError (all missing funcs implemented)
-   ✅ Safe DOM access (no null crashes)
-   ✅ Router loads pages/*.html, highlights nav
-   ✅ Product modal + Partner modal stable
-   ✅ Basic News + Admin + Form validation included
-================================================== */
-
 /* ====== КОНФИГ ====== */
 // API_BASE: пустая строка = запросы на тот же домен (/api/...). Для админки на другом домене задайте window.__NF_API_BASE = "https://ваш-сайт.ru" до загрузки скрипта.
 const NF_CONFIG = {
   API_BASE: typeof window !== "undefined" && window.__NF_API_BASE !== undefined ? String(window.__NF_API_BASE).replace(/\/$/, "") : "",
   I18N_ENDPOINT: "/api/i18n",
+};
+
+/** Литералы = :root в styles.css (для data: SVG и инлайна, где нет var()) */
+const NF_PALETTE = {
+  text: "#151515",
+  accent: "#51a8b1",
+  accentSoft: "#e5f0ed",
+  surface: "#ffffff",
+  surfaceSubtle: "#f7faf9",
+  surfaceAlt: "#f4f7f6",
+  border: "#d7e4e0",
+  hairline: "#e5e7eb",
+  muted: "#6f7c79",
+  error: "#dc2626",
 };
 
 /* ====== ДАННЫЕ (начальные; каталог подгружается с API при открытии сайта) ====== */
@@ -316,42 +321,34 @@ const NF_DATA = {
   ],
   news: [
     {
-      id: "proj-university-clinic",
-      title: "Комплексное оснащение университетской клиники в Алматы",
-      category: "Проект",
-      date: "2025-09-10",
-      author: "Команда НаноФарм",
-      excerpt: "Поставлено более 150 единиц оборудования, включая лабораторные и диагностические комплексы.",
+      id: "news-site-global-update",
+      slug: "globalnoe-obnovlenie-sayta-nanofarm",
+      title: "Глобальное обновление сайта NanoFarm",
+      category: "Компания",
+      date: "2026-04-13",
+      author: "Корпоративные коммуникации NanoFarm",
+      excerpt:
+        "NanoFarm завершила полное обновление корпоративного сайта: пересобраны интерфейс, структура разделов и адреса материалов. Платформа отражает текущий уровень компании и задаёт основу для дальнейшего развития цифровой витрины.",
+      image: "img/news/1.jpg",
+      tags: ["Сайт", "Обновление", "NanoFarm"],
       content: [
-        "В рамках проекта по модернизации университетской клиники в Алматы НаноФарм выполнил полный цикл поставки, инсталляции и ввода в эксплуатацию медицинского оборудования.",
-        "Комплекс включал лабораторные анализаторы, системы визуализации, оборудование для операционных и отделений реанимации.",
-        "Особое внимание было уделено интеграции оборудования с ИТ-инфраструктурой клиники и обучению медицинского персонала.",
-      ],
-    },
-    {
-      id: "news-lab-automation",
-      title: "Запуск типового решения по автоматизации лабораторий",
-      category: "Новость",
-      date: "2025-07-01",
-      author: "Команда НаноФарм",
-      excerpt: "Представлено модульное решение для автоматизации до 80% рутинных операций лаборатории.",
-      content: [
-        "НаноФарм представил типовое решение по автоматизации лабораторий на базе системы NanoAutomation.",
-        "Решение позволяет оптимизировать маршрутизацию проб, снизить количество ручных операций и повысить скорость выполнения исследований.",
-        "Система масштабируема и может адаптироваться под текущий парк оборудования клиента.",
-      ],
-    },
-    {
-      id: "news-service-247",
-      title: "Расширение сервисной службы и поддержка 24/7",
-      category: "Новость",
-      date: "2025-03-15",
-      author: "Сервисная служба НаноФарм",
-      excerpt: "Созданы региональные сервисные центры и внедрена единая система регистрации запросов.",
-      content: [
-        "Для повышения надёжности работы медицинских организаций НаноФарм расширил сервисную сеть и перевёл поддержку на режим 24/7.",
-        "Введена единая система регистрации и мониторинга запросов, позволяющая отслеживать статус обращений и планировать профилактические работы.",
-        "Инженеры проходят регулярную сертификацию у производителей оборудования.",
+        { h2: "Почему обновление было необходимо" },
+        "Предыдущая версия сайта накопила визуальное и структурное отставание: плотная сетка блоков, разрозненные сценарии и навигация не соответствовали масштабу поставок и сервиса, которые компания обеспечивает сегодня. Интерфейс воспринимался перегруженным, а ключевые разделы — каталог, новости, партнёры и информация о компании — не складывались в единую понятную логику.",
+        "Обновление было не косметическим, а архитектурным: мы упростили пути пользователя, выровняли дизайн-систему и подготовили почву для стабильного развития контента и функциональности без «наслоения» старых решений.",
+        { h2: "Что изменилось в дизайне" },
+        "Новый интерфейс опирается на спокойную светлую палитру, акцентный цвет бренда и единые карточные паттерны. Визуальный шум снижен: больше воздуха, чёткая типографика и предсказуемые отступы. Карточки товаров и материалов выглядят согласованно — пользователь быстрее считывает иерархию и действия.",
+        "Дизайн ориентирован на B2B-аудиторию: сдержанная «премиальная» подача без лишнего декора, с акцентом на читаемость характеристик, партнёра и логистики сопровождения.",
+        { h2: "Структура, навигация и адреса" },
+        "Переработана информационная архитектура: главная страница собрана заново, усилены входы в каталог, новости и ключевые разделы. Для товаров, новостей, партнёров и категорий предусмотрены отдельные URL — материалы проще сохранять, делиться ими и возвращаться к ним из поиска и мессенджеров.",
+        "Навигация стала короче и прозрачнее: меньше взаимно пересекающихся сценариев, больше прямых переходов к задаче — от подбора оборудования до контактов и документов.",
+        { h2: "Какие разделы переработаны" },
+        "Главная страница, карточки и сетки товаров, каталог с фильтрацией, раздел новостей, страницы партнёров, категории и блок «О компании» приведены к единым принципам компоновки и обновлённому контенту. Новости переведены на чистую ленту с одним актуальным материалом о самом обновлении — без устаревших заглушек.",
+        "Каталог получил более ясную работу с фильтрами и карточками; партнёры и категории оформлены так, чтобы быстрее объяснять специализацию и состав линеек.",
+        { h2: "Что это даёт клиентам и партнёрам" },
+        "Клиентам проще ориентироваться в ассортименте и переходить к запросу коммерческого предложения. Партнёрам — нагляднее представлен бренд и связка «продукт — производитель — поддержка». Внутренним командам проще поддерживать контент: предсказуемые шаблоны и отдельные страницы снижают стоимость правок и согласований.",
+        "В совокупности сайт выполняет роль обновлённой цифровой витрины: он соответствует текущему уровню компании и задаёт стандарт коммуникации на ближайшие релизы.",
+        { h2: "Итог" },
+        "Обновление сайта NanoFarm — это завершённый цикл пересборки цифрового присутствия: от визуала до URL и навигации. Мы закрыли наследие визуально и структурно устаревшей версии и вывели платформу на уровень, который отражает реальные компетенции компании. Дальнейшее развитие будет наращивать этот фундамент — без отката к перегруженному опыту прошлой версии.",
       ],
     },
   ],
@@ -409,13 +406,28 @@ function nfUpdateSeo(opts) {
 }
 
 /* ====== ГЛОБАЛЬНОЕ СОСТОЯНИЕ ====== */
+/** @deprecated оставлено в state; пагинация каталога заменена на прогрессивную подгрузку */
 const NF_CATALOG_PAGE_SIZE = 24;
+const NF_CATALOG_BATCH_INITIAL = 16;
+const NF_CATALOG_BATCH_STEP = 16;
 
 const NF_STATE = {
   currentPage: "home",
   lang: "ru",
   cart: [],
   pendingCatalogProductId: null,
+  /** Кэш отфильтрованного списка и прогресс рендера (см. nfRenderCatalog / nfCatalogAppendNextBatch) */
+  catalogRender: {
+    signature: "",
+    cachedList: [],
+    renderedCount: 0,
+  },
+  homeLazy: {
+    popular: false,
+    categories: false,
+    partners: false,
+    news: false,
+  },
   filters: {
     search: "",
     categoryIds: new Set(),
@@ -428,188 +440,63 @@ const NF_STATE = {
   adminSection: "dashboard",
   selectedPartnerId: null,
   selectedNewsId: null,
+  categoryDetailId: null,
+  newsArticleId: null,
+  productDetailProductId: null,
+  /** Slug из URL /catalog/:slug, пока каталог с API не подтянут или товар ещё не сопоставлен */
+  pendingProductPermalink: null,
+  newsView: {
+    search: "",
+    sort: "recent",
+    category: "all",
+  },
   productModalProductId: null,
   legalTab: "privacy",
   clientsTab: "order",
 };
 
-const NF_I18N = {
-  ru: {},
-  en: {
-    "nav.home": "Home",
-    "nav.catalog": "Catalog",
-    "nav.partners": "Partners",
-    "nav.news": "News",
-    "nav.about": "About",
-    "nav.contacts": "Contacts",
-    "nav.admin": "Admin panel",
-
-    "home.hero.title": "Turnkey supply of medical equipment",
-    "home.hero.text":
-      "Equipping clinics, laboratories and diagnostic centers. Design, supply, installation and service support.",
-    "home.hero.toCatalog": "Go to catalog",
-    "home.hero.contact": "Contact us",
-
-    "footer.nav": "Navigation",
-    "footer.clients": "For clients",
-    "footer.legal": "Legal information",
-    "footer.about":
-      "Comprehensive solutions for the supply of medical equipment for clinics and laboratories. Design, installation, training and service support.",
-    "footer.howToOrder": "How to order",
-    "footer.support": "Service and support",
-    "footer.warranty": "Warranty terms",
-    "footer.faq": "FAQ",
-    "footer.privacy": "Privacy policy",
-    "footer.tos": "User agreement",
-    "footer.requisites": "Company details",
-    "footer.copyrightPrefix": "© {year} NanoPharm. All rights reserved.",
-
-    "header.quickQuote": "Quick quote",
-    "search.placeholder": "Search by name, model, SKU, partner…",
-    "search.advanced": "Advanced search",
-
-    "form.name": "Name",
-    "form.company": "Company",
-    "form.phone": "Phone",
-    "form.phonePlaceholder": "+7 (___) ___-__-__",
-    "form.items": "Interested items (models / SKUs)",
-    "form.submit": "Send request",
-    "form.success": "Request sent. We will contact you shortly.",
-
-    "home.popular.title": "Popular equipment",
-    "home.popular.all": "Full catalog",
-
-    "home.categories.title": "Equipment categories",
-    "home.partners.title": "Our partners",
-    "home.news.title": "Company news",
-    "home.news.all": "All news",
-
-    "home.cta.title": "We will select equipment for your project",
-    "home.cta.text": "Leave a request and our specialist will contact you.",
-    "home.cta.button": "Get consultation",
-  },
-  kz: {
-    "nav.home": "Басты бет",
-    "nav.catalog": "Каталог",
-    "nav.partners": "Серіктестер",
-    "nav.news": "Жаңалықтар",
-    "nav.about": "Компания туралы",
-    "nav.contacts": "Байланыстар",
-    "nav.admin": "Әкімші панелі",
-
-    "home.hero.title": "Медициналық жабдықты кешенді жеткізу",
-    "home.hero.text":
-      "Клиникаларды, зертханаларды және диагностикалық орталықтарды жарақтандыру. Жобалау, жеткізу, монтаждау және сервистік қолдау.",
-    "home.hero.toCatalog": "Каталогқа өту",
-    "home.hero.contact": "Бізбен байланысу",
-
-    "footer.nav": "Навигация",
-    "footer.clients": "Клиенттерге",
-    "footer.legal": "Құқықтық ақпарат",
-    "footer.about":
-      "Клиникалар мен зертханалар үшін медициналық жабдықты жеткізудің кешенді шешімдері. Жобалау, монтаждау, оқыту және сервистік қолдау.",
-    "footer.howToOrder": "Қалай тапсырыс беру керек",
-    "footer.support": "Сервис және қолдау",
-    "footer.warranty": "Кепілдік шарттары",
-    "footer.faq": "Жиі қойылатын сұрақтар",
-    "footer.privacy": "Құпиялылық саясаты",
-    "footer.tos": "Пайдаланушы келісімі",
-    "footer.requisites": "Компания реквизиттері",
-    "footer.copyrightPrefix": "© {year} NanoPharm. Барлық құқықтар қорғалған.",
-
-    "header.quickQuote": "Жылдам баға сұранысы",
-    "search.placeholder": "Атауы, моделі, артикулы, серіктесі бойынша іздеу…",
-    "search.advanced": "Кеңейтілген іздеу",
-
-    "form.name": "Аты",
-    "form.company": "Компания",
-    "form.phone": "Телефон",
-    "form.phonePlaceholder": "+7 (___) ___-__-__",
-    "form.items": "Қызықтыратын позициялар (модельдер / артикула)",
-    "form.submit": "Сұранысты жіберу",
-    "form.success": "Сұраныс жіберілді. Біз жақын арада хабарласамыз.",
-
-    "home.popular.title": "Танымал жабдық",
-    "home.popular.all": "Толық каталог",
-
-    "home.categories.title": "Жабдық санаттары",
-    "home.partners.title": "Біздің серіктестер",
-    "home.news.title": "Компания жаңалықтары",
-    "home.news.all": "Барлық жаңалықтар",
-
-    "home.cta.title": "Жобаңызға жабдық таңдап береміз",
-    "home.cta.text": "Өтініш қалдырыңыз — маманымыз сізбен хабарласады.",
-    "home.cta.button": "Кеңес алу",
-  },
-};
-
-const NF_POPULAR_MARQUEE = {
-  rafId: null,
-  offset: 0,
-  speedDesktop: 46,
-  speedMobile: 18,
-  paused: false,
-  initialized: false,
-  isDragging: false,
-  dragStartX: 0,
-  dragStartY: 0,
-  dragStartOffset: 0,
-  dragLock: null,
-  dragMoved: false,
-  lastTs: 0,
-  cleanup: [],
-  resizeTimer: null,
-  resumeTimer: null,
-  currentMode: "marquee",
-  // IntersectionObserver state for CPU-friendly marquee
-  observer: null,
-  sectionEl: null,
-  isInView: true,
-  get isMobile() {
-    if (typeof window === "undefined" || !window.matchMedia) return false;
-    return window.matchMedia("(max-width: 768px)").matches;
-  },
-  get speed() {
-    return this.isMobile ? this.speedMobile : this.speedDesktop;
-  },
-};
+const NF_I18N = { ru: {}, en: {}, kz: {} };
+const NF_SUPPORTED_LANGS = new Set(["ru", "en", "kz"]);
+const NF_I18N_STRUCTURAL_TAGS = new Set([
+  "SECTION",
+  "DIV",
+  "ARTICLE",
+  "MAIN",
+  "ASIDE",
+  "HEADER",
+  "FOOTER",
+  "NAV",
+  "UL",
+  "OL",
+  "TABLE",
+  "TBODY",
+  "TR",
+  "FORM",
+]);
+let NF_LANG_CHANGE_SEQ = 0;
+let NF_CATALOG_REQUEST_SEQ = 0;
+let NF_CATALOG_ACTIVE_REQUEST_SEQ = 0;
 
 /* ====== SAFE DOM HELPERS ====== */
 function nfEl(id) {
   return document.getElementById(id);
 }
 
-/* Плавный скролл для кастомных списков (wheel → анимированное scrollTop) */
+function nfEnsureModalOutsideLayout(modalId, backdropId) {
+  const modal = nfEl(modalId);
+  const backdrop = nfEl(backdropId);
+  if (modal && modal.parentElement !== document.body) {
+    document.body.appendChild(modal);
+  }
+  if (backdrop && backdrop.parentElement !== document.body) {
+    document.body.appendChild(backdrop);
+  }
+}
+
+/* motion baseline: wheel+rAF smooth scroll removed — native scrolling only (revisit for lightweight UX if needed) */
 function nfAttachSmoothScroll(el) {
   if (!el || el.dataset.nfSmoothScroll === "1") return;
   el.dataset.nfSmoothScroll = "1";
-
-  let animFrame = null;
-  let targetTop = el.scrollTop;
-
-  const step = () => {
-    const current = el.scrollTop;
-    const diff = targetTop - current;
-    if (Math.abs(diff) < 0.5) {
-      el.scrollTop = targetTop;
-      animFrame = null;
-      return;
-    }
-    el.scrollTop = current + diff * 0.25; // easing
-    animFrame = requestAnimationFrame(step);
-  };
-
-  el.addEventListener(
-    "wheel",
-    (e) => {
-      e.preventDefault();
-      targetTop = Math.max(0, Math.min(el.scrollHeight - el.clientHeight, targetTop + e.deltaY));
-      if (animFrame === null) {
-        animFrame = requestAnimationFrame(step);
-      }
-    },
-    { passive: false }
-  );
 }
 
 /* Кастомный dropdown-обёртчик для select (используем, не трогая существующую onchange-логику) */
@@ -628,6 +515,64 @@ function nfEnhanceSelectDropdown(select) {
 
   const menu = document.createElement("div");
   menu.className = "nf-select-menu";
+  const menuId = `nf-select-menu-${select.id || `anon-${Math.random().toString(36).slice(2, 9)}`}`;
+  menu.id = menuId;
+
+  display.setAttribute("role", "combobox");
+  display.setAttribute("aria-haspopup", "listbox");
+  display.setAttribute("aria-controls", menuId);
+  display.setAttribute("aria-expanded", "false");
+  menu.setAttribute("role", "listbox");
+  const listLabelledBy = select.getAttribute("aria-labelledby");
+  if (listLabelledBy) menu.setAttribute("aria-labelledby", listLabelledBy);
+
+  const syncOpenState = () => {
+    const open = wrapper.classList.contains("is-open");
+    display.setAttribute("aria-expanded", open ? "true" : "false");
+    menu.hidden = !open;
+    menu.setAttribute("aria-hidden", open ? "false" : "true");
+  };
+
+  const getOptionButtons = () => Array.from(menu.querySelectorAll(".nf-select-option"));
+  const closeOtherEnhancedSelects = () => {
+    document.querySelectorAll(".nf-select-shell.is-open").forEach((node) => {
+      if (node === wrapper) return;
+      node.classList.remove("is-open");
+      const displayEl = node.querySelector(".nf-select-display");
+      const menuEl = node.querySelector(".nf-select-menu");
+      if (displayEl) displayEl.setAttribute("aria-expanded", "false");
+      if (menuEl) {
+        menuEl.hidden = true;
+        menuEl.setAttribute("aria-hidden", "true");
+      }
+    });
+  };
+
+  const focusOptionIndex = (idx) => {
+    const btns = getOptionButtons();
+    if (!btns.length) return;
+    const i = Math.max(0, Math.min(idx, btns.length - 1));
+    btns.forEach((b, j) => {
+      b.tabIndex = j === i ? 0 : -1;
+    });
+    btns[i].focus();
+  };
+
+  const openAndFocus = (index) => {
+    if (!wrapper.classList.contains("is-open")) {
+      closeOtherEnhancedSelects();
+      buildOptions();
+      wrapper.classList.add("is-open");
+      syncOpenState();
+    }
+    focusOptionIndex(index);
+  };
+
+  const closeAndFocusDisplay = () => {
+    wrapper.classList.remove("is-open");
+    syncOpenState();
+    display.focus();
+  };
 
   const buildOptions = () => {
     menu.innerHTML = "";
@@ -640,9 +585,13 @@ function nfEnhanceSelectDropdown(select) {
       const btn = document.createElement("button");
       btn.type = "button";
       btn.className = "nf-select-option";
+      btn.setAttribute("role", "option");
+      btn.setAttribute("aria-selected", opt.value === current.value ? "true" : "false");
       if (opt.value === current.value) btn.classList.add("is-active");
       btn.textContent = opt.text;
       btn.dataset.value = opt.value;
+      btn.tabIndex = -1;
+
       btn.addEventListener("click", () => {
         if (select.value !== opt.value) {
           select.value = opt.value;
@@ -650,46 +599,116 @@ function nfEnhanceSelectDropdown(select) {
           select.dispatchEvent(ev);
         }
         wrapper.classList.remove("is-open");
+        syncOpenState();
         buildOptions();
       });
+
+      btn.addEventListener("keydown", (e) => {
+        const btns = getOptionButtons();
+        const i = btns.indexOf(btn);
+        if (e.key === "ArrowDown") {
+          e.preventDefault();
+          if (i < btns.length - 1) focusOptionIndex(i + 1);
+        } else if (e.key === "ArrowUp") {
+          e.preventDefault();
+          if (i > 0) focusOptionIndex(i - 1);
+          else closeAndFocusDisplay();
+        } else if (e.key === "Home") {
+          e.preventDefault();
+          focusOptionIndex(0);
+        } else if (e.key === "End") {
+          e.preventDefault();
+          focusOptionIndex(btns.length - 1);
+        } else if (e.key === "Escape") {
+          e.preventDefault();
+          closeAndFocusDisplay();
+        }
+      });
+
       menu.appendChild(btn);
     });
   };
 
   buildOptions();
+  syncOpenState();
 
-  select.addEventListener("change", buildOptions);
+  select.addEventListener("change", () => {
+    buildOptions();
+    syncOpenState();
+  });
+
+  /* Программный .value не генерирует "change" — синхронизация подписи с NF_STATE */
+  select.addEventListener("nf-enhanced-select-sync", () => {
+    wrapper.classList.remove("is-open");
+    buildOptions();
+    syncOpenState();
+  });
 
   nfAttachSmoothScroll(menu);
 
   display.addEventListener("click", () => {
-    // На открытии пересобираем меню из актуальных option'ов (SPA/перерисовка/локализация)
-    const willOpen = !wrapper.classList.contains("is-open");
-    if (willOpen) buildOptions();
-    wrapper.classList.toggle("is-open");
-  });
-
-  document.addEventListener("click", (e) => {
-    if (!wrapper.contains(e.target)) {
+    const opening = !wrapper.classList.contains("is-open");
+    if (opening) {
+      closeOtherEnhancedSelects();
+      buildOptions();
+      wrapper.classList.add("is-open");
+    } else {
       wrapper.classList.remove("is-open");
     }
+    syncOpenState();
   });
+
+  display.addEventListener("keydown", (e) => {
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      openAndFocus(0);
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      openAndFocus(getOptionButtons().length - 1);
+    } else if (e.key === "Escape") {
+      if (wrapper.classList.contains("is-open")) {
+        e.preventDefault();
+        closeAndFocusDisplay();
+      }
+    }
+  });
+
+  try {
+    select.__nfEnhanceSelectDocAc?.abort();
+  } catch (_e) {}
+  const docAc = new AbortController();
+  select.__nfEnhanceSelectDocAc = docAc;
+  document.addEventListener(
+    "click",
+    (e) => {
+      if (!wrapper.contains(e.target)) {
+        wrapper.classList.remove("is-open");
+        syncOpenState();
+      }
+    },
+    { signal: docAc.signal }
+  );
 
   select.parentNode.insertBefore(wrapper, select);
   wrapper.appendChild(select);
   wrapper.appendChild(display);
   wrapper.appendChild(menu);
 }
+
+function nfAbortEnhancedSelectsInRoot(root) {
+  if (!root || !root.querySelectorAll) return;
+  root.querySelectorAll("select[data-nf-enhanced='1']").forEach((sel) => {
+    try {
+      sel.__nfEnhanceSelectDocAc?.abort();
+    } catch (_e) {}
+    sel.__nfEnhanceSelectDocAc = null;
+  });
+}
+
 function nfSafeText(id, value) {
   const el = nfEl(id);
   if (!el) return false;
   el.textContent = value ?? "";
-  return true;
-}
-function nfSafeHTML(id, value) {
-  const el = nfEl(id);
-  if (!el) return false;
-  el.innerHTML = value ?? "";
   return true;
 }
 function nfOn(id, evt, handler) {
@@ -700,8 +719,28 @@ function nfOn(id, evt, handler) {
 }
 
 /* ====== УТИЛИТЫ ====== */
+function nfNormalizeSearchText(value) {
+  return String(value || "")
+    .toLowerCase()
+    .replace(/[^\p{L}\p{N}\s_-]+/gu, " ")
+    .replace(/[_-]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function nfEntitySearchHaystack(entity, fallbackParts) {
+  const parts = [];
+  if (entity && typeof entity.searchIndexText === "string") {
+    parts.push(entity.searchIndexText);
+  }
+  (fallbackParts || []).forEach((item) => {
+    if (item != null) parts.push(String(item));
+  });
+  return nfNormalizeSearchText(parts.join(" "));
+}
+
 function nfFormatPrice(value) {
-  if (value == null) return "Цена по запросу";
+  if (value == null) return nfT("common.priceOnRequest", "Цена по запросу");
   return new Intl.NumberFormat("ru-KZ", {
     style: "currency",
     currency: "KZT",
@@ -798,11 +837,437 @@ function nfDebounce(fn, delay = 250) {
   };
 }
 
+function nfCreateAnimatedSearchHint(input, options = {}) {
+  if (!(input instanceof HTMLInputElement)) return () => {};
+  if (typeof input.__nfAnimatedHintCleanup === "function") {
+    input.__nfAnimatedHintCleanup();
+  }
+
+  const host = input.closest(".nf-search") || input.parentElement;
+  if (!host) return () => {};
+
+  const fallbackItems = [
+    "Анестезиология",
+    "Радиология",
+    "Нейрохирургия",
+    "Ортопедия",
+    "Урология",
+    "Диагностика",
+  ];
+  const sourceItems = Array.isArray(options.items) && options.items.length ? options.items : fallbackItems;
+  const items = sourceItems
+    .map((item) => String(item || "").trim())
+    .filter(Boolean);
+  if (!items.length) return () => {};
+
+  const focusedHintText = String(options.focusedHint || "Введите запрос").trim() || "Введите запрос";
+  const placeholderBackup = String(input.getAttribute("placeholder") || "");
+  input.setAttribute("placeholder", "");
+
+  const layer = document.createElement("span");
+  layer.className = "nf-search-hint-layer is-hidden";
+  layer.setAttribute("aria-hidden", "true");
+
+  const idleHint = document.createElement("span");
+  idleHint.className = "nf-search-idle-hint is-hidden";
+  const idleText = document.createElement("span");
+  idleText.className = "nf-search-idle-hint-text";
+  const idleCaret = document.createElement("span");
+  idleCaret.className = "nf-search-idle-hint-caret";
+  idleCaret.setAttribute("aria-hidden", "true");
+  idleHint.append(idleText, idleCaret);
+
+  const focusedHint = document.createElement("span");
+  focusedHint.className = "nf-search-focused-hint is-hidden";
+  focusedHint.textContent = focusedHintText;
+
+  layer.append(idleHint, focusedHint);
+  host.appendChild(layer);
+  host.classList.add("nf-search-has-animated-hint");
+  input.classList.add("nf-search-input--animated-hint");
+
+  const state = {
+    destroyed: false,
+    running: false,
+    mode: "typing", // typing | hold | deleting | focused
+    currentPhraseIndex: 0,
+    currentCharIndex: 0,
+    segments: [],
+    timerId: 0,
+    timerDueAt: 0,
+    availableWidth: 0,
+    pausedSnapshot: null,
+  };
+
+  const timing = {
+    startDelay: 420,
+    typeMin: 82,
+    typeMax: 124,
+    deleteMin: 56,
+    deleteMax: 88,
+    hold: 1420,
+    gapBetweenPhrases: 260,
+  };
+
+  const segmenter =
+    typeof Intl !== "undefined" && typeof Intl.Segmenter === "function"
+      ? new Intl.Segmenter("ru", { granularity: "grapheme" })
+      : null;
+  const toSegments = (value) => {
+    const normalized = String(value || "");
+    if (!normalized) return [];
+    if (!segmenter) return Array.from(normalized);
+    return [...segmenter.segment(normalized)].map((piece) => piece.segment);
+  };
+  const randomIn = (min, max) => Math.round(min + Math.random() * (max - min));
+  const hasText = () => Boolean(String(input.value || "").trim());
+  const isFocused = () => document.activeElement === input;
+  const measureCanvas = document.createElement("canvas");
+  const measureCtx = measureCanvas.getContext("2d");
+  const wordSegmenter =
+    typeof Intl !== "undefined" && typeof Intl.Segmenter === "function"
+      ? new Intl.Segmenter("ru", { granularity: "word" })
+      : null;
+
+  const normalizedHintText = (value) => String(value || "").replace(/\s+/g, " ").trim();
+  const getTextWidth = (value, sourceEl = idleText) => {
+    const text = String(value || "");
+    if (!text) return 0;
+    if (!measureCtx) return text.length * 8;
+    const cs = window.getComputedStyle(sourceEl);
+    measureCtx.font = `${cs.fontStyle} ${cs.fontVariant} ${cs.fontWeight} ${cs.fontSize} / ${cs.lineHeight} ${cs.fontFamily}`;
+    return measureCtx.measureText(text).width;
+  };
+  const toWordTokens = (value) => {
+    const text = normalizedHintText(value);
+    if (!text) return [];
+    if (!wordSegmenter) return text.split(" ").filter(Boolean);
+    const tokens = [];
+    [...wordSegmenter.segment(text)].forEach((segment) => {
+      if (!segment.isWordLike) return;
+      const token = String(segment.segment || "").trim();
+      if (token) tokens.push(token);
+    });
+    return tokens.length ? tokens : text.split(" ").filter(Boolean);
+  };
+  const truncateByWholeWord = (value, maxWidth, sourceEl = idleText) => {
+    const text = normalizedHintText(value);
+    if (!text) return "";
+    if (!Number.isFinite(maxWidth) || maxWidth <= 0) return "";
+    if (getTextWidth(text, sourceEl) <= maxWidth) return text;
+
+    const ellipsis = "…";
+    const ellipsisWidth = getTextWidth(ellipsis, sourceEl);
+    if (ellipsisWidth > maxWidth) return "";
+
+    const words = toWordTokens(text);
+    if (!words.length) return ellipsis;
+    if (words.length === 1) {
+      return getTextWidth(words[0], sourceEl) <= maxWidth ? words[0] : ellipsis;
+    }
+
+    let best = "";
+    for (let i = 0; i < words.length; i += 1) {
+      const candidate = words.slice(0, i + 1).join(" ");
+      if (getTextWidth(candidate, sourceEl) <= maxWidth) {
+        best = candidate;
+      } else {
+        break;
+      }
+    }
+    if (!best) return ellipsis;
+    if (best === text) return best;
+
+    let clipped = best;
+    while (clipped && getTextWidth(`${clipped}${ellipsis}`, sourceEl) > maxWidth) {
+      const parts = clipped.split(" ");
+      parts.pop();
+      clipped = parts.join(" ").trim();
+    }
+    return clipped ? `${clipped}${ellipsis}` : ellipsis;
+  };
+  const getRenderedHintText = (value, sourceEl = idleText) => {
+    const maxWidth = Math.max(0, (state.availableWidth || 0) - 2);
+    if (!maxWidth) return "";
+    return truncateByWholeWord(value, maxWidth, sourceEl);
+  };
+  const clearTimer = () => {
+    const remaining = state.timerId ? Math.max(0, state.timerDueAt - Date.now()) : 0;
+    if (state.timerId) clearTimeout(state.timerId);
+    state.timerId = 0;
+    state.timerDueAt = 0;
+    return remaining;
+  };
+  const schedule = (delayMs) => {
+    clearTimer();
+    const delay = Math.max(0, Math.round(delayMs));
+    state.timerDueAt = Date.now() + delay;
+    state.timerId = window.setTimeout(step, delay);
+  };
+  const showIdle = (visible) => idleHint.classList.toggle("is-hidden", !visible);
+  const showFocused = (visible) => focusedHint.classList.toggle("is-hidden", !visible);
+  const setLayerVisible = (visible) => layer.classList.toggle("is-hidden", !visible);
+  const updateSegments = () => {
+    state.segments = toSegments(items[state.currentPhraseIndex] || "");
+    state.currentCharIndex = Math.min(state.currentCharIndex, state.segments.length);
+  };
+  const renderIdle = () => {
+    const rawText = state.segments.slice(0, state.currentCharIndex).join("");
+    idleText.textContent = getRenderedHintText(rawText, idleText);
+  };
+  const renderFocused = () => {
+    focusedHint.textContent = getRenderedHintText(focusedHintText, focusedHint);
+  };
+  const syncVisualState = () => {
+    if (state.destroyed) return;
+    if (hasText()) {
+      setLayerVisible(false);
+      showIdle(false);
+      showFocused(false);
+      return;
+    }
+    setLayerVisible(true);
+    if (isFocused()) {
+      showIdle(false);
+      showFocused(true);
+      return;
+    }
+    showFocused(false);
+    showIdle(true);
+  };
+  const syncLayerBounds = () => {
+    if (state.destroyed) return;
+    const hostRect = host.getBoundingClientRect();
+    const inputRect = input.getBoundingClientRect();
+    const inputStyles = window.getComputedStyle(input);
+    const padLeft = parseFloat(inputStyles.paddingLeft || "0") || 0;
+    const padRight = parseFloat(inputStyles.paddingRight || "0") || 0;
+
+    let left = inputRect.left - hostRect.left + padLeft;
+    let right = inputRect.right - hostRect.left - padRight;
+
+    const icon = host.querySelector(".nf-search-icon");
+    if (icon) {
+      const iconRect = icon.getBoundingClientRect();
+      left = Math.max(left, iconRect.right - hostRect.left + 10);
+    }
+
+    const width = Math.max(0, right - left);
+    state.availableWidth = width;
+    layer.style.left = `${left}px`;
+    layer.style.width = `${width}px`;
+    renderIdle();
+    renderFocused();
+    syncVisualState();
+  };
+  const canRunIdle = () => {
+    if (state.destroyed) return false;
+    if (document.visibilityState === "hidden") return false;
+    if (isFocused()) return false;
+    return !hasText();
+  };
+  const stopIdle = () => {
+    state.running = false;
+    clearTimer();
+  };
+  const step = () => {
+    if (!state.running || !canRunIdle()) {
+      stopIdle();
+      syncVisualState();
+      return;
+    }
+
+    if (state.mode === "typing") {
+      if (state.currentCharIndex < state.segments.length) {
+        state.currentCharIndex += 1;
+        renderIdle();
+        schedule(randomIn(timing.typeMin, timing.typeMax));
+        return;
+      }
+      state.mode = "hold";
+      schedule(timing.hold);
+      return;
+    }
+
+    if (state.mode === "hold") {
+      state.mode = "deleting";
+      schedule(randomIn(timing.deleteMin, timing.deleteMax));
+      return;
+    }
+
+    if (state.mode === "deleting") {
+      if (state.currentCharIndex > 0) {
+        state.currentCharIndex -= 1;
+        renderIdle();
+        schedule(randomIn(timing.deleteMin, timing.deleteMax));
+        return;
+      }
+      state.currentPhraseIndex = (state.currentPhraseIndex + 1) % items.length;
+      state.mode = "typing";
+      updateSegments();
+      renderIdle();
+      schedule(timing.gapBetweenPhrases);
+      return;
+    }
+
+    state.mode = "typing";
+    schedule(randomIn(timing.typeMin, timing.typeMax));
+  };
+  const startIdle = (delay = timing.startDelay) => {
+    if (state.destroyed || state.running) return;
+    if (!canRunIdle()) {
+      syncVisualState();
+      return;
+    }
+    state.running = true;
+    syncVisualState();
+    schedule(delay);
+  };
+  const restoreFromSnapshot = () => {
+    const snap = state.pausedSnapshot;
+    if (!snap) return false;
+    state.currentPhraseIndex = Math.max(0, Math.min(items.length - 1, snap.currentPhraseIndex ?? 0));
+    state.currentCharIndex = Math.max(0, snap.currentCharIndex ?? 0);
+    state.mode = snap.mode === "deleting" || snap.mode === "hold" ? snap.mode : "typing";
+    updateSegments();
+    renderIdle();
+    return true;
+  };
+  const captureSnapshotForFocus = () => {
+    const remaining = clearTimer();
+    state.running = false;
+    state.pausedSnapshot = {
+      currentPhraseIndex: state.currentPhraseIndex,
+      currentCharIndex: state.currentCharIndex,
+      mode: state.mode,
+      remainingHoldMs: state.mode === "hold" ? remaining : null,
+    };
+  };
+  const resumeFromSnapshot = () => {
+    const restored = restoreFromSnapshot();
+    const snap = state.pausedSnapshot;
+    state.pausedSnapshot = null;
+    if (!restored) {
+      startIdle(timing.startDelay);
+      return false;
+    }
+    if (!canRunIdle()) {
+      syncVisualState();
+      return true;
+    }
+    state.running = true;
+    syncVisualState();
+    if (snap?.mode === "hold") {
+      schedule(snap.remainingHoldMs != null ? snap.remainingHoldMs : timing.hold);
+      return true;
+    }
+    schedule(Math.max(40, randomIn(timing.typeMin, timing.typeMax)));
+    return true;
+  };
+
+  updateSegments();
+  renderIdle();
+  renderFocused();
+  syncLayerBounds();
+  syncVisualState();
+
+  const onInput = () => {
+    if (hasText()) {
+      stopIdle();
+      syncVisualState();
+      return;
+    }
+    if (isFocused()) {
+      stopIdle();
+      syncVisualState();
+      return;
+    }
+    if (!state.running) {
+      if (!resumeFromSnapshot()) startIdle(timing.startDelay);
+      return;
+    }
+    syncVisualState();
+  };
+  const onFocus = () => {
+    if (!hasText()) {
+      captureSnapshotForFocus();
+      state.mode = "focused";
+    } else {
+      stopIdle();
+    }
+    syncVisualState();
+  };
+  const onBlur = () => {
+    if (hasText()) {
+      syncVisualState();
+      return;
+    }
+    resumeFromSnapshot();
+  };
+  const onVisibilityChange = () => {
+    if (document.visibilityState === "hidden") {
+      stopIdle();
+      return;
+    }
+    syncLayerBounds();
+    if (!hasText() && !isFocused()) {
+      resumeFromSnapshot();
+      return;
+    }
+    syncVisualState();
+  };
+
+  const controller = new AbortController();
+  const signal = controller.signal;
+  input.addEventListener("input", onInput, { signal });
+  input.addEventListener("focus", onFocus, { signal });
+  input.addEventListener("blur", onBlur, { signal });
+  document.addEventListener("visibilitychange", onVisibilityChange, { signal });
+  window.addEventListener("resize", syncLayerBounds, { signal });
+
+  const rafId = window.requestAnimationFrame(syncLayerBounds);
+  startIdle(timing.startDelay);
+
+  const destroy = () => {
+    if (state.destroyed) return;
+    state.destroyed = true;
+    stopIdle();
+    controller.abort();
+    window.cancelAnimationFrame(rafId);
+    input.setAttribute("placeholder", placeholderBackup);
+    host.classList.remove("nf-search-has-animated-hint");
+    input.classList.remove("nf-search-input--animated-hint");
+    layer.remove();
+    if (input.__nfAnimatedHintCleanup === destroy) {
+      delete input.__nfAnimatedHintCleanup;
+    }
+  };
+
+  input.__nfAnimatedHintCleanup = destroy;
+  return destroy;
+}
+
 function nfCreateEl(tag, className, html) {
   const el = document.createElement(tag);
   if (className) el.className = className;
   if (html != null) el.innerHTML = html;
   return el;
+}
+
+function nfCreateElText(tag, className, text) {
+  const el = document.createElement(tag);
+  if (className) el.className = className;
+  if (text != null) el.textContent = text;
+  return el;
+}
+
+function nfEscapeHtml(value) {
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
 }
 
 function nfProductPlaceholderSvg() {
@@ -812,22 +1277,22 @@ function nfProductPlaceholderSvg() {
       '<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300">' +
         '<defs>' +
         '<linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">' +
-        '<stop offset="0" stop-color="#e0f2fe"/>' +
-        '<stop offset="1" stop-color="#e5f3f1"/>' +
+        `<stop offset="0" stop-color="${NF_PALETTE.accentSoft}"/>` +
+        `<stop offset="1" stop-color="${NF_PALETTE.surfaceAlt}"/>` +
         "</linearGradient>" +
         "</defs>" +
         '<rect width="400" height="300" rx="24" fill="url(#bg)"/>' +
-        '<rect x="60" y="70" width="280" height="150" rx="18" fill="#f9fafb" stroke="#cbd5e1" stroke-width="2"/>' +
-        '<rect x="80" y="90" width="120" height="110" rx="14" fill="#e5f3ff"/>' +
-        '<rect x="210" y="100" width="100" height="18" rx="9" fill="#d1fae5"/>' +
-        '<rect x="210" y="130" width="80" height="14" rx="7" fill="#bfdbfe"/>' +
-        '<rect x="210" y="154" width="90" height="14" rx="7" fill="#e5e7eb"/>' +
-        '<rect x="210" y="178" width="70" height="14" rx="7" fill="#e5e7eb"/>' +
-        '<circle cx="310" cy="205" r="10" fill="#22c55e"/>' +
-        '<rect x="60" y="235" width="120" height="12" rx="6" fill="#cbd5e1" opacity="0.7"/>' +
-        '<rect x="190" y="235" width="80" height="12" rx="6" fill="#cbd5e1" opacity="0.7"/>' +
-        '<rect x="280" y="235" width="60" height="12" rx="6" fill="#cbd5e1" opacity="0.7"/>' +
-        '<text x="200" y="268" text-anchor="middle" fill="#64748b" font-family="system-ui" font-size="13">Изображение медицинского оборудования</text>' +
+        `<rect x="60" y="70" width="280" height="150" rx="18" fill="${NF_PALETTE.surfaceSubtle}" stroke="${NF_PALETTE.border}" stroke-width="2"/>` +
+        `<rect x="80" y="90" width="120" height="110" rx="14" fill="${NF_PALETTE.accentSoft}"/>` +
+        `<rect x="210" y="100" width="100" height="18" rx="9" fill="${NF_PALETTE.accentSoft}"/>` +
+        `<rect x="210" y="130" width="80" height="14" rx="7" fill="${NF_PALETTE.surfaceAlt}"/>` +
+        `<rect x="210" y="154" width="90" height="14" rx="7" fill="${NF_PALETTE.hairline}"/>` +
+        `<rect x="210" y="178" width="70" height="14" rx="7" fill="${NF_PALETTE.hairline}"/>` +
+        `<circle cx="310" cy="205" r="10" fill="${NF_PALETTE.accent}"/>` +
+        `<rect x="60" y="235" width="120" height="12" rx="6" fill="${NF_PALETTE.border}" opacity="0.7"/>` +
+        `<rect x="190" y="235" width="80" height="12" rx="6" fill="${NF_PALETTE.border}" opacity="0.7"/>` +
+        `<rect x="280" y="235" width="60" height="12" rx="6" fill="${NF_PALETTE.border}" opacity="0.7"/>` +
+        `<text x="200" y="268" text-anchor="middle" fill="${NF_PALETTE.muted}" font-family="system-ui" font-size="13">Изображение медицинского оборудования</text>` +
         "</svg>"
     )
   );
@@ -872,14 +1337,9 @@ const NF_PRODUCT_IMAGE_OVERRIDES = {
 };
 
 let NF_PRODUCT_LIGHTBOX_STATE = null;
+let nfProductLightboxUiAbort = null;
 
-function nfEnsureProductLightbox() {
-  let root = document.getElementById("nfProductLightbox");
-  if (root) return root;
-  root = document.createElement("div");
-  root.id = "nfProductLightbox";
-  root.className = "nf-product-lightbox";
-  root.innerHTML = `
+const NF_PRODUCT_LIGHTBOX_HTML = `
     <div class="nf-product-lightbox-inner">
       <div class="nf-product-lightbox-image-wrap">
         <button type="button" class="nf-product-lightbox-prev" aria-label="Предыдущее фото">
@@ -903,23 +1363,43 @@ function nfEnsureProductLightbox() {
             </svg>
           </span>
         </button>
-        <img class="nf-product-lightbox-image" alt="" />
+        <div class="nf-product-lightbox-img-clip">
+          <img class="nf-product-lightbox-image" alt="" />
+        </div>
       </div>
       <div class="nf-product-lightbox-caption">
         <span class="nf-product-lightbox-title"></span>
         <span class="nf-product-lightbox-counter"></span>
       </div>
     </div>
-  `;
+`;
+
+function nfEnsureProductLightbox() {
+  let root = document.getElementById("nfProductLightbox");
+  if (root && !root.querySelector(".nf-product-lightbox-img-clip")) {
+    const wasOpen = root.classList.contains("is-open");
+    root.innerHTML = NF_PRODUCT_LIGHTBOX_HTML.trim();
+    if (wasOpen) root.classList.add("is-open");
+    return root;
+  }
+  if (root) return root;
+  root = document.createElement("div");
+  root.id = "nfProductLightbox";
+  root.className = "nf-product-lightbox";
+  root.innerHTML = NF_PRODUCT_LIGHTBOX_HTML.trim();
   document.body.appendChild(root);
   return root;
 }
 
 function nfCloseProductLightbox() {
+  if (nfProductLightboxUiAbort) {
+    nfProductLightboxUiAbort.abort();
+    nfProductLightboxUiAbort = null;
+  }
+  nfDisposeImageZoomPan("lightbox");
   const root = document.getElementById("nfProductLightbox");
   if (root) root.classList.remove("is-open");
   NF_PRODUCT_LIGHTBOX_STATE = null;
-  document.removeEventListener("keydown", nfProductLightboxKeyHandler);
 }
 
 function nfProductLightboxKeyHandler(e) {
@@ -950,12 +1430,8 @@ function nfProductLightboxShow(nextIndex) {
   if (imgEl) {
     imgEl.src = images[idx];
     imgEl.alt = NF_PRODUCT_LIGHTBOX_STATE.productName || "Фото товара";
-    const zoom = NF_PRODUCT_LIGHTBOX_STATE.zoom || 1;
-    imgEl.style.transform = zoom > 1 ? `scale(${zoom})` : "none";
-    if (zoom <= 1) {
-      imgEl.style.transformOrigin = "50% 50%";
-    }
-    imgEl.style.cursor = zoom > 1 ? "zoom-out" : "zoom-in";
+    imgEl.style.transform = "";
+    imgEl.classList.remove("nf-pdp-media-img--zooming");
   }
   if (titleEl) titleEl.textContent = NF_PRODUCT_LIGHTBOX_STATE.productName || "";
   if (counterEl) counterEl.textContent = `${idx + 1} / ${images.length}`;
@@ -963,12 +1439,17 @@ function nfProductLightboxShow(nextIndex) {
 
 function nfOpenProductLightbox(images, startIndex, productName) {
   if (!images || !images.length) return;
+  if (nfProductLightboxUiAbort) {
+    nfProductLightboxUiAbort.abort();
+    nfProductLightboxUiAbort = null;
+  }
+  nfDisposeImageZoomPan("lightbox");
+
   const root = nfEnsureProductLightbox();
   NF_PRODUCT_LIGHTBOX_STATE = {
     images: images.slice(),
     index: Math.max(0, Math.min(startIndex || 0, images.length - 1)),
     productName: productName || "",
-    zoom: 1,
   };
 
   nfProductLightboxShow(NF_PRODUCT_LIGHTBOX_STATE.index);
@@ -979,39 +1460,26 @@ function nfOpenProductLightbox(images, startIndex, productName) {
   const nextBtn = root.querySelector(".nf-product-lightbox-next");
   const imageEl = root.querySelector(".nf-product-lightbox-image");
   const imageWrap = root.querySelector(".nf-product-lightbox-image-wrap");
+  const clipEl = root.querySelector(".nf-product-lightbox-img-clip");
 
-  const applyLensFromPoint = (clientX, clientY) => {
-    if (!NF_PRODUCT_LIGHTBOX_STATE || !imageEl) return;
-    const zoom = NF_PRODUCT_LIGHTBOX_STATE.zoom || 1;
-    if (zoom <= 1) {
-      imageEl.style.transformOrigin = "50% 50%";
-      imageEl.style.transform = "none";
-      return;
-    }
-    const rect = imageEl.getBoundingClientRect();
-    if (!rect.width || !rect.height) return;
-    const relX = ((clientX - rect.left) / rect.width) * 100;
-    const relY = ((clientY - rect.top) / rect.height) * 100;
-    const x = Math.max(0, Math.min(100, relX));
-    const y = Math.max(0, Math.min(100, relY));
-    imageEl.style.transformOrigin = `${x}% ${y}%`;
-    imageEl.style.transform = `scale(${zoom})`;
-  };
+  const ac = new AbortController();
+  nfProductLightboxUiAbort = ac;
+  const sig = ac.signal;
 
-  if (closeBtn) closeBtn.onclick = nfCloseProductLightbox;
-  if (prevBtn) prevBtn.onclick = () => nfProductLightboxShow(NF_PRODUCT_LIGHTBOX_STATE.index - 1);
-  if (nextBtn) nextBtn.onclick = () => nfProductLightboxShow(NF_PRODUCT_LIGHTBOX_STATE.index + 1);
-  if (imageEl) {
-    imageEl.onclick = (e) => {
-      if (!NF_PRODUCT_LIGHTBOX_STATE) return;
-      const current = NF_PRODUCT_LIGHTBOX_STATE.zoom || 1;
-      const next = current === 1 ? 2 : 1;
-      NF_PRODUCT_LIGHTBOX_STATE.zoom = next;
-      nfProductLightboxShow(NF_PRODUCT_LIGHTBOX_STATE.index);
-      if (next > 1 && e && typeof e.clientX === "number" && typeof e.clientY === "number") {
-        applyLensFromPoint(e.clientX, e.clientY);
-      }
-    };
+  if (closeBtn) closeBtn.addEventListener("click", nfCloseProductLightbox, { signal: sig });
+  if (prevBtn) {
+    prevBtn.addEventListener(
+      "click",
+      () => nfProductLightboxShow(NF_PRODUCT_LIGHTBOX_STATE.index - 1),
+      { signal: sig }
+    );
+  }
+  if (nextBtn) {
+    nextBtn.addEventListener(
+      "click",
+      () => nfProductLightboxShow(NF_PRODUCT_LIGHTBOX_STATE.index + 1),
+      { signal: sig }
+    );
   }
 
   let touchStartX = null;
@@ -1021,12 +1489,12 @@ function nfOpenProductLightbox(images, startIndex, productName) {
       (e) => {
         touchStartX = e.touches[0]?.clientX ?? null;
       },
-      { passive: true }
+      { passive: true, signal: sig }
     );
     imageWrap.addEventListener(
       "touchend",
       (e) => {
-        if (touchStartX == null) return;
+        if (touchStartX == null || !NF_PRODUCT_LIGHTBOX_STATE) return;
         const dx = (e.changedTouches[0]?.clientX ?? touchStartX) - touchStartX;
         if (Math.abs(dx) > 40) {
           if (dx < 0) nfProductLightboxShow(NF_PRODUCT_LIGHTBOX_STATE.index + 1);
@@ -1034,57 +1502,136 @@ function nfOpenProductLightbox(images, startIndex, productName) {
         }
         touchStartX = null;
       },
-      { passive: true }
-    );
-
-    imageWrap.addEventListener(
-      "mousemove",
-      (e) => {
-        if (!NF_PRODUCT_LIGHTBOX_STATE) return;
-        if ((NF_PRODUCT_LIGHTBOX_STATE.zoom || 1) <= 1) return;
-        applyLensFromPoint(e.clientX, e.clientY);
-      },
-      { passive: true }
-    );
-
-    imageWrap.addEventListener(
-      "wheel",
-      (e) => {
-        if (!NF_PRODUCT_LIGHTBOX_STATE) return;
-        e.preventDefault();
-        const delta = e.deltaY || 0;
-        const current = NF_PRODUCT_LIGHTBOX_STATE.zoom || 1;
-        let nextZoom = current;
-        if (delta < 0) {
-          nextZoom = Math.min(3, current + 0.25);
-        } else if (delta > 0) {
-          nextZoom = Math.max(1, current - 0.25);
-        }
-        if (nextZoom !== current) {
-          NF_PRODUCT_LIGHTBOX_STATE.zoom = nextZoom;
-          nfProductLightboxShow(NF_PRODUCT_LIGHTBOX_STATE.index);
-          if (e && typeof e.clientX === "number" && typeof e.clientY === "number") {
-            applyLensFromPoint(e.clientX, e.clientY);
-          }
-        }
-      },
-      { passive: false }
+      { passive: true, signal: sig }
     );
   }
 
-  document.addEventListener("keydown", nfProductLightboxKeyHandler);
+  document.addEventListener("keydown", nfProductLightboxKeyHandler, { signal: sig });
+
+  if (clipEl && imageEl) {
+    nfAttachImageZoomPan({
+      viewport: clipEl,
+      img: imageEl,
+      scale: NF_MODAL_LIGHTBOX_ZOOM_SCALE,
+      disposeKey: "lightbox",
+      wheelZoom: true,
+      maxScale: NF_MODAL_LIGHTBOX_WHEEL_MAX_SCALE,
+      isAllowed: () =>
+        !!NF_PRODUCT_LIGHTBOX_STATE &&
+        NF_PRODUCT_LIGHTBOX_STATE.images.length > 0 &&
+        !!imageEl.src &&
+        !String(imageEl.src).startsWith("data:image/svg+xml"),
+    });
+  }
 }
 
-function nfShowToast(message) {
-  const container = nfEl("toastContainer");
-  if (!container) return;
-  const toast = nfCreateEl("div", "nf-toast", message);
-  container.appendChild(toast);
+function nfDismissToastElement(toast) {
+  if (!toast || toast.dataset.nfToastDismissed === "1") return;
+  toast.dataset.nfToastDismissed = "1";
+  if (toast._nfToastClearTimer) toast._nfToastClearTimer();
+  toast.classList.remove("nf-toast-item--visible");
+  toast.classList.add("nf-toast-item--leaving");
+  const finish = () => {
+    toast.removeEventListener("transitionend", finish);
+    toast.remove();
+  };
+  toast.addEventListener("transitionend", finish);
   setTimeout(() => {
-    toast.style.opacity = "0";
-    toast.style.transform = "translateY(4px)";
-    setTimeout(() => toast.remove(), 200);
-  }, 2500);
+    if (toast.isConnected) toast.remove();
+  }, 420);
+}
+
+function nfPushToast(options) {
+  const message = String(options?.message ?? "");
+  const variant = options?.variant === "success" ? "success" : "info";
+  const duration = typeof options?.duration === "number" ? options.duration : 4200;
+  const actionLabel = options?.actionLabel;
+  const onAction = options?.onAction;
+  const pauseOnHover = options?.pauseOnHover !== false;
+
+  const container = nfEl("toastContainer");
+  if (!container) return null;
+
+  const toast = document.createElement("div");
+  toast.className = `nf-toast-item nf-toast-item--${variant}`;
+  toast.setAttribute("role", "status");
+
+  const row = document.createElement("div");
+  row.className = "nf-toast-item__row";
+
+  const msg = document.createElement("div");
+  msg.className = "nf-toast-item__message";
+  msg.textContent = message;
+  row.appendChild(msg);
+
+  if (actionLabel && typeof onAction === "function") {
+    const action = document.createElement("button");
+    action.type = "button";
+    action.className = "nf-toast-item__action";
+    action.textContent = actionLabel;
+    action.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const r = onAction();
+      if (r !== false) nfDismissToastElement(toast);
+    });
+    row.appendChild(action);
+  }
+
+  toast.appendChild(row);
+  container.appendChild(toast);
+
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => toast.classList.add("nf-toast-item--visible"));
+  });
+
+  let hideTimer = null;
+  let endsAt = Date.now() + Math.max(0, duration);
+
+  function clearHideTimer() {
+    if (hideTimer) {
+      clearTimeout(hideTimer);
+      hideTimer = null;
+    }
+  }
+
+  function scheduleHide() {
+    clearHideTimer();
+    if (duration <= 0) return;
+    const ms = Math.max(0, endsAt - Date.now());
+    if (ms === 0) {
+      nfDismissToastElement(toast);
+      return;
+    }
+    hideTimer = setTimeout(() => nfDismissToastElement(toast), ms);
+  }
+
+  scheduleHide();
+
+  let remainingOnPause = duration;
+  if (pauseOnHover && duration > 0) {
+    toast.addEventListener("mouseenter", () => {
+      clearHideTimer();
+      remainingOnPause = Math.max(0, endsAt - Date.now());
+    });
+    toast.addEventListener("mouseleave", () => {
+      endsAt = Date.now() + remainingOnPause;
+      scheduleHide();
+    });
+  }
+
+  toast._nfToastClearTimer = clearHideTimer;
+  return toast;
+}
+
+/** Обратная совместимость: простое текстовое уведомление. */
+function nfShowToast(message, opts) {
+  const o = opts && typeof opts === "object" ? opts : {};
+  nfPushToast({
+    message: String(message ?? ""),
+    variant: o.variant === "success" ? "success" : "info",
+    duration: typeof o.duration === "number" ? o.duration : 3800,
+    pauseOnHover: o.pauseOnHover !== false,
+  });
 }
 
 function nfGetPartnerName(partnerId) {
@@ -1101,6 +1648,299 @@ function nfPartnerShortName(p) {
     .trim();
   const first = stripped.split(" ").slice(0, 2).join(" ");
   return first || name;
+}
+
+function nfPartnerSlug(partner) {
+  if (!partner) return "";
+  if (partner.slug && String(partner.slug).trim()) return String(partner.slug).trim().toLowerCase();
+  if (partner.id === "ganshorn") return "ganhorn-medizin";
+  return String(partner.id || "")
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9-]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+function nfPartnerOpenUrlBySlug(slug) {
+  const normalized = String(slug || "").trim().toLowerCase();
+  return normalized ? `/partners/${normalized}` : "/partners";
+}
+
+function nfPartnersPageUrlWithoutOpen() {
+  return "/partners";
+}
+
+/** Латиница для сегментов URL (кириллица → латиница, остальное выкидываем). */
+function nfSlugifyPathPart(raw) {
+  const map = {
+    а: "a",
+    б: "b",
+    в: "v",
+    г: "g",
+    д: "d",
+    е: "e",
+    ё: "e",
+    ж: "zh",
+    з: "z",
+    и: "i",
+    й: "y",
+    к: "k",
+    л: "l",
+    м: "m",
+    н: "n",
+    о: "o",
+    п: "p",
+    р: "r",
+    с: "s",
+    т: "t",
+    у: "u",
+    ф: "f",
+    х: "h",
+    ц: "ts",
+    ч: "ch",
+    ш: "sh",
+    щ: "sch",
+    ъ: "",
+    ы: "y",
+    ь: "",
+    э: "e",
+    ю: "yu",
+    я: "ya",
+  };
+  let s = String(raw || "")
+    .trim()
+    .toLowerCase();
+  let out = "";
+  for (let i = 0; i < s.length; i++) {
+    const ch = s[i];
+    if (map[ch]) out += map[ch];
+    else if (/[a-z0-9]/.test(ch)) out += ch;
+    else if (/[\s._/\\|+,;:]/.test(ch) || ch === "-") out += "-";
+  }
+  return out.replace(/-+/g, "-").replace(/^-|-$/g, "") || "item";
+}
+
+function nfProductPermalinkSegment(product) {
+  if (!product) return "";
+  const idPart = nfSlugifyPathPart(String(product.id || ""));
+  const seoSlug =
+    product.seo && product.seo.slug && String(product.seo.slug).trim()
+      ? nfSlugifyPathPart(String(product.seo.slug).trim())
+      : "";
+  const namePart = nfSlugifyPathPart(String(product.name || ""));
+  const base = seoSlug || namePart || idPart;
+  if (!base || base === idPart) return idPart;
+  return `${base}-${idPart}`.replace(/-+/g, "-").replace(/^-|-$/g, "");
+}
+
+/** idle | loading | ok | error — чтобы PDP не редиректила в каталог до ответа /api/catalog */
+let NF_CATALOG_LOAD_STATE = "idle";
+
+function nfFindProductByPermalink(segment) {
+  const seg = String(segment || "").trim().toLowerCase();
+  if (!seg) return null;
+  const list = (NF_DATA.products || []).filter((p) => p && !p.isHidden);
+  const partners = NF_DATA.partners || [];
+
+  const pick = (pred) => list.find(pred);
+
+  const byCanonical = pick((p) => nfProductPermalinkSegment(p) === seg);
+  if (byCanonical) return byCanonical;
+
+  const bySeoSlug = pick(
+    (p) => p.seo && p.seo.slug && nfSlugifyPathPart(String(p.seo.slug).trim()) === seg
+  );
+  if (bySeoSlug) return bySeoSlug;
+
+  const byTopSlug = pick((p) => p.slug && nfSlugifyPathPart(String(p.slug).trim()) === seg);
+  if (byTopSlug) return byTopSlug;
+
+  const byIdSlug = pick((p) => nfSlugifyPathPart(String(p.id || "")) === seg);
+  if (byIdSlug) return byIdSlug;
+
+  const byNameSlug = pick((p) => nfSlugifyPathPart(String(p.name || "")) === seg);
+  if (byNameSlug) return byNameSlug;
+
+  const rawId = pick((p) => String(p.id || "").toLowerCase() === seg);
+  if (rawId) return rawId;
+
+  const partnerSlug = (p) => {
+    const pr = partners.find((x) => x.id === p.partnerId);
+    if (!pr) return "";
+    return nfSlugifyPathPart(String(pr.name || pr.id || ""));
+  };
+
+  const partnerExact = list.filter((p) => partnerSlug(p) === seg);
+  if (partnerExact.length === 1) return partnerExact[0];
+
+  const partnerLoose = list.filter((p) => {
+    const ps = partnerSlug(p);
+    if (!ps) return false;
+    if (ps === seg) return true;
+    if (ps.startsWith(`${seg}-`)) return true;
+    if (seg.startsWith(`${ps}-`)) return true;
+    return false;
+  });
+  if (partnerLoose.length === 1) return partnerLoose[0];
+
+  const byPrefix = list.filter((p) => {
+    const full = nfProductPermalinkSegment(p);
+    return full === seg || full.startsWith(`${seg}-`);
+  });
+  if (byPrefix.length === 1) return byPrefix[0];
+
+  return null;
+}
+
+function nfCategoryPermalinkSlug(category) {
+  if (!category) return "";
+  const explicit = category.slug || (category.seo && category.seo.slug);
+  if (explicit && String(explicit).trim()) return nfSlugifyPathPart(String(explicit).trim());
+  return nfSlugifyPathPart(String(category.id || ""));
+}
+
+function nfFindCategoryByPermalink(segment) {
+  const seg = String(segment || "").trim().toLowerCase();
+  if (!seg) return null;
+  return (NF_DATA.categories || []).find((c) => nfCategoryPermalinkSlug(c) === seg) || null;
+}
+
+function nfNewsPermalinkSlug(newsItem) {
+  if (!newsItem) return "";
+  if (newsItem.slug && String(newsItem.slug).trim()) return nfSlugifyPathPart(String(newsItem.slug).trim());
+  return nfSlugifyPathPart(String(newsItem.id || ""));
+}
+
+function nfFindNewsByPermalink(segment) {
+  const seg = String(segment || "").trim().toLowerCase();
+  if (!seg) return null;
+  return (NF_DATA.news || []).find((n) => nfNewsPermalinkSlug(n) === seg) || null;
+}
+
+function nfFindPartnerByPermalink(segment) {
+  const seg = String(segment || "").trim().toLowerCase();
+  if (!seg) return null;
+  return (NF_DATA.partners || []).find((p) => nfPartnerSlug(p) === seg) || null;
+}
+
+function nfPathSegments() {
+  return location.pathname
+    .replace(/^\/+|\/+$/g, "")
+    .split("/")
+    .filter(Boolean)
+    .map((x) => String(x).toLowerCase());
+}
+
+/**
+ * Определяет страницу SPA по pathname, выставляет NF_STATE для детальных сущностей.
+ * @returns {{ page: string, path: string }}
+ */
+function nfResolvePageFromLocation() {
+  const parts = nfPathSegments();
+  const isCatalogProductPath = parts[0] === "catalog" && Boolean(parts[1]);
+  if (!isCatalogProductPath) {
+    NF_STATE.pendingProductPermalink = null;
+  }
+
+  if (!parts.length) {
+    const h = location.hash.replace("#", "").trim();
+    if (h && NF_ROUTES[h]) {
+      return { page: h, path: h === "home" ? "/" : `/${h}` };
+    }
+    return { page: "home", path: "/" };
+  }
+
+  const [a, b] = [parts[0], parts[1]];
+
+  const top = new Set(["about", "contacts", "legal", "admin", "catalog", "partners", "news"]);
+  if (top.has(a) && !b) {
+    if (a === "catalog") {
+      NF_STATE.productDetailProductId = null;
+      NF_STATE.productModalProductId = null;
+      NF_STATE.pendingCatalogProductId = null;
+      return { page: "catalog", path: "/catalog" };
+    }
+    if (a === "partners") return { page: "partners", path: "/partners" };
+    if (a === "news") return { page: "news", path: "/news" };
+    return { page: a, path: `/${a}` };
+  }
+
+  if (a === "catalog" && b) {
+    const p = nfFindProductByPermalink(b);
+    if (p) {
+      NF_STATE.pendingProductPermalink = null;
+      NF_STATE.productDetailProductId = p.id;
+      NF_STATE.productModalProductId = p.id;
+      return { page: "product", path: `/catalog/${b}` };
+    }
+    NF_STATE.productDetailProductId = null;
+    NF_STATE.productModalProductId = null;
+    NF_STATE.pendingProductPermalink = b;
+    return { page: "product", path: `/catalog/${b}` };
+  }
+
+  if (a === "categories" && b) {
+    const c = nfFindCategoryByPermalink(b);
+    if (c) {
+      NF_STATE.categoryDetailId = c.id;
+      return { page: "category", path: `/categories/${b}` };
+    }
+    return { page: "home", path: "/" };
+  }
+
+  if (a === "partners" && b) {
+    const pr = nfFindPartnerByPermalink(b);
+    if (pr) {
+      NF_STATE.selectedPartnerId = pr.id;
+      return { page: "partners", path: `/partners/${b}` };
+    }
+    return { page: "partners", path: "/partners" };
+  }
+
+  if (a === "news" && b) {
+    const n = nfFindNewsByPermalink(b);
+    if (n) {
+      NF_STATE.newsArticleId = n.id;
+      NF_STATE.selectedNewsId = n.id;
+      return { page: "newsArticle", path: `/news/${b}` };
+    }
+    return { page: "news", path: "/news" };
+  }
+
+  if (NF_ROUTES[a]) return { page: a, path: `/${a}` };
+
+  return { page: "home", path: "/" };
+}
+
+function nfNavKeyForPage(page) {
+  if (page === "product" || page === "category") return "catalog";
+  if (page === "newsArticle") return "news";
+  return page;
+}
+
+function nfNavigate(page) {
+  const safe = NF_ROUTES[page] ? page : "home";
+  let path = "/";
+  if (safe === "home") path = "/";
+  else if (safe === "product") {
+    const p = NF_DATA.products.find((x) => String(x.id) === String(NF_STATE.productDetailProductId));
+    path = p ? `/catalog/${nfProductPermalinkSegment(p)}` : "/catalog";
+  } else path = `/${safe}`;
+  history.pushState({ page: safe }, "", path);
+  nfLoadPage(safe);
+  window.scrollTo({ top: 0, behavior: "auto" });
+}
+
+function nfGoPath(path) {
+  const p = String(path || "").trim() || "/";
+  try {
+    const u = new URL(p, window.location.origin);
+    const next = u.pathname + (u.search || "");
+    history.pushState({}, "", next);
+    const r = nfResolvePageFromLocation();
+    nfLoadPage(r.page);
+    window.scrollTo({ top: 0, behavior: "auto" });
+  } catch (_e) {}
 }
 
 function nfSetPartnerLogo(imgEl, partnerId) {
@@ -1133,11 +1973,6 @@ function nfOpenProductPage(productId) {
   nfNavigate("product");
 }
 
-function nfNavigateToPartner(partnerId) {
-  NF_STATE.selectedPartnerId = partnerId;
-  nfNavigate("partners");
-}
-
 /* ====== API ====== */
 async function nfApiJson(path, opts = {}) {
   const base = (NF_CONFIG.API_BASE || "").replace(/\/$/, "");
@@ -1157,14 +1992,19 @@ function nfApiBase() {
   return (NF_CONFIG.API_BASE || "").replace(/\/$/, "");
 }
 
-async function nfLoadCatalogFromApi() {
+async function nfLoadCatalogFromApi(options = {}) {
+  const requestLang = String(options.lang || NF_STATE.lang || "ru");
+  const requestSeq = ++NF_CATALOG_REQUEST_SEQ;
+  NF_CATALOG_ACTIVE_REQUEST_SEQ = requestSeq;
+  NF_CATALOG_LOAD_STATE = "loading";
   const base = nfApiBase();
-  const lang = NF_STATE.lang || "ru";
-  const url = (base || "") + "/api/catalog?lang=" + encodeURIComponent(lang);
+  const url = (base || "") + "/api/catalog?lang=" + encodeURIComponent(requestLang);
   try {
     const res = await fetch(url, { cache: "no-store" });
     if (!res.ok) throw new Error("API " + res.status);
     const data = await res.json();
+    if (requestSeq !== NF_CATALOG_ACTIVE_REQUEST_SEQ) return;
+    if (requestLang !== String(NF_STATE.lang || "ru")) return;
 
     if (data.categories) NF_DATA.categories = data.categories;
 
@@ -1189,9 +2029,14 @@ async function nfLoadCatalogFromApi() {
     if (data.products) NF_DATA.products = data.products;
     if (data.news) NF_DATA.news = data.news;
     nfRecalcCategoryCounts();
-    nfOnCatalogLoaded();
+    NF_CATALOG_LOAD_STATE = "ok";
   } catch (_e) {
+    if (requestSeq !== NF_CATALOG_ACTIVE_REQUEST_SEQ) return;
     console.warn("НаноФарм: API недоступен, используются начальные данные.");
+    NF_CATALOG_LOAD_STATE = "error";
+  } finally {
+    if (requestSeq !== NF_CATALOG_ACTIVE_REQUEST_SEQ) return;
+    nfOnCatalogLoaded();
   }
 }
 
@@ -1199,16 +2044,258 @@ function nfOnCatalogLoaded() {
   const page = NF_STATE.currentPage;
   if (page === "home") nfInitHomePage();
   else if (page === "catalog") nfInitCatalogPage();
+  else if (page === "product") nfInitProductPage();
+  else if (page === "category") nfInitCategoryPage();
   else if (page === "partners") nfInitPartnersPage();
   else if (page === "news") nfInitNewsPage();
+  else if (page === "newsArticle") nfInitNewsArticlePage();
+  nfInitViewportReveal(nfEl("page-root"));
 }
 
 /* ====== РОУТЕР ====== */
+let NF_CATALOG_SENTINEL_IO = null;
+const NF_CATALOG_FILTERS_COLLAPSED_KEY = "nf_catalog_filters_collapsed";
+/** Слушатель window.resize для панели фильтров каталога — только один экземпляр, иначе лаги после каждого захода в каталог */
+let NF_CATALOG_LAYOUT_RESIZE_BOUND = false;
+let NF_MOTION_REVEAL_IO = null;
+let NF_REVEAL_SAFETY_TIMER = null;
+
+function nfDisconnectCatalogRevealAndSentinel() {
+  if (NF_CATALOG_SENTINEL_IO) {
+    NF_CATALOG_SENTINEL_IO.disconnect();
+    NF_CATALOG_SENTINEL_IO = null;
+  }
+}
+
+function nfDisconnectRevealObserver() {
+  if (NF_MOTION_REVEAL_IO) {
+    NF_MOTION_REVEAL_IO.disconnect();
+    NF_MOTION_REVEAL_IO = null;
+  }
+  if (NF_REVEAL_SAFETY_TIMER != null) {
+    clearTimeout(NF_REVEAL_SAFETY_TIMER);
+    NF_REVEAL_SAFETY_TIMER = null;
+  }
+}
+
+function nfCatalogApplyFiltersCollapsedUI(collapsed, opts) {
+  const noReflowEvent = opts && opts.noReflowEvent;
+  const catalogLayout = document.querySelector(".nf-catalog-layout");
+  const filtersSheetBtn = nfEl("catalogFiltersSheetBtn");
+  if (!catalogLayout) return;
+  catalogLayout.classList.toggle("is-filters-collapsed", collapsed);
+  if (filtersSheetBtn) {
+    filtersSheetBtn.classList.toggle("is-active", !collapsed);
+    filtersSheetBtn.setAttribute("aria-expanded", String(!collapsed));
+  }
+  if (!noReflowEvent) {
+    requestAnimationFrame(() => {
+      try {
+        window.dispatchEvent(new Event("resize"));
+      } catch (_e) {}
+    });
+  }
+}
+
+function nfCatalogDesktopFiltersSyncFromWindow() {
+  const catalogLayout = document.querySelector(".nf-catalog-layout");
+  const filtersSheetBtn = nfEl("catalogFiltersSheetBtn");
+  if (!catalogLayout || !filtersSheetBtn) return;
+  const isDesktop = window.matchMedia("(min-width: 1025px)").matches;
+  if (!isDesktop) {
+    catalogLayout.classList.remove("is-filters-collapsed");
+    filtersSheetBtn.classList.remove("is-active");
+    filtersSheetBtn.removeAttribute("aria-expanded");
+    return;
+  }
+  const initialCollapsed = localStorage.getItem(NF_CATALOG_FILTERS_COLLAPSED_KEY) === "1";
+  nfCatalogApplyFiltersCollapsedUI(initialCollapsed, { noReflowEvent: true });
+}
+
+function nfDisconnectCatalogLayoutResize() {
+  if (!NF_CATALOG_LAYOUT_RESIZE_BOUND) return;
+  window.removeEventListener("resize", nfCatalogDesktopFiltersSyncFromWindow);
+  NF_CATALOG_LAYOUT_RESIZE_BOUND = false;
+}
+
+/** Перед подменой #page-root: снять глобальные подписки каталога / reveal / home motion */
+function nfRouteTeardownBeforeLoad() {
+  nfDisconnectHomeObservers();
+  nfDisconnectCatalogRevealAndSentinel();
+  nfDisconnectRevealObserver();
+  nfDisconnectCatalogLayoutResize();
+}
+
+function nfRevealSyncNearViewport(scope) {
+  if (!scope || !scope.querySelectorAll) return;
+  const vh = window.innerHeight || 640;
+  scope.querySelectorAll(".nf-vp-reveal:not(.is-visible), .nf-enter:not(.is-visible)").forEach((el) => {
+    const r = el.getBoundingClientRect();
+    if (r.bottom > -40 && r.top < vh + 40) {
+      el.classList.add("is-visible");
+    }
+  });
+}
+
+function nfDisconnectHomeObservers() {
+  if (typeof window._nfPopularCleanup === "function") {
+    try {
+      window._nfPopularCleanup();
+    } catch (_e) {}
+    window._nfPopularCleanup = null;
+  }
+  if (typeof window._nfPopularResizeCleanup === "function") {
+    try {
+      window._nfPopularResizeCleanup();
+    } catch (_e) {}
+    window._nfPopularResizeCleanup = null;
+  }
+  nfDisconnectPremiumHeroMotion();
+}
+
+function nfDisconnectPremiumHeroMotion() {
+  if (typeof window._nfPremiumHeroCleanup === "function") {
+    try {
+      window._nfPremiumHeroCleanup();
+    } catch (_e) {}
+    window._nfPremiumHeroCleanup = null;
+  }
+  const root = document.querySelector("#nf-premium-hero-root[data-nf-premium-hero]");
+  const mount = root && root.querySelector(".nf-hero-brand-particles");
+  if (mount) mount.innerHTML = "";
+}
+
+function nfPrefersReducedMotion() {
+  try {
+    return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  } catch (_e) {
+    return false;
+  }
+}
+
+function nfInitViewportReveal(root) {
+  nfDisconnectRevealObserver();
+  const scope = root && root.querySelectorAll ? root : document;
+  nfRevealSyncNearViewport(scope);
+
+  const pending = scope.querySelectorAll(".nf-vp-reveal:not(.is-visible), .nf-enter:not(.is-visible)");
+  if (!pending.length) return;
+
+  const revealImmediate = () => {
+    scope.querySelectorAll(".nf-vp-reveal:not(.is-visible), .nf-enter:not(.is-visible)").forEach((el) => {
+      el.classList.add("is-visible");
+    });
+  };
+
+  if (document.body.classList.contains("nf-admin-mode") || nfPrefersReducedMotion() || !("IntersectionObserver" in window)) {
+    revealImmediate();
+    return;
+  }
+
+  const mark = (el) => {
+    el.classList.add("is-visible");
+    NF_MOTION_REVEAL_IO?.unobserve(el);
+  };
+
+  NF_MOTION_REVEAL_IO = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((e) => {
+        if (e.isIntersecting) mark(e.target);
+      });
+    },
+    { root: null, rootMargin: "0px 0px 2% 0px", threshold: 0.02 }
+  );
+
+  scope.querySelectorAll(".nf-vp-reveal:not(.is-visible), .nf-enter:not(.is-visible)").forEach((el) => {
+    NF_MOTION_REVEAL_IO.observe(el);
+  });
+
+  nfRevealSyncNearViewport(scope);
+
+  NF_REVEAL_SAFETY_TIMER = window.setTimeout(() => {
+    NF_REVEAL_SAFETY_TIMER = null;
+    revealImmediate();
+  }, 2800);
+}
+
+/**
+ * Секции/карточки с классами .nf-vp-reveal и .nf-enter — появление при скролле (один раз).
+ */
+function nfSimpleReveal(root) {
+  nfInitViewportReveal(root || nfEl("page-root"));
+}
+
+function nfRevealObserveElements(elements) {
+  if (!elements || !elements.length) return;
+  if (nfPrefersReducedMotion() || document.body.classList.contains("nf-admin-mode")) {
+    elements.forEach((el) => el.classList.add("is-visible"));
+    return;
+  }
+  if ("IntersectionObserver" in window && NF_MOTION_REVEAL_IO) {
+    elements.forEach((el) => {
+      if ((el.classList.contains("nf-vp-reveal") || el.classList.contains("nf-enter")) && !el.classList.contains("is-visible")) {
+        NF_MOTION_REVEAL_IO.observe(el);
+      } else {
+        el.classList.add("is-visible");
+      }
+    });
+    return;
+  }
+  elements.forEach((el) => el.classList.add("is-visible"));
+}
+
+function nfSimpleRevealObserveElements(elements) {
+  nfRevealObserveElements(elements);
+}
+
+function nfRunPageEnterAnimation() {
+  const root = nfEl("page-root");
+  if (!root) return;
+
+  root.classList.remove("nf-page-leave", "nf-page-enter", "nf-page-enter--ready");
+
+  if (nfPrefersReducedMotion()) {
+    return;
+  }
+
+  root.classList.add("nf-page-enter");
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      root.classList.add("nf-page-enter--ready");
+    });
+  });
+  window.setTimeout(() => {
+    root.classList.add("nf-page-enter--ready");
+  }, 380);
+}
+
+function nfRunPageLeaveAnimation(root) {
+  if (!root || nfPrefersReducedMotion()) return Promise.resolve();
+  root.classList.remove("nf-page-enter", "nf-page-enter--ready");
+  root.classList.add("nf-page-leave");
+  return new Promise((resolve) => {
+    window.setTimeout(resolve, 140);
+  });
+}
+
+/**
+ * Перед сменой страницы: lightbox/zoom PDP и модалка товара живут вне #page-root (на body).
+ * Если их не закрыть, остаётся fixed-слой с pointer-events: auto — каталог «мертвый» для кликов.
+ */
+function nfCleanupSpaOverlaysBeforeRoute() {
+  nfCloseProductLightbox();
+  nfDisposeImageZoomPan("pdp");
+  nfCloseProductModal();
+  nfUpdateOverlayBody();
+}
+
 const NF_ROUTES = {
   home: "pages/home.html",
   catalog: "pages/catalog.html",
+  category: "pages/category.html",
   partners: "pages/partners.html",
   news: "pages/news.html",
+  newsArticle: "pages/news-detail.html",
   about: "pages/about.html",
   legal: "pages/legal.html",
   contacts: "pages/contacts.html",
@@ -1217,34 +2304,51 @@ const NF_ROUTES = {
 };
 
 async function nfLoadPage(page) {
+  nfRouteTeardownBeforeLoad();
+
   const root = nfEl("page-root");
   if (!root) return;
 
   const safe = NF_ROUTES[page] ? page : "home";
-  const path = NF_ROUTES[safe];
+  const fragmentPath = NF_ROUTES[safe];
+  const path = fragmentPath.startsWith("/") ? fragmentPath : `/${fragmentPath}`;
+  const fetchPromise = fetch(path, { cache: "no-store" });
+  await nfRunPageLeaveAnimation(root);
 
   try {
-    const res = await fetch(path, { cache: "no-store" });
+    const res = await fetchPromise;
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const html = await res.text();
+    nfAbortEnhancedSelectsInRoot(root);
+    nfCleanupSpaOverlaysBeforeRoute();
     root.innerHTML = html;
+    const addedBindings = nfRegisterAutoI18nBindings(root);
+    if (addedBindings > 0 && String(NF_STATE.lang || "ru") !== "ru") {
+      nfRefreshDynamicTranslations(2).catch(() => {});
+    }
   } catch (e) {
+    nfAbortEnhancedSelectsInRoot(root);
+    nfCleanupSpaOverlaysBeforeRoute();
     root.innerHTML = `
       <section class="nf-section">
         <div class="nf-container">
-          <h1 style="margin:0 0 8px;">Страница не загрузилась</h1>
-          <p style="margin:0;color:#6b7280;">
-            Не удалось загрузить <code>${path}</code>.
-            Проверь: файл существует, путь верный, и ты открываешь сайт через локальный сервер (Live Server).
+          <h1 style="margin:0 0 8px;">${nfEscapeHtml(nfT("common.pageLoadFailed", "Страница не загрузилась"))}</h1>
+          <p style="margin:0;color:${NF_PALETTE.muted};">
+            ${nfEscapeHtml(nfFormatTemplate(nfT("common.pageLoadFailedPath", "Не удалось загрузить {path}."), { path }))}
+            ${nfEscapeHtml(nfT("common.pageLoadFailedHint", "Проверь: файл существует, путь верный, и ты открываешь сайт через локальный сервер (Live Server)."))}
           </p>
         </div>
       </section>
     `;
+    const addedBindings = nfRegisterAutoI18nBindings(root);
+    if (addedBindings > 0 && String(NF_STATE.lang || "ru") !== "ru") {
+      nfRefreshDynamicTranslations(2).catch(() => {});
+    }
     console.error("nfLoadPage error:", e);
   }
 
   NF_STATE.currentPage = safe;
-  nfSetActiveNav(safe);
+  nfSetActiveNav(nfNavKeyForPage(safe));
   nfApplyTranslations();
   document.body.classList.toggle("nf-admin-mode", safe === "admin");
 
@@ -1252,18 +2356,175 @@ async function nfLoadPage(page) {
   if (safe === "home") nfInitHomePage();
   if (safe === "catalog") nfInitCatalogPage();
   if (safe === "product") nfInitProductPage();
+  if (safe === "category") nfInitCategoryPage();
   if (safe === "partners") nfInitPartnersPage();
   if (safe === "news") nfInitNewsPage();
+  if (safe === "newsArticle") nfInitNewsArticlePage();
   if (safe === "legal") nfInitLegalPage();
   if (safe === "contacts") nfInitContactsPage();
+  if (safe === "about") nfInitAboutPage();
   if (safe === "admin") nfInitAdminPage();
+
+  nfRunPageEnterAnimation();
+  nfInitViewportReveal(root);
 }
 
-function nfNavigate(page) {
-  const safe = NF_ROUTES[page] ? page : "home";
-  history.pushState({ page: safe }, "", `#${safe}`);
-  nfLoadPage(safe);
-  window.scrollTo({ top: 0, behavior: "smooth" });
+const NF_NAV_INDICATOR = {
+  initialized: false,
+  hasPosition: false,
+  resizeBound: false,
+  resizeRafId: 0,
+  lastX: 0,
+  lastY: 0,
+  lastW: 0,
+  moveTimerId: 0,
+};
+
+function nfInitNavIndicator() {
+  const nav = nfEl("mainNav");
+  if (!nav) return null;
+  let indicator = nav.querySelector(".nf-nav-indicator");
+  if (!indicator) {
+    indicator = document.createElement("span");
+    indicator.className = "nf-nav-indicator";
+    indicator.setAttribute("aria-hidden", "true");
+    nav.appendChild(indicator);
+  }
+  if (!NF_NAV_INDICATOR.resizeBound) {
+    NF_NAV_INDICATOR.resizeBound = true;
+    window.addEventListener(
+      "resize",
+      () => {
+        if (NF_NAV_INDICATOR.resizeRafId) cancelAnimationFrame(NF_NAV_INDICATOR.resizeRafId);
+        NF_NAV_INDICATOR.resizeRafId = requestAnimationFrame(() => {
+          NF_NAV_INDICATOR.resizeRafId = 0;
+          nfRefreshNavIndicator({ animate: false });
+        });
+      },
+      { passive: true }
+    );
+  }
+  NF_NAV_INDICATOR.initialized = true;
+  return { nav, indicator };
+}
+
+function nfNavIndicatorClearFlow() {
+  if (NF_NAV_INDICATOR.moveTimerId) {
+    clearTimeout(NF_NAV_INDICATOR.moveTimerId);
+    NF_NAV_INDICATOR.moveTimerId = 0;
+  }
+}
+
+function nfNavIndicatorApplyGeom(indicator, x, y, w) {
+  indicator.style.width = `${Math.round(w)}px`;
+  indicator.style.transform = `translate3d(${Math.round(x)}px, ${Math.round(y)}px, 0)`;
+}
+
+function nfNavIndicatorReadGeom(indicator, nav) {
+  const navRect = nav.getBoundingClientRect();
+  const r = indicator.getBoundingClientRect();
+  return {
+    x: Math.round(r.left - navRect.left),
+    y: Math.round(r.top - navRect.top),
+    w: Math.round(r.width),
+  };
+}
+
+function nfNavIndicatorGetTargetGeom(navRect, targetRect) {
+  const bottomOffset = 6;
+  const maxByItem = Math.max(20, Math.round(targetRect.width - 10));
+  let w = Math.round(targetRect.width * 0.56);
+  w = Math.max(24, Math.min(64, w));
+  w = Math.min(w, maxByItem);
+  const centerX = targetRect.left - navRect.left + targetRect.width / 2;
+  const x = centerX - w / 2;
+  const y = targetRect.bottom - navRect.top + bottomOffset;
+  return { x, y, w };
+}
+
+function nfUpdateNavIndicator(targetEl, animate = true) {
+  const refs = nfInitNavIndicator();
+  if (!refs) return;
+  const { nav, indicator } = refs;
+  if (!(targetEl instanceof HTMLElement) || !nav.contains(targetEl)) {
+    nfNavIndicatorClearFlow();
+    indicator.classList.remove("is-visible", "is-moving");
+    NF_NAV_INDICATOR.hasPosition = false;
+    return;
+  }
+
+  const navRect = nav.getBoundingClientRect();
+  const targetRect = targetEl.getBoundingClientRect();
+  const next = nfNavIndicatorGetTargetGeom(navRect, targetRect);
+  const oldG =
+    indicator.classList.contains("is-moving") && indicator.classList.contains("is-visible")
+      ? nfNavIndicatorReadGeom(indicator, nav)
+      : {
+          x: NF_NAV_INDICATOR.lastX,
+          y: NF_NAV_INDICATOR.lastY,
+          w: NF_NAV_INDICATOR.lastW,
+        };
+
+  const shouldMove =
+    animate &&
+    NF_NAV_INDICATOR.hasPosition &&
+    !nfPrefersReducedMotion() &&
+    (Math.abs(next.x - oldG.x) > 1 || Math.abs(next.y - oldG.y) > 1 || Math.abs(next.w - oldG.w) > 1);
+
+  nfNavIndicatorClearFlow();
+
+  if (!shouldMove) {
+    indicator.classList.add("is-instant");
+    nfNavIndicatorApplyGeom(indicator, next.x, next.y, next.w);
+    indicator.classList.remove("is-moving");
+    indicator.classList.add("is-visible");
+    NF_NAV_INDICATOR.hasPosition = true;
+    NF_NAV_INDICATOR.lastX = next.x;
+    NF_NAV_INDICATOR.lastY = next.y;
+    NF_NAV_INDICATOR.lastW = next.w;
+    requestAnimationFrame(() => indicator.classList.remove("is-instant"));
+    return;
+  }
+
+  const centerPrev = oldG.x + oldG.w / 2;
+  const centerNext = next.x + next.w / 2;
+  const distance = Math.abs(centerNext - centerPrev);
+  const moveMs = Math.min(420, Math.max(220, Math.round(200 + distance * 0.72)));
+
+  indicator.classList.add("is-instant");
+  nfNavIndicatorApplyGeom(indicator, oldG.x, oldG.y, oldG.w);
+  indicator.classList.add("is-visible", "is-moving");
+  indicator.style.setProperty("--nf-nav-line-duration", `${moveMs}ms`);
+
+  requestAnimationFrame(() => {
+    indicator.classList.remove("is-instant");
+    nfNavIndicatorApplyGeom(indicator, next.x, next.y, next.w);
+  });
+
+  NF_NAV_INDICATOR.moveTimerId = window.setTimeout(() => {
+    indicator.classList.remove("is-moving");
+    NF_NAV_INDICATOR.moveTimerId = 0;
+    NF_NAV_INDICATOR.lastX = next.x;
+    NF_NAV_INDICATOR.lastY = next.y;
+    NF_NAV_INDICATOR.lastW = next.w;
+  }, moveMs);
+
+  NF_NAV_INDICATOR.hasPosition = true;
+}
+
+function initNavIndicator() {
+  return nfInitNavIndicator();
+}
+
+function updateNavIndicator(targetEl, animate = true) {
+  return nfUpdateNavIndicator(targetEl, animate);
+}
+
+function nfRefreshNavIndicator(options = {}) {
+  const opts = { animate: true, ...options };
+  const nav = nfEl("mainNav");
+  const active = nav?.querySelector(".nf-nav-link.nf-nav-link-active") || null;
+  nfUpdateNavIndicator(active, opts.animate);
 }
 
 function nfSetActiveNav(page) {
@@ -1273,16 +2534,470 @@ function nfSetActiveNav(page) {
     el.classList.toggle("nf-footer-link-active", active && el.classList.contains("nf-footer-link"));
     el.setAttribute("aria-current", active ? "page" : "false");
   });
+  requestAnimationFrame(() => nfRefreshNavIndicator({ animate: true }));
 }
 
-window.addEventListener("popstate", (e) => {
-  const page = e.state?.page || location.hash.replace("#", "") || "home";
-  nfLoadPage(page);
+window.addEventListener("popstate", () => {
+  const r = nfResolvePageFromLocation();
+  nfLoadPage(r.page);
+  window.scrollTo({ top: 0, behavior: "auto" });
 });
 
 /* ====== ЯЗЫК / ПЕРЕВОД ====== */
-async function nfCollectBaseTranslations() {
-  const map = {};
+const NF_UI_EXTRA_RU = {
+  "brand.name": "НаноФарм",
+  "nav.home": "Главная",
+  "nav.catalog": "Каталог",
+  "nav.partners": "Партнёры",
+  "nav.news": "Новости",
+  "nav.about": "О компании",
+  "nav.contacts": "Контакты",
+  "nav.admin": "Админ-панель",
+  "header.quickQuote": "Быстрый запрос цены",
+  "search.placeholder": "Поиск по названию, модели, артикулу, партнёру…",
+  "footer.nav": "Навигация",
+  "footer.clients": "Клиентам",
+  "footer.legal": "Правовая информация",
+  "footer.about": "Комплексные решения по поставке медицинского оборудования для клиник, лабораторий и диагностических центров. Проектирование, монтаж, обучение и сервисное сопровождение.",
+  "footer.ctaKicker": "Готовы обсудить проект",
+  "footer.ctaLead": "Свяжитесь с отделом продаж — подберём оборудование под вашу задачу.",
+  "footer.ctaButton": "Связаться",
+  "common.popularBadge": "Популярный",
+  "common.priceOnRequest": "Цена по запросу",
+  "common.commercialOffer": "коммерческое предложение",
+  "common.addToRequest": "В запрос",
+  "common.inRequest": "В запросе",
+  "common.details": "Подробнее",
+  "common.goTo": "Перейти",
+  "common.viewProducts": "Смотреть продукцию",
+  "common.news": "Новости",
+  "common.openNews": "Открыть новость",
+  "common.readMaterial": "Читать материал",
+  "common.noNewsYet": "Новостей пока нет.",
+  "common.remove": "Удалить",
+  "common.qtyShort": "Кол-во",
+  "common.unitsShort": "шт.",
+  "common.categoryUnknown": "Категория не указана",
+  "common.estimatedQuote": "ориентировочно, уточняется в КП",
+  "common.searchNothingFound": "Ничего не найдено",
+  "search.group.products": "Товары",
+  "search.group.categories": "Категории",
+  "search.group.partners": "Партнёры",
+  "home.hero.aria": "Главный экран",
+  "home.hero.brandLineLead": "Поставки, данные и сервис — в одном контуре",
+  "home.hero.brandLineSub": "Для клиник и лабораторий, где критичны стерильность среды, предсказуемость и долгий горизонт партнёрства",
+  "home.hero.brandLead": "Закрываем полный цикл: подбор и поставка оборудования, сопровождение данных и сервисная поддержка. Один ответственный контур вместо разрозненных подрядчиков — спокойный ритм работы без срывов между закупкой, вводом в эксплуатацию и обслуживанием.",
+  "home.hero.brandNote": "Ориентируемся на воспроизводимость процессов и прозрачность поставок — для команд, которым важна надёжность среды и партнёрство на годы, а не разовая сделка.",
+  "common.open": "Открыть",
+  "common.pageLoadFailed": "Страница не загрузилась",
+  "common.pageLoadFailedPath": "Не удалось загрузить {path}.",
+  "common.pageLoadFailedHint": "Проверь: файл существует, путь верный, и ты открываешь сайт через локальный сервер (Live Server).",
+  "count.item.one": "позиция",
+  "count.item.few": "позиции",
+  "count.item.many": "позиций",
+  "count.item.other": "позиций",
+  "catalog.countFound": "Найдено: {total} {items}",
+  "catalog.countShown": "Найдено: {total} {items} · показано {shown}",
+  "catalog.filter.groupLabel": "Группа оборудования",
+  "catalog.filter.brandLabel": "Бренд",
+  "catalog.filter.modelLabel": "Поиск по модели",
+  "catalog.filter.modelPlaceholder": "Введите модель…",
+  "catalog.resetFilters": "Сбросить фильтры",
+  "catalog.view.aria": "Вид каталога",
+  "catalog.view.gridAria": "Сетка",
+  "catalog.view.listAria": "Список",
+  "catalog.loadMore": "Показать ещё",
+  "catalog.paginationAria": "Навигация по страницам каталога",
+  "catalog.allGroups": "Все группы",
+  "catalog.allBrands": "Все бренды",
+  "catalog.filter.category": "Категория: {value}",
+  "catalog.filter.partner": "Партнёр: {value}",
+  "catalog.filter.model": "Модель: {value}",
+  "catalog.filter.search": "Поиск: {value}",
+  "catalog.filter.removeAria": "Убрать фильтр",
+  "catalog.filter.clearSearchAria": "Очистить поиск",
+  "cart.empty.title": "В запросе пока нет позиций",
+  "cart.empty.text": "Добавьте товары из каталога или карточек партнёров, чтобы отправить единый запрос.",
+  "cart.total.positions": "Позиций:",
+  "cart.total.withPrice": "Итого (по позициям с ценой):",
+  "cart.total.note": "Часть оборудования может иметь цену «по запросу» — итоговое КП будет содержать полный расчёт.",
+  "cart.panel.title": "Список запросов",
+  "cart.panel.subtitle": "Все добавленные позиции для единого запроса.",
+  "cart.panel.clear": "Очистить",
+  "cart.panel.requestAll": "Запросить цену на всё",
+  "toast.addedToRequest": "Товар добавлен в запрос",
+  "toast.addedManyToRequest": "Добавлено в запрос: {count} {items}",
+  "toast.undo": "Отменить",
+  "toast.addCancelled": "Добавление отменено",
+  "toast.requestSent": "Запрос отправлен.",
+  "toast.linkCopied": "Ссылка скопирована",
+  "toast.linkCopyFailed": "Не удалось скопировать ссылку",
+  "toast.requestSubmitted": "Заявка отправлена.",
+  "toast.equipmentRequestSent": "Запрос на оборудование отправлен.",
+  "toast.requestListCleared": "Список запросов очищен.",
+  "product.defaultShortDesc": "Профессиональное медицинское оборудование.",
+  "product.page.aria": "Карточка товара",
+  "product.backToCatalog": "В каталог",
+  "product.backToCatalogAria": "Вернуться в каталог",
+  "product.prevPhoto": "Предыдущее фото",
+  "product.nextPhoto": "Следующее фото",
+  "product.photoOnRequest": "Фото по запросу",
+  "product.qtyLabel": "Количество",
+  "product.qtyDecreaseAria": "Уменьшить количество",
+  "product.qtyIncreaseAria": "Увеличить количество",
+  "product.qtyInputAria": "Количество",
+  "product.specsTitle": "Характеристики",
+  "product.installTitle": "Установка",
+  "product.maintenanceTitle": "Обслуживание",
+  "product.article": "Артикул: {value}",
+  "product.partner": "Партнёр: {value}",
+  "product.model": "Модель: {value}",
+  "product.unitPrice": "Цена за единицу: {value}",
+  "product.total": "Итого: {value}",
+  "product.priceIndividual": "Цена рассчитывается индивидуально",
+  "product.requestPriceModel": "Запросить цену по этой модели",
+  "product.requestPriceShort": "Запросить цену",
+  "product.modal.zoomHint": "Наведите для увеличения",
+  "product.docNote": "Документация по оборудованию доступна по запросу — приложим паспорта и инструкции в составе коммерческого предложения.",
+  "product.install.roomConditions": "Помещение и условия",
+  "product.install.engineering": "Инженерные коммуникации",
+  "product.install.stepsTitle": "Этапы установки и ввода",
+  "product.maintenanceFallback": "Регулярное сервисное сопровождение, калибровка и консультации доступны по договору. Формат поддержки согласуется при поставке.",
+  "product.nav.description": "Описание",
+  "product.nav.specs": "Характеристики",
+  "product.nav.kit": "Комплектация",
+  "product.nav.install": "Установка",
+  "product.nav.service": "Сервис",
+  "product.nav.docs": "Документация",
+  "product.section.description": "Описание",
+  "product.section.kit": "Комплектация",
+  "product.section.docs": "Документация",
+  "product.quickSpecsTitle": "Краткие параметры",
+  "product.trust.delivery": "Поставка и сопровождение по договору",
+  "product.trust.support": "Техническая поддержка и обучение персонала",
+  "product.status.inStock": "В наличии",
+  "product.status.onOrder": "Под заказ",
+  "product.quick.category": "Категория",
+  "product.quick.partner": "Партнёр",
+  "product.quick.article": "Артикул",
+  "product.quick.model": "Модель",
+  "product.kitPlaceholder": "Состав комплекта и опции конфигурации согласуются при подготовке коммерческого предложения под вашу задачу.",
+  "product.pdpZoomHint": "Просмотр",
+  "partner.noProducts": "Нет товаров у этого партнёра.",
+  "partners.stat.country": "Страна",
+  "partners.stat.equipment": "Оборудование",
+  "partners.stat.products": "Товаров",
+  "partners.productsTitle": "Товары партнёра",
+  "partners.searchPlaceholder": "Поиск по товарам партнёра…",
+  "partners.countryFallback": "—",
+  "partners.card.cta": "Решения бренда",
+  "partners.heroMeta.one": "{count} бренд в витрине",
+  "partners.heroMeta.few": "{count} бренда в витрине",
+  "partners.heroMeta.many": "{count} брендов в витрине",
+  "partners.heroMeta.other": "{count} брендов в витрине",
+  "partners.years.one": "{count} год",
+  "partners.years.few": "{count} года",
+  "partners.years.many": "{count} лет",
+  "partners.years.other": "{count} years",
+  "partners.descriptionFallback": "Описание партнёра будет добавлено позже.",
+  "news.placeholderWordmark": "НаноФарм",
+  "news.placeholderHint": "Компания",
+  "news.title": "Новости и события",
+  "news.kicker": "Редакция",
+  "news.subtitle": "Ключевые проекты, партнёрства и обновления НаноФарм для клиник, лабораторий и диагностических центров.",
+  "news.all": "Все новости",
+  "news.searchPlaceholder": "Поиск по заголовку, категории или ключевым словам",
+  "news.nothingFound": "Ничего не найдено. Измените фильтры или поисковый запрос.",
+  "news.noResultsByFilters": "Нет новостей по фильтрам",
+  "news.categoryAll": "Все",
+  "news.count.one": "новость",
+  "news.count.few": "новости",
+  "news.count.many": "новостей",
+  "news.count.other": "новостей",
+  "news.coverAlt": "Обложка: {title}",
+  "news.inlineImageAlt": "Иллюстрация к материалу",
+  "news.articleFallback": "Материал",
+  "news.placeholderMediaLabel": "НаноФарм Новости",
+  "news.galleryTitle": "Галерея",
+  "news.relatedTitle": "Ещё материалы",
+  "news.summaryTitle": "Кратко",
+  "news.shareTitle": "Поделиться",
+  "news.copyLink": "Скопировать ссылку",
+  "news.directLinkHint": "Прямая ссылка на этот материал.",
+  "news.tagsTitle": "Теги",
+  "news.sort.recent": "Сначала новые",
+  "news.sort.old": "Сначала старые",
+  "news.sort.all": "За всё время",
+  "search.focusedHint": "Введите запрос",
+  "search.hint.1": "Анестезиология",
+  "search.hint.2": "Радиология",
+  "search.hint.3": "Нейрохирургия",
+  "search.hint.4": "Ортопедия",
+  "search.hint.5": "Урология",
+  "search.hint.6": "Диагностика",
+  "product.defaultStep.1": "Анализ задач и требований заказчика",
+  "product.defaultStep.2": "Подготовка технического решения и КП",
+  "product.defaultStep.3": "Согласование конфигурации и сроков поставки",
+  "product.defaultStep.4": "Поставка и логистика",
+  "product.defaultStep.5": "Инсталляция и подключение к сетям",
+  "product.defaultStep.6": "Калибровка и настройка",
+  "product.defaultStep.7": "Интеграция с ИТ-системами",
+  "product.defaultStep.8": "Обучение персонала",
+  "product.defaultStep.9": "Тестовая эксплуатация",
+  "product.defaultStep.10": "Плановое сервисное сопровождение",
+  "product.defaultRoom.1": "Температура: +18°C до +25°C",
+  "product.defaultRoom.2": "Влажность: 30–75% без конденсата",
+  "product.defaultRoom.3": "Площадь: от 15 м²",
+  "product.defaultRoom.4": "Высота потолков: от 2,5 м",
+  "product.defaultEngineer.1": "Электропитание: 220В / 50Гц",
+  "product.defaultEngineer.2": "Заземление",
+  "product.defaultEngineer.3": "Интернет‑подключение (по необходимости)",
+  "product.defaultEngineer.4": "Вентиляция помещения",
+  "seo.home.title": "НаноФарм — Медицинское оборудование для клиник и лабораторий",
+  "seo.home.description": "Поставка, установка и сервисное обслуживание медицинского оборудования для клиник, лабораторий и диагностических центров.",
+  "seo.catalog.title": "Каталог медицинского оборудования — НаноФарм",
+  "seo.catalog.description": "Каталог медицинского оборудования НаноФарм: аппараты ИВЛ, радиология, функциональная диагностика, нейрохирургия и другие направления.",
+  "seo.category.title": "{name} — каталог НаноФарм",
+  "seo.category.descriptionFallback": "Оборудование: {name}",
+  "seo.productNotFound.title": "Товар не найден — НаноФарм",
+  "seo.productNotFound.description": "Запрошенная позиция отсутствует в каталоге или ссылка устарела.",
+  "seo.product.fallbackTitle": "Товар каталога — НаноФарм",
+  "seo.product.fallbackDescription": "Профессиональное медицинское оборудование из каталога НаноФарм.",
+  "seo.legal.title": "Правовая информация — НаноФарм",
+  "seo.legal.description": "Политика конфиденциальности, пользовательское соглашение и реквизиты компании НаноФарм.",
+  "seo.about.title": "О компании НаноФарм — поставка медицинского оборудования",
+  "seo.about.description": "НаноФарм: комплексная поставка и сервис медицинского оборудования для клиник и диагностических центров Казахстана.",
+  "seo.contacts.title": "Контакты НаноФарм",
+  "seo.contacts.description": "Контактные данные НаноФарм: адрес, телефон, email и форма обратной связи для запросов по поставке медицинского оборудования.",
+  "errors.productPermalinkNotFound": "Товар по этой ссылке не найден. Проверьте адрес или откройте каталог и выберите модель из списка.",
+  "errors.productNotFoundGeneric": "Товар не найден. Вернитесь в каталог и выберите модель ещё раз.",
+  "errors.productRemoved": "Товар не найден в каталоге. Возможно, он был удалён.",
+  "partners.seoTitle": "Партнёры НаноФарм — производители медицинского оборудования",
+  "partners.seoDescription": "Международные и локальные партнёры НаноФарм: производители медицинского оборудования для различных направлений медицины.",
+};
+
+const NF_AUTO_I18N_BINDINGS = [];
+const NF_AUTO_I18N_KEY_BY_TEXT = new Map();
+const NF_I18N_ELEMENT_SOURCE = new WeakMap();
+
+function nfSimpleTextHash(value) {
+  let hash = 2166136261;
+  const input = String(value || "");
+  for (let i = 0; i < input.length; i += 1) {
+    hash ^= input.charCodeAt(i);
+    hash = Math.imul(hash, 16777619);
+  }
+  return Math.abs(hash >>> 0).toString(36);
+}
+
+function nfAutoI18nKeyFromText(text) {
+  const normalized = String(text || "").replace(/\s+/g, " ").trim();
+  if (!normalized) return "";
+  const existed = NF_AUTO_I18N_KEY_BY_TEXT.get(normalized);
+  if (existed) return existed;
+  const key = `auto.${nfSimpleTextHash(normalized)}`;
+  NF_AUTO_I18N_KEY_BY_TEXT.set(normalized, key);
+  return key;
+}
+
+function nfShouldAutoTranslateText(text) {
+  const value = String(text || "").replace(/\s+/g, " ").trim();
+  if (!value) return false;
+  if (value.length <= 1) return false;
+  if (/^[0-9\s.,:/%()\-+]+$/.test(value)) return false;
+  return true;
+}
+
+function nfRegisterAutoI18nBindings(rootNode) {
+  const root = rootNode || document;
+  if (!root || !root.querySelectorAll) return 0;
+  let added = 0;
+  const skipSelector = [
+    ".nf-lang-switcher",
+    ".nf-lang-btn",
+    "#homeCategories",
+    "#homePartnersGrid",
+    "#homeNews",
+    "#catalogProducts",
+    "#newsFeatured",
+    "#newsList",
+    "#partnerModalProducts",
+    "#cartItems",
+    "#cartTotals",
+    "#searchSuggestions",
+    "[data-no-auto-i18n]",
+    "[data-i18n]",
+  ].join(", ");
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+    acceptNode(node) {
+      if (!node || !node.parentElement) return NodeFilter.FILTER_REJECT;
+      const parent = node.parentElement;
+      if (parent.closest(skipSelector)) return NodeFilter.FILTER_REJECT;
+      if (["SCRIPT", "STYLE"].includes(parent.tagName)) return NodeFilter.FILTER_REJECT;
+      const raw = String(node.nodeValue || "");
+      if (!nfShouldAutoTranslateText(raw)) return NodeFilter.FILTER_REJECT;
+      return NodeFilter.FILTER_ACCEPT;
+    },
+  });
+  const textNodes = [];
+  while (walker.nextNode()) textNodes.push(walker.currentNode);
+  textNodes.forEach((node) => {
+    const rawText = String(node.nodeValue || "");
+    const text = rawText.replace(/\s+/g, " ").trim();
+    const key = nfAutoI18nKeyFromText(text);
+    if (!key) return;
+    if (!NF_AUTO_I18N_BINDINGS.find((binding) => binding.node === node && binding.kind === "text")) {
+      const leading = (rawText.match(/^\s*/) || [""])[0];
+      const trailing = (rawText.match(/\s*$/) || [""])[0];
+      NF_AUTO_I18N_BINDINGS.push({ kind: "text", node, key, source: text, leading, trailing });
+      added += 1;
+    }
+  });
+  root.querySelectorAll("[placeholder], [aria-label], [title]").forEach((el) => {
+    if (!(el instanceof HTMLElement)) return;
+    if (el.closest(skipSelector)) return;
+    ["placeholder", "aria-label", "title"].forEach((attr) => {
+      const value = String(el.getAttribute(attr) || "").trim();
+      if (!nfShouldAutoTranslateText(value)) return;
+      const key = nfAutoI18nKeyFromText(value);
+      if (!key) return;
+      if (!NF_AUTO_I18N_BINDINGS.find((binding) => binding.node === el && binding.kind === attr)) {
+        NF_AUTO_I18N_BINDINGS.push({ kind: attr, node: el, key, source: value });
+        added += 1;
+      }
+    });
+  });
+  return added;
+}
+
+function nfApplyAutoTranslations() {
+  const dict = NF_I18N[NF_STATE.lang] || {};
+  const ruDict = NF_I18N.ru || {};
+  NF_AUTO_I18N_BINDINGS.forEach((binding) => {
+    if (!binding || !binding.node || !binding.node.isConnected) return;
+    const value = dict[binding.key] || ruDict[binding.key] || binding.source;
+    if (binding.kind === "text") {
+      binding.node.nodeValue = `${binding.leading || ""}${value}${binding.trailing || ""}`;
+      return;
+    }
+    if (binding.node instanceof HTMLElement) {
+      binding.node.setAttribute(binding.kind, value);
+    }
+  });
+}
+
+function nfFormatTemplate(template, params) {
+  let out = String(template || "");
+  Object.entries(params || {}).forEach(([key, value]) => {
+    out = out.replaceAll(`{${key}}`, String(value ?? ""));
+  });
+  return out;
+}
+
+function nfT(key, fallback = "", params = {}) {
+  const lang = String(NF_STATE.lang || "ru");
+  const dict = NF_I18N[lang] || {};
+  const ruDict = NF_I18N.ru || {};
+  const baseFallback = NF_UI_EXTRA_RU[key] || fallback || key;
+  const value = dict[key] || ruDict[key] || baseFallback;
+  return nfFormatTemplate(value, params);
+}
+
+function nfGetLocalizedField(entity, field, fallback = "") {
+  if (!entity || typeof entity !== "object") return fallback;
+  const value = entity[field];
+  if (value == null) return fallback;
+  if (typeof value === "string") {
+    const normalized = value.trim();
+    return normalized || fallback;
+  }
+  return value;
+}
+
+function nfPluralForm(count, forms) {
+  const n = Math.abs(Number(count) || 0);
+  const lang = String(NF_STATE.lang || "ru");
+  if (lang === "en") return n === 1 ? forms.one : forms.other;
+  if (lang === "kz" || lang === "kk") return forms.other;
+  const n10 = n % 10;
+  const n100 = n % 100;
+  if (n10 === 1 && n100 !== 11) return forms.one;
+  if (n10 >= 2 && n10 <= 4 && (n100 < 12 || n100 > 14)) return forms.few;
+  return forms.many;
+}
+
+function nfItemsCountLabel(count) {
+  const forms = {
+    one: nfT("count.item.one", "позиция"),
+    few: nfT("count.item.few", "позиции"),
+    many: nfT("count.item.many", "позиций"),
+    other: nfT("count.item.other", "items"),
+  };
+  return `${count} ${nfPluralForm(count, forms)}`;
+}
+
+function nfPartnerShowcaseMetaText(count) {
+  const n = Math.max(0, Number(count) || 0);
+  return nfPluralForm(n, {
+    one: nfT("partners.heroMeta.one", "{count} бренд в витрине").replace("{count}", String(n)),
+    few: nfT("partners.heroMeta.few", "{count} бренда в витрине").replace("{count}", String(n)),
+    many: nfT("partners.heroMeta.many", "{count} брендов в витрине").replace("{count}", String(n)),
+    other: nfT("partners.heroMeta.other", "{count} brands in showcase").replace("{count}", String(n)),
+  });
+}
+
+function nfPartnerYearsLabel(yearsCount) {
+  const years = Math.max(0, Number(yearsCount) || 0);
+  if (!years) return "";
+  return nfPluralForm(years, {
+    one: nfT("partners.years.one", "{count} год").replace("{count}", String(years)),
+    few: nfT("partners.years.few", "{count} года").replace("{count}", String(years)),
+    many: nfT("partners.years.many", "{count} лет").replace("{count}", String(years)),
+    other: nfT("partners.years.other", "{count} years").replace("{count}", String(years)),
+  });
+}
+
+const NF_STATIC_UI_LOCALE_CACHE = {};
+
+async function nfLoadStaticUiLocale(lang) {
+  const locale = String(lang || "ru").trim() || "ru";
+  if (NF_STATIC_UI_LOCALE_CACHE[locale]) return NF_STATIC_UI_LOCALE_CACHE[locale];
+  try {
+    const res = await fetch(`/i18n/ui.${encodeURIComponent(locale)}.json`, { cache: "no-store" });
+    if (!res.ok) return {};
+    const json = await res.json();
+    const data = json && typeof json === "object" ? json : {};
+    NF_STATIC_UI_LOCALE_CACHE[locale] = data;
+    return data;
+  } catch (_e) {
+    return {};
+  }
+}
+
+function nfIsLikelyRuSourceText(value) {
+  const text = String(value || "").replace(/\s+/g, " ").trim();
+  if (!text) return false;
+  if (!/[А-Яа-яЁё]/.test(text)) return false;
+  if (/[ӘәҒғҚқҢңӨөҰұҮүҺһІі]/.test(text)) return false;
+  return true;
+}
+
+async function nfCollectBaseTranslations(options = {}) {
+  const includeDom = options.includeDom === true;
+  const map = { ...NF_UI_EXTRA_RU };
+  const staticRu = await nfLoadStaticUiLocale("ru");
+  Object.entries(staticRu || {}).forEach(([key, value]) => {
+    if (!key || map[key]) return;
+    const text = String(value || "").trim();
+    if (!text) return;
+    map[key] = text;
+  });
+  NF_AUTO_I18N_BINDINGS.forEach((binding) => {
+    if (!binding || !binding.key || !binding.source) return;
+    if (!nfIsLikelyRuSourceText(binding.source)) return;
+    if (!map[binding.key]) map[binding.key] = binding.source;
+  });
+  if (!includeDom) return map;
   document.querySelectorAll("[data-i18n]").forEach((el) => {
     const key = el.dataset.i18n;
     if (!key || map[key]) return;
@@ -1290,508 +3005,386 @@ async function nfCollectBaseTranslations() {
     const raw = attr ? el.getAttribute(attr) : el.textContent;
     const text = (raw || "").trim();
     if (!text) return;
+    if (!nfIsLikelyRuSourceText(text)) return;
     map[key] = text;
   });
   return map;
 }
 
 async function nfLoadTranslationsForLang(lang) {
-  if (lang === "ru") return; // русская версия — базовый текст в разметке
+  const l = String(lang || "ru");
   try {
-    const ep = NF_CONFIG.I18N_ENDPOINT;
-    const baseMap = await nfCollectBaseTranslations();
-    // Сохраняем исходные русские тексты один раз, чтобы можно было вернуться с EN/KZ обратно на RU
-    if (!NF_I18N.ru || Object.keys(NF_I18N.ru).length === 0) {
-      NF_I18N.ru = baseMap;
+    const base = nfApiBase();
+    const endpoint = `${base}${NF_CONFIG.I18N_ENDPOINT}`;
+    const isSourceRu = l === "ru";
+    const staticData = await nfLoadStaticUiLocale(l);
+    if (staticData && typeof staticData === "object") {
+      NF_I18N[l] = { ...(NF_I18N[l] || {}), ...staticData };
     }
-    const res = await fetch(ep, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        lang,
-        base: baseMap,
-        existing: NF_I18N[lang] || {},
-      }),
-    });
+    const reqInit = isSourceRu
+      ? { cache: "no-store" }
+      : {
+          method: "POST",
+          cache: "no-store",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            lang: l,
+            base: await nfCollectBaseTranslations({ includeDom: true }),
+            existing: NF_I18N[l] || {},
+          }),
+        };
+    const url = isSourceRu ? `${endpoint}?lang=${encodeURIComponent(l)}` : endpoint;
+    const ctrl = isSourceRu ? null : new AbortController();
+    const timeoutId = ctrl ? window.setTimeout(() => ctrl.abort(), 9000) : null;
+    let res;
+    try {
+      res = await fetch(url, ctrl ? { ...reqInit, signal: ctrl.signal } : reqInit);
+    } finally {
+      if (timeoutId != null) {
+        window.clearTimeout(timeoutId);
+      }
+    }
     if (!res.ok) return;
     const data = await res.json();
     if (!data || typeof data !== "object") return;
-    NF_I18N[lang] = { ...(NF_I18N[lang] || {}), ...data };
+    if (isSourceRu) {
+      const staticRu = await nfLoadStaticUiLocale("ru");
+      NF_I18N.ru = { ...NF_UI_EXTRA_RU, ...(staticRu || {}), ...data };
+      return;
+    }
+    NF_I18N[l] = { ...(NF_I18N[l] || {}), ...data, ...(staticData || {}) };
   } catch (_e) {}
+}
+
+let NF_DYNAMIC_TRANSLATION_REFRESH_TASK = null;
+let NF_DYNAMIC_TRANSLATION_REFRESH_LANG = "";
+let NF_LOCALE_DIAGNOSTIC_TIMER = null;
+
+function nfRefreshDynamicTranslations(retries = 2) {
+  const lang = String(NF_STATE.lang || "ru");
+  if (lang === "ru") return Promise.resolve();
+  if (NF_DYNAMIC_TRANSLATION_REFRESH_TASK && NF_DYNAMIC_TRANSLATION_REFRESH_LANG === lang) {
+    return NF_DYNAMIC_TRANSLATION_REFRESH_TASK;
+  }
+  NF_DYNAMIC_TRANSLATION_REFRESH_LANG = lang;
+  NF_DYNAMIC_TRANSLATION_REFRESH_TASK = (async () => {
+    const attempts = Math.max(1, Number(retries) || 1);
+    for (let idx = 0; idx < attempts; idx += 1) {
+      await nfLoadTranslationsForLang(lang);
+      nfApplyTranslations();
+      if (idx < attempts - 1) {
+        await new Promise((resolve) => setTimeout(resolve, 900));
+      }
+    }
+  })().finally(() => {
+    NF_DYNAMIC_TRANSLATION_REFRESH_TASK = null;
+    NF_DYNAMIC_TRANSLATION_REFRESH_LANG = "";
+  });
+  return NF_DYNAMIC_TRANSLATION_REFRESH_TASK;
 }
 
 function nfApplyTranslations() {
   const dict = NF_I18N[NF_STATE.lang] || {};
+  const ruDict = NF_I18N.ru || {};
   document.querySelectorAll("[data-i18n]").forEach((el) => {
     const key = el.dataset.i18n;
     if (!key) return;
-    let value = dict[key];
-    if (!value) return;
+    let source = NF_I18N_ELEMENT_SOURCE.get(el);
+    if (!source) {
+      source = {};
+      NF_I18N_ELEMENT_SOURCE.set(el, source);
+    }
 
     if (key === "footer.copyrightPrefix") {
       const year = new Date().getFullYear();
-      value = value.replace("{year}", String(year));
+      const raw = String(dict[key] ?? ruDict[key] ?? source.text ?? NF_UI_EXTRA_RU[key] ?? "");
+      if (!raw) return;
+      const value = raw.replace("{year}", String(year));
+      const attr = el.dataset.i18nAttr;
+      if (attr) {
+        el.setAttribute(attr, value);
+      } else {
+        el.textContent = value;
+      }
+      return;
     }
 
     const attr = el.dataset.i18nAttr;
-    if (attr) el.setAttribute(attr, value);
-    else el.textContent = value;
+    if (attr) {
+      if (source[attr] == null) {
+        const src = String(el.getAttribute(attr) || "").trim();
+        if (src) source[attr] = src;
+      }
+      const rawValue = dict[key] ?? ruDict[key] ?? source[attr] ?? NF_UI_EXTRA_RU[key];
+      if (rawValue == null) return;
+      const value = String(rawValue);
+      el.setAttribute(attr, value);
+      return;
+    }
+    if (source.text == null) {
+      const src = String(el.textContent || "").trim();
+      if (src) source.text = src;
+    }
+    const rawValue = dict[key] ?? ruDict[key] ?? source.text ?? NF_UI_EXTRA_RU[key];
+    if (rawValue == null) return;
+    const value = String(rawValue);
+    const tagName = String(el.tagName || "").toUpperCase();
+    const hasNestedElements = el.childElementCount > 0;
+    const isStructural = NF_I18N_STRUCTURAL_TAGS.has(tagName);
+    if (hasNestedElements || isStructural) {
+      if (el.hasAttribute("aria-label")) {
+        el.setAttribute("aria-label", value);
+      } else if (el.hasAttribute("title")) {
+        el.setAttribute("title", value);
+      }
+      return;
+    }
+    el.textContent = value;
   });
+  nfApplyAutoTranslations();
+  nfSyncGlobalSearchHint();
+  nfScheduleLocaleDiagnostics();
+  requestAnimationFrame(() => nfRefreshNavIndicator({ animate: false }));
+}
+
+let NF_I18N_FADE_STYLE_READY = false;
+function nfEnsureI18nFadeStyles() {
+  if (NF_I18N_FADE_STYLE_READY) return;
+  const style = document.createElement("style");
+  style.id = "nf-i18n-fade-style";
+  style.textContent = `
+    .nf-i18n-fade-target {
+      transition: opacity 180ms ease, transform 220ms ease;
+      will-change: opacity, transform;
+    }
+    .nf-i18n-fade-target.nf-i18n-fade-out {
+      opacity: 0.62;
+      transform: translateY(2px);
+    }
+    .nf-i18n-fade-target.nf-i18n-fade-in {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  `;
+  document.head.appendChild(style);
+  NF_I18N_FADE_STYLE_READY = true;
+}
+
+function nfCollectI18nFadeTargets() {
+  const selectors = [
+    "[data-i18n]",
+    ".nf-partner-action__label",
+    "#partnersHeroMeta",
+    "#partnerModalMeta",
+    "#partnerModalDesc",
+    "#partnerModalCountry",
+    "#partnerModalEquip",
+  ];
+  const unique = new Set();
+  selectors.forEach((selector) => {
+    document.querySelectorAll(selector).forEach((el) => {
+      if (el instanceof HTMLElement) unique.add(el);
+    });
+  });
+  return Array.from(unique);
+}
+
+function nfAnimateLocaleTextSwap() {
+  nfEnsureI18nFadeStyles();
+  const targets = nfCollectI18nFadeTargets();
+  if (!targets.length) return;
+  targets.forEach((el) => {
+    el.classList.add("nf-i18n-fade-target", "nf-i18n-fade-out");
+    el.classList.remove("nf-i18n-fade-in");
+  });
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      targets.forEach((el) => {
+        el.classList.remove("nf-i18n-fade-out");
+        el.classList.add("nf-i18n-fade-in");
+      });
+    });
+  });
+}
+
+function nfBuildGlobalSearchHintConfig() {
+  return {
+    items: [
+      nfT("search.hint.1", "Анестезиология"),
+      nfT("search.hint.2", "Радиология"),
+      nfT("search.hint.3", "Нейрохирургия"),
+      nfT("search.hint.4", "Ортопедия"),
+      nfT("search.hint.5", "Урология"),
+      nfT("search.hint.6", "Диагностика"),
+    ],
+    focusedHint: nfT("search.focusedHint", "Введите запрос"),
+  };
+}
+
+function nfSyncGlobalSearchHint() {
+  const input = nfEl("globalSearchInput");
+  if (!input) return;
+  const cfg = nfBuildGlobalSearchHintConfig();
+  const cleanup = nfCreateAnimatedSearchHint(input, cfg);
+  if (typeof cleanup === "function") {
+    input.__nfGlobalSearchHintCleanup = cleanup;
+  }
+}
+
+function nfScheduleLocaleDiagnostics() {
+  const lang = String(NF_STATE.lang || "ru");
+  if (lang === "ru") return;
+  if (NF_LOCALE_DIAGNOSTIC_TIMER != null) {
+    clearTimeout(NF_LOCALE_DIAGNOSTIC_TIMER);
+  }
+  NF_LOCALE_DIAGNOSTIC_TIMER = window.setTimeout(() => {
+    NF_LOCALE_DIAGNOSTIC_TIMER = null;
+    const root = document.querySelector("#page-root") || document.body;
+    if (!root) return;
+    const unresolved = [];
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+      acceptNode(node) {
+        if (!node || !node.parentElement) return NodeFilter.FILTER_REJECT;
+        const parent = node.parentElement;
+        if (["SCRIPT", "STYLE"].includes(parent.tagName)) return NodeFilter.FILTER_REJECT;
+        const text = String(node.nodeValue || "").replace(/\s+/g, " ").trim();
+        if (!text) return NodeFilter.FILTER_REJECT;
+        if (!/[А-Яа-яЁё]/.test(text)) return NodeFilter.FILTER_REJECT;
+        return NodeFilter.FILTER_ACCEPT;
+      },
+    });
+    while (walker.nextNode() && unresolved.length < 12) {
+      unresolved.push(String(walker.currentNode.nodeValue || "").replace(/\s+/g, " ").trim());
+    }
+    if (unresolved.length > 0) {
+      console.warn("[nf][i18n] unresolved localized fragments", {
+        lang,
+        count: unresolved.length,
+        sample: unresolved,
+      });
+    }
+  }, 320);
 }
 
 function nfSetLang(lang) {
-  NF_STATE.lang = lang;
+  const requestedLang = NF_SUPPORTED_LANGS.has(String(lang || "").trim()) ? String(lang).trim() : "ru";
+  NF_STATE.lang = requestedLang;
+  const langChangeSeq = ++NF_LANG_CHANGE_SEQ;
+  try {
+    localStorage.setItem("nf_lang", requestedLang);
+  } catch (_e) {}
+  document.documentElement.setAttribute("lang", requestedLang === "en" ? "en" : requestedLang === "kz" ? "kz" : "ru");
   document.querySelectorAll(".nf-lang-btn").forEach((btn) => {
-    const active = btn.dataset.lang === lang;
+    const active = btn.dataset.lang === requestedLang;
+    btn.textContent = String(btn.dataset.lang || "").toUpperCase();
     btn.classList.toggle("nf-lang-btn-active", active);
     btn.setAttribute("aria-checked", active ? "true" : "false");
   });
-  nfLoadTranslationsForLang(lang).finally(() => {
+  // Instant UI switch: apply what we already have first.
+  nfAnimateLocaleTextSwap();
+  nfApplyTranslations();
+  nfOnCatalogLoaded();
+
+  // Remote translations/catalog are refreshed in background.
+  nfLoadTranslationsForLang(requestedLang).then(() => {
+    if (langChangeSeq !== NF_LANG_CHANGE_SEQ) return;
+    if (NF_STATE.lang !== requestedLang) return;
     nfApplyTranslations();
-    nfLoadCatalogFromApi();
+    nfOnCatalogLoaded();
+  }).catch(() => {});
+  nfLoadCatalogFromApi({ lang: requestedLang });
+}
+
+let NF_LANG_SWITCH_DELEGATED = false;
+function nfInitLangSwitcherBinding() {
+  if (NF_LANG_SWITCH_DELEGATED) return;
+  NF_LANG_SWITCH_DELEGATED = true;
+  document.addEventListener("click", (event) => {
+    const target = event.target instanceof Element ? event.target : null;
+    const langBtn = target ? target.closest(".nf-lang-btn") : null;
+    if (!langBtn) return;
+    event.preventDefault();
+    nfSetLang(langBtn.dataset.lang);
   });
 }
+nfInitLangSwitcherBinding();
 
-/* ====== ГЛАВНАЯ ====== */
-function nfPopularGetMode() {
-  // Legacy split (mobile native scroll vs desktop marquee) is removed.
-  // We now use one infinite marquee implementation for all breakpoints
-  // with pointer-based drag (mouse) and swipe (touch).
-  return "marquee";
+function nfCheckStructuralLocaleTargets() {
+  const checks = [
+    { key: "catalog", selector: ".nf-page-catalog", minChildren: 1 },
+    { key: "partners", selector: ".nf-partners-page", minChildren: 1 },
+    { key: "about", selector: ".nf-about-page", minChildren: 1 },
+  ];
+  const failures = [];
+  checks.forEach((check) => {
+    const node = document.querySelector(check.selector);
+    if (!node) return;
+    if (node.childElementCount < check.minChildren) {
+      failures.push(`${check.key}:empty-structure`);
+    }
+  });
+  const particlesRoot = document.querySelector("#nf-premium-hero-root .nf-hero-brand-particles");
+  if (particlesRoot) {
+    const particlesCount = particlesRoot.querySelectorAll(".nf-hero-brand-particle").length;
+    if (particlesCount > 12) {
+      failures.push(`home:particle-overflow(${particlesCount})`);
+    }
+  }
+  return failures;
 }
 
-function nfDestroyPopularMarquee() {
-  const state = NF_POPULAR_MARQUEE;
-
-  if (state.rafId) {
-    cancelAnimationFrame(state.rafId);
-    state.rafId = null;
-  }
-
-  if (state.resumeTimer) {
-    clearTimeout(state.resumeTimer);
-    state.resumeTimer = null;
-  }
-
-  if (Array.isArray(state.cleanup)) {
-    state.cleanup.forEach((fn) => {
-      try {
-        fn();
-      } catch (_) {}
+async function nfRunLocaleSmokeTest(options = {}) {
+  const sequence = Array.isArray(options.sequence) && options.sequence.length
+    ? options.sequence
+    : ["ru", "kz", "en", "ru"];
+  const waitMs = Math.max(150, Number(options.waitMs) || 950);
+  const report = [];
+  for (const lang of sequence) {
+    nfSetLang(lang);
+    await new Promise((resolve) => setTimeout(resolve, waitMs));
+    const failures = nfCheckStructuralLocaleTargets();
+    report.push({
+      lang,
+      page: NF_STATE.currentPage,
+      failures,
+      ok: failures.length === 0,
     });
   }
-
-  state.cleanup = [];
-  state.offset = 0;
-  state.paused = false;
-  state.isDragging = false;
-  state.dragStartX = 0;
-  state.dragStartY = 0;
-  state.dragStartOffset = 0;
-  state.dragLock = null;
-  state.dragMoved = false;
-  state.lastTs = 0;
-
-  const track = nfEl("popularTrack");
-  if (track) {
-    track.style.transform = "";
-    track.style.willChange = "";
+  const hasErrors = report.some((entry) => !entry.ok);
+  if (hasErrors) {
+    console.warn("[nf][locale-smoke] issues detected", report);
+  } else {
+    console.info("[nf][locale-smoke] passed", report);
   }
+  return report;
 }
 
-function nfRenderPopularCarousel() {
-  console.log("[popular] render called");
-
-  const track = nfEl("popularTrack");
-  if (!track) {
-    console.log("[popular] no track");
-    return;
-  }
-
-  const viewport =
-    track.closest(".nf-popular__viewport") ||
-    document.querySelector(".nf-popular__viewport");
-
-  if (!viewport) {
-    console.log("[popular] no viewport");
-    return;
-  }
-
-  const popularSource = (NF_DATA.products || []).filter((p) => p.popular);
-  const popular = popularSource.length
-    ? popularSource
-    : (NF_DATA.products || []).slice(0, 8);
-
-  nfDestroyPopularMarquee();
-
-  track.innerHTML = "";
-  if (!popular.length) return;
-
-  const itemsToRender = [...popular, ...popular];
-
-  itemsToRender.forEach((p, index) => {
-    const isClone = index >= popular.length;
-    track.appendChild(nfPopularCard(p, isClone));
-  });
-
-  track.onclick = (e) => {
-    if (NF_POPULAR_MARQUEE.dragMoved) {
-      e.preventDefault();
-      e.stopPropagation();
-      return;
-    }
-
-    const addBtn = e.target.closest(".nf-popular-add");
-    const moreBtn = e.target.closest(".nf-popular-more");
-    const card = e.target.closest(".nf-product-card--popular");
-    if (!card) return;
-
-    const productId = card.dataset.productId;
-    const product = (NF_DATA.products || []).find(
-      (x) => String(x.id) === String(productId)
-    );
-    if (!product) return;
-
-    if (addBtn) {
-      e.preventDefault();
-      e.stopPropagation();
-      nfAddToCart(productId, 1);
-      return;
-    }
-
-    if (moreBtn) return;
-
-    nfNavigateToCatalogProduct(productId);
-  };
-
-  track.onkeydown = (e) => {
-    const card = e.target.closest(".nf-product-card--popular");
-    if (!card) return;
-    if (e.key !== "Enter" && e.key !== " ") return;
-    e.preventDefault();
-    nfNavigateToCatalogProduct(card.dataset.productId);
-  };
-
-  const prev = document.getElementById("popularPrev");
-  const next = document.getElementById("popularNext");
-  nfBindPopularViewportControls(viewport, prev, next, false);
-
-  requestAnimationFrame(() => {
-    setTimeout(() => {
-      nfStartPopularMarquee();
-    }, 0);
-  });
+if (typeof window !== "undefined") {
+  window.nfRunLocaleSmokeTest = nfRunLocaleSmokeTest;
 }
 
-function nfBindPopularViewportControls(viewport, prev, next, isMobile = false) {
-  if (!viewport) return;
-
-  const state = NF_POPULAR_MARQUEE;
-
-  const updateButtons = () => {
-    if (!prev || !next) return;
-
-    if (!isMobile) {
-      prev.disabled = true;
-      next.disabled = true;
-      return;
-    }
-
-    const maxScroll = Math.max(0, viewport.scrollWidth - viewport.clientWidth);
-    const left = Math.round(viewport.scrollLeft);
-
-    prev.disabled = left <= 2;
-    next.disabled = left >= maxScroll - 2;
-  };
-
-  const getStep = () => {
-    const firstCard = viewport.querySelector(".nf-product-card--popular");
-    if (!firstCard) return Math.round(viewport.clientWidth * 0.9);
-
-    const cardRect = firstCard.getBoundingClientRect();
-    const track = viewport.querySelector(".nf-popular__track");
-    const styles = track ? window.getComputedStyle(track) : null;
-    const gap = styles
-      ? parseFloat(styles.columnGap || styles.gap || "0") || 0
-      : 0;
-
-    return Math.round(cardRect.width + gap);
-  };
-
-  if (prev) {
-    prev.onclick = () => {
-      if (!isMobile) return;
-      viewport.scrollBy({
-        left: -getStep(),
-        behavior: "smooth",
-      });
-    };
-  }
-
-  if (next) {
-    next.onclick = () => {
-      if (!isMobile) return;
-      viewport.scrollBy({
-        left: getStep(),
-        behavior: "smooth",
-      });
-    };
-  }
-
-  const onScroll = () => updateButtons();
-  const onResize = () => updateButtons();
-
-  viewport.addEventListener("scroll", onScroll, { passive: true });
-  window.addEventListener("resize", onResize);
-
-  state.cleanup.push(() => viewport.removeEventListener("scroll", onScroll));
-  state.cleanup.push(() => window.removeEventListener("resize", onResize));
-
-  requestAnimationFrame(updateButtons);
-}
-
-function nfStartPopularMarquee() {
-  console.log("[popular] marquee start called");
-
-  const track = nfEl("popularTrack");
-  if (!track) {
-    console.log("[popular] marquee: no track");
-    return;
-  }
-
-  const viewport =
-    track.closest(".nf-popular__viewport") ||
-    document.querySelector(".nf-popular__viewport");
-  if (!viewport) {
-    console.log("[popular] marquee: no viewport");
-    return;
-  }
-
-  const state = NF_POPULAR_MARQUEE;
-  const prefersReducedMotion = window.matchMedia(
-    "(prefers-reduced-motion: reduce)"
-  ).matches;
-
-  // Для блока "Популярное оборудование" не отключаем marquee полностью,
-  // даже если в системе включено reduced motion.
-  if (prefersReducedMotion) {
-    console.log("[popular] reduced motion enabled, marquee still allowed");
-  }
-
-  if (state.rafId) {
-    cancelAnimationFrame(state.rafId);
-    state.rafId = null;
-  }
-
-  track.style.willChange = "transform";
-
-  state.offset = 0;
-  state.paused = false;
-  state.isDragging = false;
-  state.dragMoved = false;
-  state.dragLock = null;
-  state.lastTs = 0;
-
-  const getLoopWidth = () => {
-    const cards = track.querySelectorAll(".nf-product-card--popular");
-    if (!cards.length) return 0;
-    return track.scrollWidth / 2;
-  };
-
-  const debugLoop = () => {
-    const w = getLoopWidth();
-    console.log("[popular] loopWidth =", w, "scrollWidth =", track.scrollWidth);
-    return w;
-  };
-
-  const normalizeOffset = () => {
-    const loopWidth = getLoopWidth();
-    if (!loopWidth) return;
-    while (state.offset < 0) state.offset += loopWidth;
-    while (state.offset >= loopWidth) state.offset -= loopWidth;
-  };
-
-  const applyTransform = () => {
-    track.style.transform = `translate3d(${-state.offset}px, 0, 0)`;
-  };
-
-  const tick = (ts) => {
-    if (!document.body.contains(track)) {
-      nfDestroyPopularMarquee();
-      return;
-    }
-
-    if (!state.lastTs) state.lastTs = ts;
-    const dt = ts - state.lastTs;
-    state.lastTs = ts;
-
-    if (!state.paused && !state.isDragging && state.isInView) {
-      const loopWidth = debugLoop();
-      if (loopWidth > 0) {
-        state.offset += (state.speed * dt) / 1000;
-        normalizeOffset();
-        applyTransform();
-      }
-    }
-
-    state.rafId = requestAnimationFrame(tick);
-  };
-
-  const pause = () => {
-    state.paused = true;
-  };
-
-  const resume = () => {
-    if (!state.isDragging) {
-      state.paused = false;
-    }
-  };
-
-  const scheduleResume = (delay = 300) => {
-    if (state.resumeTimer) {
-      clearTimeout(state.resumeTimer);
-    }
-
-    state.resumeTimer = setTimeout(() => {
-      state.resumeTimer = null;
-      if (!state.isDragging) {
-        state.paused = false;
-      }
-    }, delay);
-  };
-
-  const onPointerDown = (e) => {
-    state.isDragging = true;
-    state.paused = true;
-    state.dragMoved = false;
-    state.dragLock = null;
-    state.dragStartX = e.clientX;
-    state.dragStartY = e.clientY;
-    state.dragStartOffset = state.offset;
-
-    viewport.classList.add("nf-carousel-dragging");
-
-    if (viewport.setPointerCapture) {
-      try {
-        viewport.setPointerCapture(e.pointerId);
-      } catch (_) {}
-    }
-  };
-
-  const onPointerMove = (e) => {
-    if (!state.isDragging) return;
-
-    const dx = e.clientX - state.dragStartX;
-    const dy = e.clientY - state.dragStartY;
-
-    if (Math.abs(dx) > 6 || Math.abs(dy) > 6) {
-      state.dragMoved = true;
-    }
-
-    if (state.dragLock == null) {
-      const ax = Math.abs(dx);
-      const ay = Math.abs(dy);
-      if (ax < 6 && ay < 6) return;
-      state.dragLock = ax >= ay ? "x" : "y";
-    }
-
-    if (state.dragLock === "y") return;
-
-    if (e.pointerType !== "mouse") {
-      e.preventDefault();
-    }
-
-    state.offset = state.dragStartOffset - dx;
-    normalizeOffset();
-    applyTransform();
-  };
-
-  const onPointerUp = () => {
-    state.isDragging = false;
-    state.dragLock = null;
-    viewport.classList.remove("nf-carousel-dragging");
-    scheduleResume(320);
-
-    setTimeout(() => {
-      state.dragMoved = false;
-    }, 0);
-  };
-
-  if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
-    viewport.addEventListener("mouseenter", pause);
-    viewport.addEventListener("mouseleave", resume);
-
-    state.cleanup.push(() =>
-      viewport.removeEventListener("mouseenter", pause)
-    );
-    state.cleanup.push(() =>
-      viewport.removeEventListener("mouseleave", resume)
-    );
-  }
-
-  const onWheel = (e) => {
-    const hasHorizontal = Math.abs(e.deltaX) > Math.abs(e.deltaY);
-    const intent = hasHorizontal || e.shiftKey;
-    if (!intent) return;
-
-    e.preventDefault();
-    state.paused = true;
-
-    const loopWidth = getLoopWidth();
-    if (!loopWidth) return;
-
-    state.offset += (e.deltaX || e.deltaY || 0) * 0.8;
-    normalizeOffset();
-    applyTransform();
-    scheduleResume(600);
-  };
-
-  const onResize = () => {
-    normalizeOffset();
-    applyTransform();
-  };
-
-  viewport.addEventListener("pointerdown", onPointerDown);
-  viewport.addEventListener("pointermove", onPointerMove, { passive: false });
-  viewport.addEventListener("pointerup", onPointerUp);
-  viewport.addEventListener("pointercancel", onPointerUp);
-  viewport.addEventListener("lostpointercapture", onPointerUp);
-  viewport.addEventListener("wheel", onWheel, { passive: false });
-  window.addEventListener("resize", onResize);
-
-  state.cleanup.push(() =>
-    viewport.removeEventListener("pointerdown", onPointerDown)
-  );
-  state.cleanup.push(() =>
-    viewport.removeEventListener("pointermove", onPointerMove)
-  );
-  state.cleanup.push(() =>
-    viewport.removeEventListener("pointerup", onPointerUp)
-  );
-  state.cleanup.push(() =>
-    viewport.removeEventListener("pointercancel", onPointerUp)
-  );
-  state.cleanup.push(() =>
-    viewport.removeEventListener("lostpointercapture", onPointerUp)
-  );
-  state.cleanup.push(() => viewport.removeEventListener("wheel", onWheel));
-  state.cleanup.push(() => window.removeEventListener("resize", onResize));
-
-  applyTransform();
-  state.rafId = requestAnimationFrame(tick);
-}
+/* ====== ГЛАВНАЯ — «Популярное»: карусель ====== */
 
 function nfPopularCard(p, isClone = false) {
-  const card = nfCreateEl("article", "nf-product-card nf-product-card--popular");
+  const card = nfCreateEl(
+    "article",
+    "nf-product-card nf-product-card--popular nf-popular-showcase nf-popular-card product-card card fade-up"
+  );
   card.dataset.productId = p.id;
-  if (isClone) card.dataset.clone = "1";
-  card.setAttribute("role", "button");
-  card.setAttribute("tabindex", "0");
-  card.setAttribute("aria-label", `${p.name}. Открыть в каталоге`);
+  if (isClone) {
+    card.dataset.clone = "1";
+    card.setAttribute("aria-hidden", "true");
+    card.setAttribute("tabindex", "-1");
+    card.removeAttribute("role");
+  } else {
+    card.setAttribute("role", "button");
+    card.setAttribute("tabindex", "0");
+    card.setAttribute("aria-label", `${p.name}. ${nfT("common.goTo", "Перейти")} в каталог`);
+  }
 
-  const thumb = nfCreateEl("div", "nf-product-thumb nf-product-thumb--popular");
+  const thumb = nfCreateEl("div", "nf-product-thumb nf-product-thumb--popular nf-popular-showcase__stage product-image");
   thumb.classList.add("nf-product-thumb-loading");
-  const thumbInner = nfCreateEl("div", "nf-product-thumb-inner");
+  const thumbInner = nfCreateEl("div", "nf-product-thumb-inner nf-popular-showcase__thumb-inner");
   const img = document.createElement("img");
   img.alt = p.name;
 
@@ -1823,28 +3416,34 @@ function nfPopularCard(p, isClone = false) {
   thumbInner.appendChild(img);
   thumb.appendChild(thumbInner);
 
-  const body = nfCreateEl("div", "nf-product-body nf-product-body--popular");
+  const mediaWrap = nfCreateEl("div", "nf-popular-showcase__media");
+  mediaWrap.appendChild(thumb);
 
-  const titleBlock = nfCreateEl("div", "nf-popular-title-block");
+  const body = nfCreateEl("div", "nf-product-body nf-product-body--popular nf-popular-showcase__body");
+
+  const titleBlock = nfCreateEl("div", "nf-popular-title-block nf-popular-showcase__title-block");
 
   if (p.popular) {
     const badgeWrap = nfCreateEl("div", "nf-popular-badge-wrap");
-    const badge = nfCreateEl("span", "nf-popular-badge", "Популярный");
+    const badge = nfCreateEl("span", "nf-popular-badge nf-popular-badge--showcase", nfT("common.popularBadge", "Популярный"));
     badgeWrap.appendChild(badge);
     titleBlock.appendChild(badgeWrap);
   }
 
-  titleBlock.appendChild(nfCreateEl("div", "nf-product-title nf-product-title--popular", p.name));
+  const titleEl = document.createElement("h3");
+  titleEl.className = "nf-product-title nf-product-title--popular";
+  titleEl.textContent = p.name;
+  titleBlock.appendChild(titleEl);
 
-  const metaTop = nfCreateEl("div", "nf-product-meta-row nf-product-meta-row--topline");
+  const metaTop = nfCreateEl("div", "nf-product-meta-row nf-product-meta-row--topline nf-popular-showcase__meta");
   const partnerName = nfGetPartnerName(p.partnerId);
   if (partnerName) {
-    metaTop.appendChild(nfCreateEl("div", "nf-product-meta nf-product-meta--brand", partnerName));
+    metaTop.appendChild(nfCreateElText("div", "nf-product-meta nf-product-meta--brand", partnerName));
   }
   const cat = NF_DATA.categories.find((c) => c.id === p.categoryId);
   if (cat) {
     metaTop.appendChild(
-      nfCreateEl("div", "nf-product-meta nf-product-meta--muted nf-product-meta--category", cat.name)
+      nfCreateElText("div", "nf-product-meta nf-product-meta--muted nf-product-meta--category", cat.name)
     );
   }
   if (metaTop.childNodes.length) {
@@ -1853,141 +3452,559 @@ function nfPopularCard(p, isClone = false) {
 
   body.appendChild(titleBlock);
 
-  const footer = nfCreateEl("div", "nf-product-footer nf-product-footer--popular");
-
-  const priceBlock = nfCreateEl(
+  const footer = nfCreateEl(
     "div",
-    "nf-popular-price-block",
+    "nf-product-footer nf-product-footer--popular nf-popular-showcase__footer"
+  );
+
+  const commerce = nfCreateEl("div", "nf-popular-showcase__commerce");
+  const priceRow = nfCreateEl("div", "nf-popular-showcase__price-row");
+  const hasNumericPrice = p.price != null && Number(p.price) > 0;
+  if (hasNumericPrice) {
+    priceRow.appendChild(
+      nfCreateElText("div", "nf-price nf-price--popular nf-popular-showcase__price-num", nfFormatPrice(p.price))
+    );
+    priceRow.appendChild(
+      nfCreateEl("span", "nf-popular-showcase__price-context", nfT("common.estimatedQuote", "ориентировочно, уточняется в КП"))
+    );
+  } else {
+    priceRow.appendChild(
+      nfCreateEl("div", "nf-popular-showcase__b2b-label", nfT("common.priceOnRequest", "Цена по запросу"))
+    );
+    priceRow.appendChild(
+      nfCreateEl("span", "nf-popular-showcase__b2b-hint", nfT("common.commercialOffer", "коммерческое предложение"))
+    );
+  }
+  commerce.appendChild(priceRow);
+  footer.appendChild(commerce);
+
+  const actions = nfCreateEl(
+    "div",
+    "nf-product-actions nf-popular-actions nf-popular-actions--showcase"
+  );
+
+  const addBtn = nfCreateEl(
+    "button",
+    "nf-btn nf-btn-primary nf-popular-add nf-popular-showcase__cta nf-btn-checkable",
     ""
   );
-  const priceEl = nfCreateEl("div", p.price ? "nf-price nf-price--popular" : "nf-price-muted nf-price--popular", nfFormatPrice(p.price));
-  priceBlock.appendChild(priceEl);
-  footer.appendChild(priceBlock);
+  addBtn.type = "button";
+  nfInitAddToRequestControl(addBtn, p.id, nfT("common.addToRequest", "В запрос"), {});
+  addBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    nfAddToCart(p.id, 1, { sourceButton: addBtn });
+  });
 
-  const actions = nfCreateEl("div", "nf-product-actions nf-popular-actions");
-  const moreBtn = nfCreateEl("button", "nf-btn nf-btn-ghost nf-btn-sm nf-popular-more", "Подробнее");
+  const moreBtn = nfCreateEl(
+    "button",
+    "nf-btn nf-btn-ghost nf-btn-sm nf-popular-more nf-popular-showcase__detail btn-secondary",
+    nfT("common.details", "Подробнее")
+  );
   moreBtn.type = "button";
   moreBtn.addEventListener("click", (e) => {
     e.stopPropagation();
     nfNavigateToCatalogProduct(p.id);
   });
-  const addBtn = nfCreateEl(
-    "button",
-    "nf-btn nf-btn-primary nf-btn-sm nf-popular-add nf-btn-checkable",
-    `<span class="nf-btn-icon" aria-hidden="true">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M5 5h2l1.2 8.4A1.5 1.5 0 0 0 9.7 15h7.1a1.5 1.5 0 0 0 1.47-1.19L19.8 9H8.3" stroke="#0b1f1c" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-        <circle cx="10" cy="18" r="1.3" fill="#0b1f1c" />
-        <circle cx="17" cy="18" r="1.3" fill="#0b1f1c" />
-      </svg>
-    </span><span class="nf-btn-label">В запрос</span>`
-  );
-  addBtn.type = "button";
-  addBtn.addEventListener("click", (e) => {
-    e.stopPropagation();
-    nfAddToCart(p.id, 1);
-    nfAnimateAddToCartButton(addBtn);
-  });
-  actions.appendChild(moreBtn);
+
   actions.appendChild(addBtn);
+  actions.appendChild(moreBtn);
   footer.appendChild(actions);
 
-  card.append(thumb, body, footer);
+  card.append(mediaWrap, body, footer);
   return card;
 }
 
-function nfInitPopularCarouselResponsiveWatcher() {
-  const state = NF_POPULAR_MARQUEE;
+function nfRenderPopularCarousel() {
+  const track = nfEl("popularTrack");
+  if (!track) return;
 
-  if (state.initialized) return;
-  state.initialized = true;
+  const viewport =
+    track.closest(".nf-popular__viewport") ||
+    document.querySelector(".nf-popular__viewport");
 
-  const onResize = () => {
-    clearTimeout(state.resizeTimer);
-    state.resizeTimer = setTimeout(() => {
-      if (NF_STATE.currentPage !== "home") return;
+  if (!viewport) return;
 
-      const nextMode = nfPopularGetMode();
-      if (nextMode !== state.currentMode) {
-        nfRenderPopularCarousel();
-      }
-    }, 120);
-  };
-
-  window.addEventListener("resize", onResize);
-}
-
-function nfInitPopularVisibilityObserver() {
-  const state = NF_POPULAR_MARQUEE;
-
-  if (typeof window === "undefined" || !("IntersectionObserver" in window)) {
-    return;
+  if (typeof window._nfPopularCleanup === "function") {
+    try {
+      window._nfPopularCleanup();
+    } catch (_e) {}
+    window._nfPopularCleanup = null;
   }
 
-  if (state.observer) return;
+  const popularSource = (NF_DATA.products || []).filter((p) => p.popular);
+  const popular = popularSource.length ? popularSource : (NF_DATA.products || []).slice(0, 8);
 
-  const section = document.querySelector(".nf-popular");
-  if (!section) return;
+  track.innerHTML = "";
+  track.classList.remove("nf-popular__track--scroll");
+  track.classList.add("nf-popular__track--marquee");
+  track.style.transform = "translate3d(0,0,0)";
+  track.dataset.nfPopularDrive = "raf";
+  /* Не вешаем viewport--scroll: там overflow-x:auto и pan-x — ломают JS-карусель */
 
-  state.sectionEl = section;
-  state.isInView = true;
+  if (!popular.length) return;
 
-  const observer = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
-        if (entry.target !== section) return;
+  popular.forEach((p, idx) => {
+    const card = nfPopularCard(p, false);
+    card.dataset.popularVariant = String(idx % 3);
+    track.appendChild(card);
+  });
+  popular.forEach((p, idx) => {
+    const card = nfPopularCard(p, true);
+    card.dataset.popularVariant = String(idx % 3);
+    track.appendChild(card);
+  });
 
-        const visible =
-          entry.isIntersecting && entry.intersectionRatio > 0.1;
+  const prevBtn = nfEl("popularPrev");
+  const nextBtn = nfEl("popularNext");
+  const carouselWrap = viewport.closest(".nf-popular__carousel-wrap");
 
-        state.isInView = visible;
+  let cycleWidth = 0;
+  let raf = null;
+  let lastTs = 0;
+  let x = 0;
+  let paused = false;
+  let viewportHoverPaused = false;
+  let tween = null;
+  let resumeAfterInteractionTs = 0;
 
-        if (!visible) {
-          state.paused = true;
-        } else if (!state.isDragging) {
-          // Секция снова в зоне видимости — продолжаем плавное движение
-          state.paused = false;
+  /* Autoplay: быстрее, без суеты */
+  const speedPxPerSec = nfPrefersReducedMotion() ? 14 : 30;
+
+  const normalize = (value) => {
+    if (cycleWidth <= 0) return 0;
+    let next = value % cycleWidth;
+    if (next < 0) next += cycleWidth;
+    return next;
+  };
+
+  const computeCycleWidth = () => {
+    const cards = track.querySelectorAll(".nf-popular-card");
+    if (cards.length < popular.length + 1) {
+      cycleWidth = 0;
+      return;
+    }
+    const first = cards[0];
+    const firstClone = cards[popular.length];
+    cycleWidth = Math.max(1, Math.round(firstClone.offsetLeft - first.offsetLeft));
+    x = normalize(x);
+  };
+
+  const getStep = () => {
+    const card = track.querySelector(".nf-popular-card");
+    if (!card) return Math.max(180, Math.round(viewport.clientWidth * 0.46));
+    const cs = getComputedStyle(track);
+    const gap = parseFloat(cs.gap || cs.columnGap || "0") || 0;
+    return Math.max(1, Math.round(card.getBoundingClientRect().width + gap));
+  };
+
+  const render = () => {
+    track.style.transform = `translate3d(${-x}px, 0, 0)`;
+    track.style.webkitTransform = `translate3d(${-x}px, 0, 0)`;
+  };
+
+  const easeInOutSine = (t) => 0.5 * (1 - Math.cos(Math.PI * t));
+
+  const startTween = (delta) => {
+    if (!cycleWidth) return;
+    const from = x;
+    const to = normalize(x + delta);
+    tween = { from, to, start: performance.now(), duration: 300 };
+  };
+
+  const tick = (ts) => {
+    if (!lastTs) lastTs = ts;
+    const dt = Math.min(48, ts - lastTs);
+    lastTs = ts;
+
+    if (tween) {
+      const p = Math.min(1, (ts - tween.start) / tween.duration);
+      const e = easeInOutSine(p);
+      let diff = tween.to - tween.from;
+      if (Math.abs(diff) > cycleWidth / 2) {
+        diff += diff > 0 ? -cycleWidth : cycleWidth;
+      }
+      x = normalize(tween.from + diff * e);
+      if (p >= 1) tween = null;
+    } else if (!paused && !viewportHoverPaused && cycleWidth > 0) {
+      if (resumeAfterInteractionTs && ts < resumeAfterInteractionTs) {
+        render();
+        raf = requestAnimationFrame(tick);
+        return;
+      }
+      resumeAfterInteractionTs = 0;
+      x = normalize(x + (speedPxPerSec * dt) / 1000);
+    }
+
+    render();
+    raf = requestAnimationFrame(tick);
+  };
+
+  const onPrevClick = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    paused = false;
+    tween = null;
+    computeCycleWidth();
+    resumeAfterInteractionTs = performance.now() + 720;
+    startTween(-getStep());
+  };
+
+  const onNextClick = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    paused = false;
+    tween = null;
+    computeCycleWidth();
+    resumeAfterInteractionTs = performance.now() + 720;
+    startTween(getStep());
+  };
+
+  const onWrapPointerEnter = () => {
+    viewportHoverPaused = true;
+  };
+
+  const onWrapPointerLeave = () => {
+    viewportHoverPaused = false;
+  };
+
+  const onFocusIn = (e) => {
+    const card = e.target.closest(".nf-popular-card");
+    if (card && viewport.contains(card)) paused = true;
+  };
+
+  const onFocusOut = () => {
+    paused = false;
+  };
+
+  if (prevBtn) {
+    prevBtn.disabled = false;
+    prevBtn.setAttribute("aria-disabled", "false");
+    prevBtn.addEventListener("click", onPrevClick);
+  }
+  if (nextBtn) {
+    nextBtn.disabled = false;
+    nextBtn.setAttribute("aria-disabled", "false");
+    nextBtn.addEventListener("click", onNextClick);
+  }
+  if (carouselWrap) {
+    carouselWrap.addEventListener("pointerenter", onWrapPointerEnter);
+    carouselWrap.addEventListener("pointerleave", onWrapPointerLeave);
+  }
+  viewport.addEventListener("focusin", onFocusIn);
+  viewport.addEventListener("focusout", onFocusOut);
+
+  let navResizeObserver = null;
+  if (typeof ResizeObserver !== "undefined") {
+    navResizeObserver = new ResizeObserver(() => {
+      computeCycleWidth();
+      render();
+    });
+    navResizeObserver.observe(viewport);
+    navResizeObserver.observe(track);
+  }
+
+  const kickoff = () => {
+    computeCycleWidth();
+    render();
+    if (raf == null) raf = requestAnimationFrame(tick);
+  };
+  kickoff();
+  requestAnimationFrame(() => {
+    computeCycleWidth();
+    render();
+  });
+
+  window._nfPopularCleanup = () => {
+    if (raf != null) cancelAnimationFrame(raf);
+    raf = null;
+    track.style.webkitTransform = "";
+    delete track.dataset.nfPopularDrive;
+    if (prevBtn) prevBtn.removeEventListener("click", onPrevClick);
+    if (nextBtn) nextBtn.removeEventListener("click", onNextClick);
+    if (carouselWrap) {
+      carouselWrap.removeEventListener("pointerenter", onWrapPointerEnter);
+      carouselWrap.removeEventListener("pointerleave", onWrapPointerLeave);
+    }
+    viewport.removeEventListener("focusin", onFocusIn);
+    viewport.removeEventListener("focusout", onFocusOut);
+    if (navResizeObserver) {
+      try {
+        navResizeObserver.disconnect();
+      } catch (_e) {}
+      navResizeObserver = null;
+    }
+  };
+
+  const ensureResizeHook = () => {
+    if (typeof window._nfPopularResizeCleanup === "function") return;
+    let t;
+    const onResize = () => {
+      clearTimeout(t);
+      t = setTimeout(() => {
+        if (NF_STATE.currentPage === "home") nfRenderPopularCarousel();
+      }, 280);
+    };
+    window.addEventListener("resize", onResize, { passive: true });
+    window._nfPopularResizeCleanup = () => {
+      clearTimeout(t);
+      window.removeEventListener("resize", onResize);
+    };
+  };
+  ensureResizeHook();
+}
+
+function nfTearDownCategoryEcosystem(gridEl) {
+  const wrap = gridEl && gridEl.closest("[data-nf-categories-wrap]");
+  if (wrap && typeof wrap.__nfEcoCleanup === "function") {
+    wrap.__nfEcoCleanup();
+    wrap.__nfEcoCleanup = null;
+  }
+}
+
+function nfSetupCategoryEcosystem(gridEl) {
+  const wrap = gridEl.closest("[data-nf-categories-wrap]");
+  const svg = wrap && wrap.querySelector("[data-nf-categories-flow]");
+  if (!wrap || !svg) return;
+
+  const NS = "http://www.w3.org/2000/svg";
+
+  const clearHot = () => {
+    svg.querySelectorAll(".nf-categories__cat-hot.is-hot").forEach((el) => el.classList.remove("is-hot"));
+  };
+
+  const onCardEnter = (ev) => {
+    const i = Number(ev.currentTarget.dataset.nfCatIndex);
+    if (Number.isNaN(i)) return;
+    clearHot();
+    svg.querySelectorAll(`.nf-categories__branch[data-branch="${i}"]`).forEach((el) => el.classList.add("is-hot"));
+    svg.querySelectorAll(`.nf-categories__trunk-seg[data-trunk-for="${i}"]`).forEach((el) => el.classList.add("is-hot"));
+  };
+
+  const onCardLeave = () => {
+    clearHot();
+  };
+
+  let raf = 0;
+  const redraw = () => {
+    const cards = [...gridEl.querySelectorAll(".nf-category-card")];
+    const w = Math.round(wrap.clientWidth);
+    const h = Math.round(wrap.clientHeight);
+    clearHot();
+    if (!cards.length || w < 48 || h < 48) {
+      svg.innerHTML = "";
+      return;
+    }
+    const eco = wrap.getBoundingClientRect();
+    const n = cards.length;
+    const padX2 = Math.max(10, w * 0.022);
+
+    const trunkPoint = (u) => {
+      const t = Math.max(0, Math.min(1, u));
+      const x = padX2 + t * (w - 2 * padX2);
+      const yMid = h * (n <= 2 ? 0.4 : 0.43);
+      const amp = Math.min(h * 0.13, 44);
+      const y = yMid + amp * Math.sin(t * (Math.PI * 2.12) + 0.62);
+      return { x, y };
+    };
+
+    const polylineD = (u0, u1, steps) => {
+      const seg = [];
+      for (let s = 0; s <= steps; s += 1) {
+        const u = u0 + (u1 - u0) * (s / steps);
+        const p = trunkPoint(u);
+        seg.push(`${p.x.toFixed(1)},${p.y.toFixed(1)}`);
+      }
+      return `M ${seg[0].replace(",", " ")} L ${seg
+        .slice(1)
+        .map((pair) => {
+          const [xx, yy] = pair.split(",");
+          return `${xx} ${yy}`;
+        })
+        .join(" ")}`;
+    };
+
+    const trunkFullD = polylineD(0, 1, 72);
+
+    const attachOnCard = (tp, cr) => {
+      const r = {
+        left: cr.left - eco.left,
+        right: cr.right - eco.left,
+        top: cr.top - eco.top,
+        bottom: cr.bottom - eco.top,
+      };
+      const mids = [
+        { x: (r.left + r.right) / 2, y: r.top },
+        { x: (r.left + r.right) / 2, y: r.bottom },
+        { x: r.left, y: (r.top + r.bottom) / 2 },
+        { x: r.right, y: (r.top + r.bottom) / 2 },
+      ];
+      let best = mids[0];
+      let bd = Infinity;
+      mids.forEach((c) => {
+        const d = Math.hypot(tp.x - c.x, tp.y - c.y);
+        if (d < bd) {
+          bd = d;
+          best = c;
         }
       });
-    },
-    {
-      root: null,
-      threshold: [0, 0.1, 0.25],
-    }
-  );
+      return best;
+    };
 
-  observer.observe(section);
-  state.observer = observer;
+    const frag = document.createDocumentFragment();
+
+    const defs = document.createElementNS(NS, "defs");
+    const filter = document.createElementNS(NS, "filter");
+    filter.setAttribute("id", "nfCategoriesTrunkGlow");
+    filter.setAttribute("x", "-35%");
+    filter.setAttribute("y", "-35%");
+    filter.setAttribute("width", "170%");
+    filter.setAttribute("height", "170%");
+    const blur = document.createElementNS(NS, "feGaussianBlur");
+    blur.setAttribute("in", "SourceGraphic");
+    blur.setAttribute("stdDeviation", "5");
+    blur.setAttribute("result", "blur");
+    const merge = document.createElementNS(NS, "feMerge");
+    const mn1 = document.createElementNS(NS, "feMergeNode");
+    mn1.setAttribute("in", "blur");
+    const mn2 = document.createElementNS(NS, "feMergeNode");
+    mn2.setAttribute("in", "SourceGraphic");
+    merge.appendChild(mn1);
+    merge.appendChild(mn2);
+    filter.appendChild(blur);
+    filter.appendChild(merge);
+    defs.appendChild(filter);
+    frag.appendChild(defs);
+
+    const glow = document.createElementNS(NS, "path");
+    glow.setAttribute("d", trunkFullD);
+    glow.setAttribute("class", "nf-categories__trunk-glow");
+    glow.setAttribute("fill", "none");
+    frag.appendChild(glow);
+
+    const trunkMain = document.createElementNS(NS, "path");
+    trunkMain.setAttribute("d", trunkFullD);
+    trunkMain.setAttribute("class", "nf-categories__trunk-main");
+    trunkMain.setAttribute("fill", "none");
+    frag.appendChild(trunkMain);
+
+    for (let i = 0; i < n; i += 1) {
+      const u0 = i / n;
+      const u1 = (i + 1) / n;
+      const piece = document.createElementNS(NS, "path");
+      piece.setAttribute("d", polylineD(u0, u1, 18));
+      piece.setAttribute("class", "nf-categories__trunk-seg nf-categories__cat-hot");
+      piece.setAttribute("data-trunk-for", String(i));
+      piece.setAttribute("fill", "none");
+      frag.appendChild(piece);
+    }
+
+    for (let i = 0; i < n; i += 1) {
+      const u = (i + 0.5) / n;
+      const tp = trunkPoint(u);
+      const cr = cards[i].getBoundingClientRect();
+      const ap = attachOnCard(tp, cr);
+      const mx = (tp.x + ap.x) / 2;
+      const my = (tp.y + ap.y) / 2;
+      const dx = ap.x - tp.x;
+      const dy = ap.y - tp.y;
+      const len = Math.hypot(dx, dy) || 1;
+      const bend = Math.min(22, len * 0.14) * (i % 2 === 0 ? 1 : -1);
+      const qx = mx + (-dy / len) * bend;
+      const qy = my + (dx / len) * bend;
+      const br = document.createElementNS(NS, "path");
+      br.setAttribute("d", `M ${tp.x.toFixed(1)} ${tp.y.toFixed(1)} Q ${qx.toFixed(1)} ${qy.toFixed(1)} ${ap.x.toFixed(1)} ${ap.y.toFixed(1)}`);
+      br.setAttribute("class", "nf-categories__branch nf-categories__cat-hot");
+      br.setAttribute("data-branch", String(i));
+      br.setAttribute("fill", "none");
+      frag.appendChild(br);
+    }
+
+    svg.innerHTML = "";
+    svg.setAttribute("viewBox", `0 0 ${w} ${h}`);
+    svg.setAttribute("width", String(w));
+    svg.setAttribute("height", String(h));
+    svg.setAttribute("preserveAspectRatio", "none");
+    svg.appendChild(frag);
+  };
+
+  const scheduleRedraw = () => {
+    cancelAnimationFrame(raf);
+    raf = requestAnimationFrame(redraw);
+  };
+
+  if (nfPrefersReducedMotion()) {
+    svg.innerHTML = "";
+    svg.classList.add("nf-categories__flow--reduced");
+    wrap.__nfEcoCleanup = () => {
+      cancelAnimationFrame(raf);
+    };
+    return;
+  }
+  svg.classList.remove("nf-categories__flow--reduced");
+
+  const ro = new ResizeObserver(() => scheduleRedraw());
+  ro.observe(wrap);
+  ro.observe(gridEl);
+
+  const cards = () => [...gridEl.querySelectorAll(".nf-category-card")];
+  cards().forEach((el) => {
+    el.addEventListener("mouseenter", onCardEnter);
+    el.addEventListener("mouseleave", onCardLeave);
+  });
+
+  scheduleRedraw();
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(() => scheduleRedraw()).catch(() => {});
+  }
+  setTimeout(scheduleRedraw, 160);
+  setTimeout(scheduleRedraw, 480);
+
+  wrap.__nfEcoCleanup = () => {
+    cancelAnimationFrame(raf);
+    ro.disconnect();
+    cards().forEach((el) => {
+      el.removeEventListener("mouseenter", onCardEnter);
+      el.removeEventListener("mouseleave", onCardLeave);
+    });
+    clearHot();
+    svg.innerHTML = "";
+  };
 }
 
 function nfRenderHomeCategories() {
   const container = nfEl("homeCategories");
   if (!container) return;
+  nfTearDownCategoryEcosystem(container);
   container.innerHTML = "";
 
-  NF_DATA.categories.forEach((c, idx) => {
-    const card = nfCreateEl("article", "nf-category-card");
-    card.style.background =
-      idx % 2 === 0
-        ? "linear-gradient(135deg,#ffffff,#f5f7fa)"
-        : "linear-gradient(135deg,#f9fafb,#edf2f7)";
-
+  NF_DATA.categories.forEach((c, i) => {
+    const card = nfCreateEl(
+      "article",
+      "nf-category-card nf-category-card--eco nf-vp-reveal card fade-up"
+    );
+    card.dataset.nfCatIndex = String(i);
+    card.style.setProperty("--nf-vp-stagger", `${Math.min(i, 14) * 40}ms`);
     card.innerHTML = `
-      <div class="nf-category-title">${c.name}</div>
-      <div class="nf-category-desc">${c.description}</div>
+      <span class="nf-category-card__rail" aria-hidden="true"></span>
+      <div class="nf-category-card__body">
+        <h3 class="nf-category-title">${nfEscapeHtml(c.name)}</h3>
+        <p class="nf-category-desc">${nfEscapeHtml(c.description)}</p>
+      </div>
       <div class="nf-category-footer">
-        <span>${c.count} позиций</span>
-        <span>Перейти →</span>
+        <span class="nf-category-count">${nfEscapeHtml(nfItemsCountLabel(c.count || 0))}</span>
+        <span class="nf-category-cta">${nfEscapeHtml(nfT("common.goTo", "Перейти"))}</span>
       </div>
     `;
 
     card.addEventListener("click", () => {
-      NF_STATE.filters.categoryIds = new Set([c.id]);
-      nfNavigate("catalog");
+      NF_STATE.categoryDetailId = c.id;
+      nfGoPath(`/categories/${nfCategoryPermalinkSlug(c)}`);
     });
 
     container.appendChild(card);
   });
+
+  nfSetupCategoryEcosystem(container);
 }
 
 function nfRenderHomePartners() {
@@ -1995,22 +4012,33 @@ function nfRenderHomePartners() {
   if (!grid) return;
   grid.innerHTML = "";
 
-  NF_DATA.partners.forEach((p) => {
-    const btn = nfCreateEl("button", "nf-partner nf-partner-btn");
+  NF_DATA.partners.forEach((p, i) => {
+    const btn = nfCreateEl("button", "nf-partner nf-partner-btn nf-home-partner-tile nf-vp-reveal fade-up");
+    btn.style.setProperty("--nf-vp-stagger", `${Math.min(i, 18) * 28}ms`);
     btn.type = "button";
     btn.dataset.partnerId = p.id;
 
+    const brand = nfEscapeHtml(nfPartnerShortName(p));
     btn.innerHTML = `
-      <span class="nf-partner-logo-wrap" aria-hidden="true">
-        <img class="nf-partner-logo-img" alt="" loading="lazy" />
+      <img class="nf-partner-logo-img" alt="${brand}" loading="lazy" />
+      <div class="nf-partner-meta">
+        <span class="nf-partner-name">${brand}</span>
+        <span class="nf-partner-country">${nfEscapeHtml(p.country || nfT("partners.countryFallback", "—"))}</span>
+      </div>
+      <span class="nf-partner-action" aria-hidden="true">
+        <span class="nf-partner-action__label">${nfEscapeHtml(nfT("common.viewProducts", "Смотреть продукцию"))}</span>
+        <span class="nf-partner-action__arrow">→</span>
       </span>
-      <span class="nf-partner-name">${nfPartnerShortName(p)}</span>
     `;
 
     const img = btn.querySelector(".nf-partner-logo-img");
     if (img) nfSetPartnerLogo(img, p.id);
 
-    btn.addEventListener("click", () => nfOpenPartnerModal(p.id));
+    btn.addEventListener("click", () => {
+      const slug = nfPartnerSlug(p);
+      if (!slug) return;
+      nfGoPath(nfPartnerOpenUrlBySlug(slug));
+    });
     grid.appendChild(btn);
   });
 }
@@ -2022,66 +4050,228 @@ function nfRenderHomeNews() {
 
   const [main, ...rest] = NF_DATA.news;
   if (!main) {
-    container.innerHTML = `<div class="nf-empty">Новостей пока нет.</div>`;
+    container.innerHTML = `<div class="nf-empty">${nfEscapeHtml(nfT("common.noNewsYet", "Новостей пока нет."))}</div>`;
     return;
   }
 
-  const mainEl = nfCreateEl("article", "nf-news-main");
+  const featuredWrap = nfCreateEl("section", "news-featured");
+  const mainEl = nfCreateEl("article", "news-featured-card fade-up");
+  mainEl.style.setProperty("--nf-vp-stagger", "0ms");
   mainEl.innerHTML = `
-    <div class="nf-news-main-image">
-      ${
-        main.image
-          ? `<img src="${main.image}" alt="" class="nf-news-main-image-img" loading="lazy" />`
-          : `<div class="nf-news-main-image-placeholder">НаноФарм · Новости</div>`
-      }
+    ${
+      main.image
+        ? `<div class="news-featured-media"><img src="${nfEscapeHtml(main.image)}" alt="" loading="lazy" /></div>`
+        : `<div class="news-featured-media news-featured-media--placeholder" aria-hidden="true">
+      <div class="nf-home-news-thumb nf-home-news-thumb--featured">
+        <span class="nf-home-news-thumb__mesh" aria-hidden="true"></span>
+        <span class="nf-home-news-thumb__glow" aria-hidden="true"></span>
+        <div class="nf-home-news-thumb__content">
+          <span class="nf-home-news-thumb__eyebrow">${nfEscapeHtml(nfT("common.news", "Новости"))}</span>
+          <span class="nf-home-news-thumb__wordmark">НаноФарм</span>
+          <span class="nf-home-news-thumb__hint">${nfEscapeHtml(nfT("news.placeholderHint", "Компания"))}</span>
+        </div>
+      </div>
+    </div>`
+    }
+    <div class="news-featured-body">
+      <span class="news-featured-chip">${nfEscapeHtml(nfNewsCategory(main))}</span>
+      <h3 class="news-featured-title">${nfEscapeHtml(nfNewsTitle(main))}</h3>
+      <div class="news-featured-meta">${nfEscapeHtml(nfFormatDate(main.date))}${main.author ? ` · ${nfEscapeHtml(main.author)}` : ""}</div>
+      <p class="news-featured-text">${nfEscapeHtml(nfNewsExcerpt(main))}</p>
+      <div class="news-featured-open"><span class="news-featured-open__label">${nfEscapeHtml(nfT("common.openNews", "Открыть новость"))}</span><span class="news-featured-open__arrow" aria-hidden="true">→</span></div>
     </div>
-    <div class="nf-chip nf-chip-primary">${main.category}</div>
-    <div class="nf-news-main-title">${main.title}</div>
-    <div class="nf-news-main-meta">${nfFormatDate(main.date)} · ${main.author}</div>
-    <div class="nf-news-main-text">${main.excerpt}</div>
   `;
   mainEl.addEventListener("click", () => {
-    NF_STATE.selectedNewsId = main.id;
-    nfNavigate("news");
+    NF_STATE.newsArticleId = main.id;
+    nfGoPath(`/news/${nfNewsPermalinkSlug(main)}`);
   });
+  featuredWrap.appendChild(mainEl);
 
-  const side = nfCreateEl("div", "nf-news-side-grid");
-  rest.forEach((n) => {
-    const card = nfCreateEl("article", "nf-news-card");
+  const side = nfCreateEl("div", "news-list-grid");
+  rest.forEach((n, i) => {
+    const card = nfCreateEl("article", "nf-news-card nf-vp-reveal fade-up");
+    card.style.setProperty("--nf-vp-stagger", `${(i + 1) * 50}ms`);
     card.innerHTML = `
       ${
         n.image
-          ? `<div class="nf-news-card__image"><img src="${n.image}" alt="" loading="lazy" class="nf-news-card__image-img" /></div>`
-          : ""
+          ? `<div class="news-feed-card-media"><img src="${nfEscapeHtml(n.image)}" alt="" loading="lazy" class="nf-news-card__image-img" /></div>`
+          : `<div class="news-feed-card-media news-feed-card-media--placeholder" aria-hidden="true">
+      <div class="nf-home-news-thumb nf-home-news-thumb--side">
+        <span class="nf-home-news-thumb__mesh" aria-hidden="true"></span>
+        <span class="nf-home-news-thumb__glow" aria-hidden="true"></span>
+        <div class="nf-home-news-thumb__content">
+          <span class="nf-home-news-thumb__eyebrow">${nfEscapeHtml(nfT("common.news", "News"))}</span>
+          <span class="nf-home-news-thumb__wordmark">${nfEscapeHtml(nfT("news.placeholderWordmark", "НФ"))}</span>
+        </div>
+      </div>
+    </div>`
       }
-      <div class="nf-news-card-title">${n.title}</div>
-      <div class="nf-news-card-meta">${nfFormatDate(n.date)} · ${n.category}</div>
+      <div class="news-feed-card-body">
+        <span class="nf-news-card-chip">${nfEscapeHtml(nfNewsCategory(n))}</span>
+        <h3 class="nf-news-card-title">${nfEscapeHtml(nfNewsTitle(n))}</h3>
+        <div class="nf-news-card-meta">${nfEscapeHtml(nfFormatDate(n.date))} · ${nfEscapeHtml(nfNewsCategory(n))}</div>
+        <p class="nf-news-card-text">${nfEscapeHtml(nfNewsExcerpt(n))}</p>
+      </div>
     `;
     card.addEventListener("click", () => {
-      NF_STATE.selectedNewsId = n.id;
-      nfNavigate("news");
+      NF_STATE.newsArticleId = n.id;
+      nfGoPath(`/news/${nfNewsPermalinkSlug(n)}`);
     });
     side.appendChild(card);
   });
 
-  container.append(mainEl, side);
+  container.append(featuredWrap, side);
 }
 
 /* ====== КАТАЛОГ ====== */
-function nfApplyFilters() {
-  let list = [...NF_DATA.products];
+function nfCatalogCurrentFilterSnapshot() {
+  const f = NF_STATE.filters;
+  return {
+    search: String(f.search || "").trim(),
+    categoryIds: new Set(f.categoryIds || []),
+    partnerIds: new Set(f.partnerIds || []),
+    model: String(f.model || "").trim(),
+    sort: String(f.sort || "popular"),
+    viewMode: String(f.viewMode || "grid"),
+    page: 1,
+  };
+}
+
+function nfCatalogBuildQueryFromFilters() {
+  const f = nfCatalogCurrentFilterSnapshot();
+  const params = new URLSearchParams();
+  if (f.search) params.set("search", f.search);
+  if (f.categoryIds.size) params.set("cat", [...f.categoryIds].sort().join(","));
+  if (f.partnerIds.size) params.set("brand", [...f.partnerIds].sort().join(","));
+  if (f.sort && f.sort !== "popular") params.set("sort", f.sort);
+  if (f.viewMode && f.viewMode !== "grid") params.set("view", f.viewMode);
+  return params.toString();
+}
+
+function nfCatalogSyncUrlWithFilters() {
+  if (NF_STATE.currentPage !== "catalog") return;
+  const query = nfCatalogBuildQueryFromFilters();
+  const next = `/catalog${query ? `?${query}` : ""}`;
+  const current = `${location.pathname}${location.search}`;
+  if (current === next) return;
+  try {
+    history.replaceState({}, "", next);
+  } catch (_e) {}
+}
+
+function nfCatalogApplyFiltersFromLocationSearch() {
+  if (NF_STATE.currentPage !== "catalog") return;
+  const params = new URLSearchParams(window.location.search || "");
   const f = NF_STATE.filters;
 
+  const parseSet = (raw) =>
+    new Set(
+      String(raw || "")
+        .split(",")
+        .map((x) => x.trim())
+        .filter(Boolean)
+    );
+
+  f.search = String(params.get("search") || params.get("q") || "").trim();
+  f.categoryIds = parseSet(params.get("cat"));
+  f.partnerIds = parseSet(params.get("brand"));
+
+  const allowedSort = new Set(["popular", "name-asc", "name-desc", "price-asc", "price-desc"]);
+  const sort = String(params.get("sort") || "popular").trim();
+  f.sort = allowedSort.has(sort) ? sort : "popular";
+
+  const allowedView = new Set(["grid", "list", "large"]);
+  const view = String(params.get("view") || "grid").trim();
+  f.viewMode = allowedView.has(view) ? view : "grid";
+  f.page = 1;
+}
+
+function nfCatalogResetFiltersState() {
+  NF_STATE.filters = {
+    search: "",
+    categoryIds: new Set(),
+    partnerIds: new Set(),
+    model: "",
+    sort: "popular",
+    viewMode: NF_STATE.filters.viewMode || "grid",
+    page: 1,
+  };
+}
+
+function nfSyncCatalogSidebarControlsFromFilters() {
+  const f = NF_STATE.filters;
+  const modelInput = nfEl("filterModelInput");
+  const catSelect = nfEl("filterCategorySelect");
+  const partnerSelect = nfEl("filterPartnerSelect");
+  const sortSelect = nfEl("catalogSort") || nfEl("sortSelect");
+  const globalSearchInput = nfEl("globalSearchInput");
+
+  if (modelInput) modelInput.value = f.model || "";
+  if (catSelect) {
+    catSelect.value = f.categoryIds.size === 1 ? [...f.categoryIds][0] : "";
+    catSelect.dispatchEvent(new CustomEvent("nf-enhanced-select-sync", { bubbles: false }));
+  }
+  if (partnerSelect) {
+    partnerSelect.value = f.partnerIds.size === 1 ? [...f.partnerIds][0] : "";
+    partnerSelect.dispatchEvent(new CustomEvent("nf-enhanced-select-sync", { bubbles: false }));
+  }
+  if (sortSelect) {
+    sortSelect.value = f.sort || "popular";
+    sortSelect.dispatchEvent(new CustomEvent("nf-enhanced-select-sync", { bubbles: false }));
+  }
+  if (globalSearchInput && document.activeElement !== globalSearchInput) {
+    globalSearchInput.value = f.search || "";
+  }
+}
+
+function nfApplyCatalogFilters(filtersState = NF_STATE.filters, opts = {}) {
+  const options = {
+    navigateToCatalog: false,
+    ...opts,
+  };
+  NF_STATE.filters = {
+    ...NF_STATE.filters,
+    ...filtersState,
+    categoryIds: new Set(filtersState.categoryIds || []),
+    partnerIds: new Set(filtersState.partnerIds || []),
+    page: 1,
+  };
+  nfSyncCatalogSidebarControlsFromFilters();
+
+  if (NF_STATE.currentPage === "catalog") {
+    nfRenderCatalog();
+    return;
+  }
+
+  if (options.navigateToCatalog) {
+    const query = nfCatalogBuildQueryFromFilters();
+    nfGoPath(`/catalog${query ? `?${query}` : ""}`);
+  }
+}
+
+function applyFilters(filtersState = NF_STATE.filters, opts = {}) {
+  nfApplyCatalogFilters(filtersState, opts);
+}
+
+function nfApplyFilters(filters = NF_STATE.filters) {
+  let list = [...NF_DATA.products];
+  const f = filters;
+
   if (f.search) {
-    const q = f.search.toLowerCase();
+    const q = nfNormalizeSearchText(f.search);
     list = list.filter((p) => {
-      const partnerName = nfGetPartnerName(p.partnerId).toLowerCase();
-      return (
-        p.name.toLowerCase().includes(q) ||
-        p.article.toLowerCase().includes(q) ||
-        p.model.toLowerCase().includes(q) ||
-        partnerName.includes(q)
-      );
+      const partnerName = nfGetPartnerName(p.partnerId);
+      const categoryName = String(NF_DATA.categories.find((c) => c.id === p.categoryId)?.name || "");
+      const haystack = nfEntitySearchHaystack(p, [
+        p.name,
+        p.article,
+        p.model,
+        p.shortDesc,
+        p.description,
+        partnerName,
+        categoryName,
+      ]);
+      return haystack.includes(q);
     });
   }
 
@@ -2121,7 +4311,7 @@ function nfRenderCatalogFilters() {
   const f = NF_STATE.filters;
 
   // Категории
-  catSelect.innerHTML = `<option value="">Все группы</option>`;
+  catSelect.innerHTML = `<option value="">${nfEscapeHtml(nfT("catalog.allGroups", "Все группы"))}</option>`;
   NF_DATA.categories.forEach((c) => {
     const opt = document.createElement("option");
     opt.value = c.id;
@@ -2133,11 +4323,11 @@ function nfRenderCatalogFilters() {
     const val = e.target.value;
     f.categoryIds = new Set();
     if (val) f.categoryIds.add(val);
-    nfRenderCatalog();
+    nfApplyCatalogFilters(f, { navigateToCatalog: false });
   };
 
   // Партнёры
-  partnerSelect.innerHTML = `<option value="">Все бренды</option>`;
+  partnerSelect.innerHTML = `<option value="">${nfEscapeHtml(nfT("catalog.allBrands", "Все бренды"))}</option>`;
   NF_DATA.partners.forEach((p) => {
     const opt = document.createElement("option");
     opt.value = p.id;
@@ -2149,22 +4339,241 @@ function nfRenderCatalogFilters() {
     const val = e.target.value;
     f.partnerIds = new Set();
     if (val) f.partnerIds.add(val);
-    nfRenderCatalog();
+    nfApplyCatalogFilters(f, { navigateToCatalog: false });
   };
 
   // Модели (по полю model)
 
   nfEnhanceSelectDropdown(catSelect);
   nfEnhanceSelectDropdown(partnerSelect);
+
+  catSelect.dispatchEvent(new CustomEvent("nf-enhanced-select-sync", { bubbles: false }));
+  partnerSelect.dispatchEvent(new CustomEvent("nf-enhanced-select-sync", { bubbles: false }));
+}
+
+function nfCatalogFiltersSignature() {
+  const f = NF_STATE.filters;
+  const cats = [...f.categoryIds].sort().join("\u0001");
+  const parts = [...f.partnerIds].sort().join("\u0001");
+  return [
+    cats,
+    parts,
+    f.model || "",
+    f.sort || "",
+    f.viewMode || "",
+    f.search || "",
+  ].join("|");
+}
+
+/** Одна карточка каталога + класс .nf-vp-reveal для viewport-анимации (только transform/opacity). */
+function nfCreateCatalogProductCard(p, staggerOpts) {
+  const card = nfCreateEl(
+    "article",
+    "nf-product-card nf-product-card--catalog nf-vp-reveal"
+  );
+  if (staggerOpts && typeof staggerOpts.staggerMs === "number" && staggerOpts.staggerMs > 0) {
+    card.style.setProperty("--nf-vp-stagger", `${staggerOpts.staggerMs}ms`);
+  }
+
+  const thumb = nfCreateEl("div", "nf-product-thumb nf-product-thumb--popular");
+  const thumbInner = nfCreateEl("div", "nf-product-thumb-inner");
+  const img = document.createElement("img");
+  img.alt = p.name;
+  const galleryImages = nfGetProductImages(p);
+  const primarySrc = galleryImages[0] || p.image || "";
+  if (primarySrc && String(primarySrc).trim()) {
+    img.src = primarySrc;
+    nfConfigureImageElement(img, {
+      loading: "lazy",
+      decoding: "async",
+      fetchPriority: "low",
+    });
+    img.onerror = () => {
+      img.src = nfProductPlaceholderSvg();
+    };
+  } else {
+    img.src = nfProductPlaceholderSvg();
+    nfConfigureImageElement(img, {
+      loading: "lazy",
+      decoding: "async",
+      fetchPriority: "low",
+    });
+  }
+  thumbInner.appendChild(img);
+  thumb.appendChild(thumbInner);
+  thumb.addEventListener("click", () => nfOpenProductPage(p.id));
+
+  const body = nfCreateEl("div", "nf-product-body nf-product-body--popular");
+  const titleBlock = nfCreateEl("div", "nf-popular-title-block");
+
+  if (p.popular) {
+    const badgeWrap = nfCreateEl("div", "nf-popular-badge-wrap");
+    const badge = nfCreateEl("span", "nf-popular-badge", nfT("common.popularBadge", "Популярный"));
+    badgeWrap.appendChild(badge);
+    titleBlock.appendChild(badgeWrap);
+  }
+
+  const title = document.createElement("h3");
+  title.className = "nf-product-title nf-product-title--popular";
+  title.textContent = p.name;
+  title.addEventListener("click", () => nfOpenProductPage(p.id));
+  titleBlock.appendChild(title);
+
+  const metaTop = nfCreateEl("div", "nf-product-meta-row nf-product-meta-row--topline");
+  const partnerName = nfGetPartnerName(p.partnerId);
+  if (partnerName) {
+    metaTop.appendChild(nfCreateElText("div", "nf-product-meta nf-product-meta--brand", partnerName));
+  }
+  const cat = NF_DATA.categories.find((c) => c.id === p.categoryId);
+  if (cat) {
+    metaTop.appendChild(
+      nfCreateElText("div", "nf-product-meta nf-product-meta--muted nf-product-meta--category", cat.name)
+    );
+  }
+  if (metaTop.childNodes.length) {
+    titleBlock.appendChild(metaTop);
+  }
+
+  body.appendChild(titleBlock);
+
+  const footer = nfCreateEl("div", "nf-product-footer nf-product-footer--popular");
+  const priceEl = nfCreateElText(
+    "div",
+    p.price ? "nf-price nf-price--popular" : "nf-price-muted",
+    nfFormatPrice(p.price)
+  );
+
+  const actions = nfCreateEl("div", "nf-product-actions nf-popular-actions");
+  const addBtn = nfCreateEl("button", "nf-btn nf-btn-primary nf-btn-sm nf-btn-checkable nf-popular-add", "");
+  addBtn.type = "button";
+  nfInitAddToRequestControl(addBtn, p.id, nfT("common.addToRequest", "В запрос"), {});
+  addBtn.addEventListener("click", () => {
+    nfAddToCart(p.id, 1, { sourceButton: addBtn });
+  });
+
+  const moreBtn = nfCreateEl(
+    "button",
+    "nf-btn nf-btn-ghost nf-btn-sm nf-popular-more",
+    nfT("common.details", "Подробнее")
+  );
+  moreBtn.type = "button";
+  moreBtn.addEventListener("click", () => nfOpenProductPage(p.id));
+
+  actions.append(addBtn, moreBtn);
+
+  const footerMain = nfCreateEl("div", "nf-product-footer-main");
+  footerMain.append(priceEl, actions);
+  footer.appendChild(footerMain);
+
+  card.append(thumb, body, footer);
+  return card;
+}
+
+function nfCatalogObserveAddedCards(elements) {
+  nfSimpleRevealObserveElements(elements);
+}
+
+function nfCatalogUpdateCountLabel(total, shown) {
+  const label = nfEl("catalogCountLabel");
+  if (!label) return;
+  if (shown >= total) {
+    label.textContent = nfT("catalog.countFound", "Найдено: {total} {items}", {
+      total,
+      items: nfItemsCountLabel(total).replace(`${total} `, ""),
+    });
+  } else {
+    label.textContent = nfT("catalog.countShown", "Найдено: {total} {items} · показано {shown}", {
+      total,
+      shown,
+      items: nfItemsCountLabel(total).replace(`${total} `, ""),
+    });
+  }
+}
+
+function nfCatalogSetupLoadMoreSentinel(container, sentinel, hasMore) {
+  if (NF_CATALOG_SENTINEL_IO) {
+    NF_CATALOG_SENTINEL_IO.disconnect();
+    NF_CATALOG_SENTINEL_IO = null;
+  }
+
+  const loadBtn = nfEl("catalogLoadMoreBtn");
+  if (!hasMore) {
+    if (loadBtn) {
+      loadBtn.hidden = true;
+      loadBtn.classList.add("nf-hidden");
+    }
+    return;
+  }
+
+  if (!("IntersectionObserver" in window)) {
+    if (loadBtn) {
+      loadBtn.hidden = false;
+      loadBtn.classList.remove("nf-hidden");
+      loadBtn.onclick = () => nfCatalogAppendNextBatch();
+    }
+    return;
+  }
+
+  if (loadBtn) {
+    loadBtn.hidden = true;
+    loadBtn.classList.add("nf-hidden");
+  }
+
+  NF_CATALOG_SENTINEL_IO = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((e) => {
+        if (e.isIntersecting) nfCatalogAppendNextBatch();
+      });
+    },
+    { rootMargin: "320px 0px 320px 0px", threshold: 0 }
+  );
+  if (sentinel) NF_CATALOG_SENTINEL_IO.observe(sentinel);
+}
+
+let NF_CATALOG_APPEND_LOCK = false;
+
+function nfCatalogAppendNextBatch() {
+  if (NF_CATALOG_APPEND_LOCK) return;
+  const container = nfEl("catalogProducts");
+  const st = NF_STATE.catalogRender;
+  if (!container || !st.cachedList.length || st.renderedCount >= st.cachedList.length) return;
+  if (nfCatalogFiltersSignature() !== st.signature) return;
+
+  NF_CATALOG_APPEND_LOCK = true;
+  try {
+    const sentinel = container.querySelector(".nf-catalog-load-sentinel");
+    const prev = st.renderedCount;
+    const next = Math.min(prev + NF_CATALOG_BATCH_STEP, st.cachedList.length);
+    const frag = document.createDocumentFragment();
+    const newEls = [];
+    for (let i = prev; i < next; i++) {
+      const card = nfCreateCatalogProductCard(st.cachedList[i], null);
+      frag.appendChild(card);
+      newEls.push(card);
+    }
+    if (sentinel) container.insertBefore(frag, sentinel);
+    else container.appendChild(frag);
+
+    st.renderedCount = next;
+    nfCatalogObserveAddedCards(newEls);
+    nfCatalogUpdateCountLabel(st.cachedList.length, st.renderedCount);
+
+    const stillMore = st.renderedCount < st.cachedList.length;
+    nfCatalogSetupLoadMoreSentinel(container, sentinel, stillMore);
+  } finally {
+    queueMicrotask(() => {
+      NF_CATALOG_APPEND_LOCK = false;
+    });
+  }
 }
 
 function nfRenderCatalog() {
   nfRenderCatalogFilters();
   const fullList = nfApplyFilters();
+  NF_STATE.filters.page = 1;
 
   const label = nfEl("catalogCountLabel");
   const activeFilters = nfEl("catalogActiveFilters");
-  if (label) label.textContent = `Найдено: ${fullList.length} позиций`;
   if (activeFilters) activeFilters.innerHTML = "";
 
   const f = NF_STATE.filters;
@@ -2174,11 +4583,18 @@ function nfRenderCatalog() {
       const c = NF_DATA.categories.find((x) => x.id === id);
       if (!c) return;
       const chip = nfCreateEl("div", "nf-filter-chip");
-      chip.innerHTML = `Категория: ${c.name} <button type="button" aria-label="Убрать фильтр">×</button>`;
-      chip.querySelector("button").addEventListener("click", () => {
+      const label = nfCreateEl("span", "nf-filter-chip__text");
+      label.textContent = nfT("catalog.filter.category", "Категория: {value}", { value: c.name });
+      const rm = document.createElement("button");
+      rm.type = "button";
+      rm.className = "nf-filter-chip__remove";
+      rm.setAttribute("aria-label", nfT("catalog.filter.removeAria", "Убрать фильтр"));
+      rm.textContent = "×";
+      rm.addEventListener("click", () => {
         f.categoryIds.delete(id);
-        nfRenderCatalog();
+        nfApplyCatalogFilters(f, { navigateToCatalog: false });
       });
+      chip.append(label, rm);
       activeFilters.appendChild(chip);
     });
 
@@ -2186,23 +4602,53 @@ function nfRenderCatalog() {
       const p = NF_DATA.partners.find((x) => x.id === id);
       if (!p) return;
       const chip = nfCreateEl("div", "nf-filter-chip");
-      chip.innerHTML = `Партнёр: ${p.name} <button type="button" aria-label="Убрать фильтр">×</button>`;
-      chip.querySelector("button").addEventListener("click", () => {
+      const label = nfCreateEl("span", "nf-filter-chip__text");
+      label.textContent = nfT("catalog.filter.partner", "Партнёр: {value}", { value: p.name });
+      const rm = document.createElement("button");
+      rm.type = "button";
+      rm.className = "nf-filter-chip__remove";
+      rm.setAttribute("aria-label", nfT("catalog.filter.removeAria", "Убрать фильтр"));
+      rm.textContent = "×";
+      rm.addEventListener("click", () => {
         f.partnerIds.delete(id);
-        nfRenderCatalog();
+        nfApplyCatalogFilters(f, { navigateToCatalog: false });
       });
+      chip.append(label, rm);
       activeFilters.appendChild(chip);
     });
 
     if (f.model) {
       const chip = nfCreateEl("div", "nf-filter-chip");
-      chip.innerHTML = `Модель: ${f.model} <button type="button" aria-label="Убрать фильтр">×</button>`;
-      chip.querySelector("button").addEventListener("click", () => {
+      const label = nfCreateEl("span", "nf-filter-chip__text");
+      label.textContent = nfT("catalog.filter.model", "Модель: {value}", { value: f.model });
+      const rm = document.createElement("button");
+      rm.type = "button";
+      rm.className = "nf-filter-chip__remove";
+      rm.setAttribute("aria-label", nfT("catalog.filter.removeAria", "Убрать фильтр"));
+      rm.textContent = "×";
+      rm.addEventListener("click", () => {
         f.model = "";
         const input = nfEl("filterModelInput");
         if (input) input.value = "";
-        nfRenderCatalog();
+        nfApplyCatalogFilters(f, { navigateToCatalog: false });
       });
+      chip.append(label, rm);
+      activeFilters.appendChild(chip);
+    }
+    if (f.search) {
+      const chip = nfCreateEl("div", "nf-filter-chip");
+      const label = nfCreateEl("span", "nf-filter-chip__text");
+      label.textContent = nfT("catalog.filter.search", "Поиск: {value}", { value: f.search });
+      const rm = document.createElement("button");
+      rm.type = "button";
+      rm.className = "nf-filter-chip__remove";
+      rm.setAttribute("aria-label", nfT("catalog.filter.clearSearchAria", "Очистить поиск"));
+      rm.textContent = "×";
+      rm.addEventListener("click", () => {
+        f.search = "";
+        nfApplyCatalogFilters(f, { navigateToCatalog: false });
+      });
+      chip.append(label, rm);
       activeFilters.appendChild(chip);
     }
   }
@@ -2210,15 +4656,17 @@ function nfRenderCatalog() {
   const container = nfEl("catalogProducts");
   if (!container) return;
 
-  const total = fullList.length;
-  const pageSize = NF_CATALOG_PAGE_SIZE;
-  const totalPages = Math.max(1, Math.ceil(total / pageSize));
-  let currentPage = Number(f.page) || 1;
-  if (currentPage < 1) currentPage = 1;
-  if (currentPage > totalPages) currentPage = totalPages;
-  f.page = currentPage;
-  const startIndex = (currentPage - 1) * pageSize;
-  const pageItems = fullList.slice(startIndex, startIndex + pageSize);
+  container.classList.add("nf-catalog-mutation");
+  requestAnimationFrame(() => {
+    container.classList.remove("nf-catalog-mutation");
+  });
+
+  const st = NF_STATE.catalogRender;
+  st.signature = nfCatalogFiltersSignature();
+  st.cachedList = fullList;
+  st.renderedCount = 0;
+
+  nfDisconnectCatalogRevealAndSentinel();
 
   container.innerHTML = "";
   container.classList.remove(
@@ -2236,176 +4684,37 @@ function nfRenderCatalog() {
     container.classList.add("nf-products-grid-mode");
   }
 
-  pageItems.forEach((p) => {
-    const card = nfCreateEl("article", "nf-product-card nf-product-card--catalog");
-
-    const thumb = nfCreateEl("div", "nf-product-thumb");
-    const thumbInner = nfCreateEl("div", "nf-product-thumb-inner");
-    const img = document.createElement("img");
-    img.alt = p.name;
-    const galleryImages = nfGetProductImages(p);
-    const primarySrc = galleryImages[0] || p.image || "";
-    if (primarySrc && String(primarySrc).trim()) {
-      img.src = primarySrc;
-      nfConfigureImageElement(img, {
-        loading: "lazy",
-        decoding: "async",
-        fetchPriority: "low",
-        width: 600,
-        height: 450,
-      });
-      img.onerror = () => {
-        img.src = nfProductPlaceholderSvg();
-      };
-    } else {
-      img.src = nfProductPlaceholderSvg();
-      nfConfigureImageElement(img, {
-        loading: "lazy",
-        decoding: "async",
-        fetchPriority: "low",
-        width: 600,
-        height: 450,
-      });
-    }
-    thumbInner.appendChild(img);
-    thumb.appendChild(thumbInner);
-    thumb.addEventListener("click", () => nfOpenProductPage(p.id));
-
-    const body = nfCreateEl("div", "nf-product-body");
-    const titleBlock = nfCreateEl("div", "nf-popular-title-block");
-
-    if (p.popular) {
-      const badgeWrap = nfCreateEl("div", "nf-popular-badge-wrap");
-      const badge = nfCreateEl("span", "nf-popular-badge", "Популярный");
-      badgeWrap.appendChild(badge);
-      titleBlock.appendChild(badgeWrap);
-    }
-
-    const title = nfCreateEl("div", "nf-product-title", p.name);
-    title.addEventListener("click", () => nfOpenProductPage(p.id));
-    titleBlock.appendChild(title);
-
-    const metaTop = nfCreateEl("div", "nf-product-meta-row nf-product-meta-row--topline");
-    const partnerName = nfGetPartnerName(p.partnerId);
-    if (partnerName) {
-      metaTop.appendChild(nfCreateEl("div", "nf-product-meta nf-product-meta--brand", partnerName));
-    }
-    const cat = NF_DATA.categories.find((c) => c.id === p.categoryId);
-    if (cat) {
-      metaTop.appendChild(
-        nfCreateEl("div", "nf-product-meta nf-product-meta--muted nf-product-meta--category", cat.name)
-      );
-    }
-    if (metaTop.childNodes.length) {
-      titleBlock.appendChild(metaTop);
-    }
-
-    body.appendChild(titleBlock);
-
-    const footer = nfCreateEl("div", "nf-product-footer");
-    footer.appendChild(nfCreateEl("div", p.price ? "nf-price" : "nf-price-muted", nfFormatPrice(p.price)));
-
-    const actions = nfCreateEl("div", "nf-product-actions");
-  const addBtn = nfCreateEl(
-    "button",
-    "nf-btn nf-btn-primary nf-btn-sm nf-btn-checkable",
-    `<span class="nf-btn-icon" aria-hidden="true">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M5 5h2l1.2 8.4A1.5 1.5 0 0 0 9.7 15h7.1a1.5 1.5 0 0 0 1.47-1.19L19.8 9H8.3" stroke="#0b1f1c" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-        <circle cx="10" cy="18" r="1.3" fill="#0b1f1c" />
-        <circle cx="17" cy="18" r="1.3" fill="#0b1f1c" />
-      </svg>
-    </span><span class="nf-btn-label">В запрос</span>`
-  );
-    addBtn.type = "button";
-    addBtn.addEventListener("click", () => {
-      nfAddToCart(p.id, 1);
-      nfAnimateAddToCartButton(addBtn);
-    });
-
-  const moreBtn = nfCreateEl(
-    "button",
-    "nf-btn nf-btn-secondary nf-btn-sm",
-    `<span class="nf-btn-label">Подробнее</span>
-     <span class="nf-btn-icon" aria-hidden="true">
-       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-         <path d="M9 5l6 7-6 7" stroke="#0f172a" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
-       </svg>
-     </span>`
-  );
-    moreBtn.type = "button";
-    moreBtn.addEventListener("click", () => nfOpenProductPage(p.id));
-
-    actions.append(addBtn, moreBtn);
-    footer.appendChild(actions);
-
-    card.append(thumb, body, footer);
+  const total = fullList.length;
+  const firstCount = Math.min(NF_CATALOG_BATCH_INITIAL, total);
+  const firstCards = [];
+  for (let i = 0; i < firstCount; i++) {
+    const staggerMs = i < 8 ? i * 42 : 0;
+    const card = nfCreateCatalogProductCard(
+      fullList[i],
+      staggerMs > 0 ? { staggerMs } : null
+    );
     container.appendChild(card);
-  });
+    firstCards.push(card);
+  }
+  st.renderedCount = firstCount;
+
+  const sentinel = nfCreateEl("div", "nf-catalog-load-sentinel");
+  sentinel.setAttribute("aria-hidden", "true");
+  container.appendChild(sentinel);
+
+  nfCatalogUpdateCountLabel(total, st.renderedCount);
+  nfCatalogObserveAddedCards(firstCards);
+
+  const hasMore = st.renderedCount < st.cachedList.length;
+  nfCatalogSetupLoadMoreSentinel(container, sentinel, hasMore);
 
   const paginationEl = nfEl("catalogPagination");
   if (paginationEl) {
     paginationEl.innerHTML = "";
-    if (totalPages > 1) {
-      const createBtn = (page, label, isActive, isDisabled) => {
-        const btn = document.createElement("button");
-        btn.type = "button";
-        btn.className =
-          "nf-catalog-page-btn" +
-          (isActive ? " nf-catalog-page-btn-active" : "") +
-          (isDisabled ? " nf-catalog-page-btn-disabled" : "");
-        btn.textContent = label;
-        btn.disabled = isDisabled;
-        if (!isDisabled && !isActive) {
-          btn.addEventListener("click", () => {
-            NF_STATE.filters.page = page;
-            nfRenderCatalog();
-            window.scrollTo({ top: 0, behavior: "smooth" });
-          });
-        }
-        return btn;
-      };
-
-      paginationEl.appendChild(
-        createBtn(
-          currentPage - 1,
-          "Назад",
-          false,
-          currentPage <= 1
-        )
-      );
-
-      for (let i = 1; i <= totalPages; i += 1) {
-        if (totalPages > 7) {
-          const isEdge = i === 1 || i === totalPages;
-          const isNearCurrent = Math.abs(i - currentPage) <= 1;
-          const shouldShow = isEdge || isNearCurrent;
-          if (!shouldShow) {
-            if (i === 2 || i === totalPages - 1) {
-              const dots = document.createElement("span");
-              dots.className = "nf-catalog-page-dots";
-              dots.textContent = "…";
-              paginationEl.appendChild(dots);
-            }
-            continue;
-          }
-        }
-
-        paginationEl.appendChild(
-          createBtn(i, String(i), i === currentPage, false)
-        );
-      }
-
-      paginationEl.appendChild(
-        createBtn(
-          currentPage + 1,
-          "Вперёд",
-          false,
-          currentPage >= totalPages
-        )
-      );
-    }
+    paginationEl.hidden = true;
   }
+
+  nfCatalogSyncUrlWithFilters();
 }
 
 /* ====== КОРЗИНА ====== */
@@ -2413,30 +4722,169 @@ function nfGetCartItem(productId) {
   return NF_STATE.cart.find((x) => x.productId === productId);
 }
 
-function nfAddToCart(productId, qty) {
+function nfUndoCartAdjust(productId, qty) {
+  const existing = nfGetCartItem(productId);
+  if (!existing) return;
+  existing.qty -= qty;
+  if (existing.qty <= 0) {
+    NF_STATE.cart = NF_STATE.cart.filter((x) => x.productId !== productId);
+  }
+}
+
+function nfAddToRequestCartIconSvg() {
+  return `<svg class="nf-add-request__svg" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <path d="M5 5h2l1.2 8.4A1.5 1.5 0 0 0 9.7 15h7.1a1.5 1.5 0 0 0 1.47-1.19L19.8 9H8.3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="10" cy="18" r="1.3" fill="currentColor" />
+    <circle cx="17" cy="18" r="1.3" fill="currentColor" />
+  </svg>`;
+}
+
+function nfAddToRequestCheckSvg() {
+  return `<svg class="nf-add-request__svg nf-add-request__svg--check" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <path d="M6 12.5l3.8 3.5L18 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>`;
+}
+
+function nfAddToRequestInnerHtml(idleLabel, options = {}) {
+  const compact = !!options.compact;
+  const inCartLabel = options.inCartLabel || nfT("common.inRequest", "В запросе");
+  const ico = compact ? "" : `<span class="nf-add-request__ico" aria-hidden="true">${nfAddToRequestCartIconSvg()}</span>`;
+  const icoDone = compact ? "" : `<span class="nf-add-request__ico" aria-hidden="true">${nfAddToRequestCartIconSvg()}</span>`;
+  return `<span class="nf-add-request__root">
+    <span class="nf-add-request__seg nf-add-request__idle">${ico}<span class="nf-add-request__txt">${nfEscapeHtml(idleLabel)}</span></span>
+    <span class="nf-add-request__seg nf-add-request__check" aria-hidden="true">${nfAddToRequestCheckSvg()}</span>
+    <span class="nf-add-request__seg nf-add-request__done">${icoDone}<span class="nf-add-request__txt">${nfEscapeHtml(inCartLabel)}</span></span>
+  </span>`;
+}
+
+function nfInitAddToRequestControl(el, productId, idleLabel, options = {}) {
+  if (!el) return;
+  el.dataset.nfAddProduct = productId;
+  el.classList.add("nf-add-request");
+  el.classList.toggle("nf-add-request--compact", !!options.compact);
+  el.innerHTML = nfAddToRequestInnerHtml(idleLabel, {
+    compact: !!options.compact,
+    inCartLabel: options.inCartLabel || nfT("common.inRequest", "В запросе"),
+  });
+  nfSyncAddToRequestButton(el);
+}
+
+function nfCssEscapeSelector(value) {
+  const s = String(value ?? "");
+  if (typeof CSS !== "undefined" && typeof CSS.escape === "function") return CSS.escape(s);
+  return s.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
+}
+
+function nfSyncAddToRequestButton(btn) {
+  if (!btn || !btn.dataset || !btn.dataset.nfAddProduct) return;
+  if (btn.classList.contains("nf-add-request--reverting")) return;
+  const id = btn.dataset.nfAddProduct;
+  const has = !!nfGetCartItem(id);
+  if (has) {
+    if (btn.classList.contains("nf-add-request--success-run")) return;
+    btn.classList.add("nf-add-request--in-cart");
+  } else {
+    btn.classList.remove(
+      "nf-add-request--in-cart",
+      "nf-add-request--success-run",
+      "nf-add-request--pressed"
+    );
+  }
+}
+
+function nfSyncAllAddToRequestButtons() {
+  document.querySelectorAll("[data-nf-add-product]").forEach((btn) => nfSyncAddToRequestButton(btn));
+}
+
+function nfPlayAddToRequestSuccess(btn) {
+  if (!btn || !btn.classList.contains("nf-add-request")) return;
+  btn.classList.remove("nf-add-request--reverting");
+  if (btn._nfAddReqSuccessT) {
+    clearTimeout(btn._nfAddReqSuccessT);
+    btn._nfAddReqSuccessT = null;
+  }
+  btn.classList.remove("nf-add-request--pressed");
+  void btn.offsetWidth;
+  btn.classList.add("nf-add-request--pressed");
+  requestAnimationFrame(() => {
+    btn.classList.remove("nf-add-request--pressed");
+    btn.classList.add("nf-add-request--success-run");
+  });
+  btn._nfAddReqSuccessT = setTimeout(() => {
+    btn._nfAddReqSuccessT = null;
+    btn.classList.remove("nf-add-request--success-run");
+    btn.classList.add("nf-add-request--in-cart");
+  }, 520);
+}
+
+function nfPlayAddToRequestReset(btn) {
+  if (!btn || !btn.classList.contains("nf-add-request")) return;
+  if (btn._nfAddReqSuccessT) {
+    clearTimeout(btn._nfAddReqSuccessT);
+    btn._nfAddReqSuccessT = null;
+  }
+  btn.classList.remove("nf-add-request--success-run", "nf-add-request--pressed");
+  btn.classList.add("nf-add-request--reverting");
+  btn.classList.remove("nf-add-request--in-cart");
+  setTimeout(() => {
+    btn.classList.remove("nf-add-request--reverting");
+  }, 380);
+}
+
+function nfToastProductAddedToRequest({ productId, qty, sourceButton }) {
+  nfPushToast({
+    message: nfT("toast.addedToRequest", "Товар добавлен в запрос"),
+    variant: "success",
+    duration: 7200,
+    actionLabel: nfT("toast.undo", "Отменить"),
+    pauseOnHover: true,
+    onAction: () => {
+      nfUndoCartAdjust(productId, qty);
+      nfUpdateCartBadge();
+      const sel = `[data-nf-add-product="${nfCssEscapeSelector(productId)}"]`;
+      document.querySelectorAll(sel).forEach((b) => nfPlayAddToRequestReset(b));
+      nfRenderCart();
+      nfPushToast({
+        message: nfT("toast.addCancelled", "Добавление отменено"),
+        variant: "info",
+        duration: 3400,
+      });
+      return true;
+    },
+  });
+  if (sourceButton && sourceButton.classList.contains("nf-add-request")) {
+    nfPlayAddToRequestSuccess(sourceButton);
+  }
+  document.querySelectorAll(`[data-nf-add-product="${nfCssEscapeSelector(productId)}"]`).forEach((b) => {
+    if (b !== sourceButton) nfSyncAddToRequestButton(b);
+  });
+}
+
+function nfAddToCart(productId, qty, options) {
+  const opts = options && typeof options === "object" ? options : {};
+  const silent = !!opts.silent;
+  const sourceButton = opts.sourceButton || null;
+
   const existing = nfGetCartItem(productId);
   if (existing) existing.qty += qty;
   else NF_STATE.cart.push({ productId, qty });
 
   nfUpdateCartBadge();
   nfRenderCart();
-  nfShowToast("Товар добавлен в запрос");
 
-  const btn = nfEl("cartToggleBtn");
-  if (btn) {
-    btn.style.transform = "translateY(-2px) scale(1.02)";
-    setTimeout(() => {
-      btn.style.transform = "";
-    }, 160);
+  if (!silent) {
+    nfToastProductAddedToRequest({ productId, qty, sourceButton });
   }
 }
 
 function nfAnimateAddToCartButton(sourceButton) {
   if (!sourceButton) return;
-  sourceButton.classList.add("nf-btn-checkable", "nf-btn-check-success");
-  setTimeout(() => {
+  if (sourceButton.classList.contains("nf-add-request")) {
+    nfPlayAddToRequestSuccess(sourceButton);
+  } else {
+    sourceButton.classList.add("nf-btn-checkable");
     sourceButton.classList.remove("nf-btn-check-success");
-  }, 450);
+  }
 }
 
 function nfUpdateCartBadge() {
@@ -2450,20 +4898,29 @@ function nfRenderCart() {
   const itemsEl = nfEl("cartItems");
   const totalsEl = nfEl("cartTotals");
   const btn = nfEl("cartRequestBtn");
+  const clearBtn = nfEl("cartClearBtn");
   if (!itemsEl || !totalsEl || !btn) return;
 
   itemsEl.innerHTML = "";
 
   if (!NF_STATE.cart.length) {
     itemsEl.innerHTML =
-      `<p class="nf-cart-empty">Ваш список запросов пока пуст. Откройте каталог и добавьте интересующие позиции.</p>`;
+      `<div class="nf-cart-empty">
+        <div class="nf-cart-empty-icon" aria-hidden="true"></div>
+        <p class="nf-cart-empty-title">${nfEscapeHtml(nfT("cart.empty.title", "В запросе пока нет позиций"))}</p>
+        <p class="nf-cart-empty-text">${nfEscapeHtml(nfT("cart.empty.text", "Добавьте товары из каталога или карточек партнёров, чтобы отправить единый запрос."))}</p>
+      </div>`;
     totalsEl.textContent = "";
     btn.disabled = true;
+    if (clearBtn) clearBtn.disabled = true;
+    nfSyncAllAddToRequestButtons();
     return;
   }
 
   btn.disabled = false;
+  if (clearBtn) clearBtn.disabled = false;
   let totalKnown = 0;
+  let totalUnits = 0;
 
   NF_STATE.cart.forEach((item) => {
     const p = NF_DATA.products.find((x) => x.id === item.productId);
@@ -2473,9 +4930,13 @@ function nfRenderCart() {
     const thumb = nfCreateEl("div", "nf-cart-thumb");
 
     const info = nfCreateEl("div", "nf-cart-info");
+    const categoryName =
+      NF_DATA.categories.find((c) => c.id === p.categoryId)?.name || nfT("common.categoryUnknown", "Категория не указана");
+    const priceLabel = p.price != null ? nfFormatPrice(p.price) : nfT("common.priceOnRequest", "Цена по запросу");
     info.innerHTML = `
-      <div class="nf-cart-name">${p.name}</div>
-      <div class="nf-cart-meta">${p.article} · ${nfGetPartnerName(p.partnerId)}</div>
+      <div class="nf-cart-name">${nfEscapeHtml(p.name)}</div>
+      <div class="nf-cart-meta">${nfEscapeHtml(p.article)} · ${nfEscapeHtml(nfGetPartnerName(p.partnerId))} · ${nfEscapeHtml(categoryName)}</div>
+      <div class="nf-cart-price">${nfEscapeHtml(priceLabel)}</div>
     `;
 
     const qtyCol = nfCreateEl("div", "nf-cart-qty");
@@ -2491,7 +4952,7 @@ function nfRenderCart() {
       nfUpdateCartBadge();
     });
 
-    const removeBtn = nfCreateEl("button", "nf-cart-remove", "Удалить");
+    const removeBtn = nfCreateEl("button", "nf-cart-remove", nfT("common.remove", "Удалить"));
     removeBtn.type = "button";
     removeBtn.addEventListener("click", () => {
       NF_STATE.cart = NF_STATE.cart.filter((x) => x.productId !== item.productId);
@@ -2499,19 +4960,22 @@ function nfRenderCart() {
       nfUpdateCartBadge();
     });
 
-    qtyCol.append("Кол-во:", qtyInput, removeBtn);
+    qtyCol.append(`${nfT("common.qtyShort", "Кол-во")}:`, qtyInput, removeBtn);
     row.append(thumb, info, qtyCol);
     itemsEl.appendChild(row);
 
+    totalUnits += item.qty;
     if (p.price != null) totalKnown += p.price * item.qty;
   });
 
   totalsEl.innerHTML = `
-    <div><strong>Итого (по позициям с ценой):</strong> ${nfFormatPrice(totalKnown)}</div>
-    <div style="font-size:12px;color:#6b7280;margin-top:4px;">
-      Часть оборудования может иметь цену «по запросу» — итоговое КП будет содержать полный расчёт.
+    <div class="nf-cart-total-row"><strong>${nfEscapeHtml(nfT("cart.total.positions", "Позиций:"))}</strong> ${nfEscapeHtml(String(NF_STATE.cart.length))} · ${nfEscapeHtml(String(totalUnits))} ${nfEscapeHtml(nfT("common.unitsShort", "шт."))}</div>
+    <div class="nf-cart-total-row"><strong>${nfEscapeHtml(nfT("cart.total.withPrice", "Итого (по позициям с ценой):"))}</strong> ${nfEscapeHtml(nfFormatPrice(totalKnown))}</div>
+    <div class="nf-cart-total-note">
+      ${nfEscapeHtml(nfT("cart.total.note", "Часть оборудования может иметь цену «по запросу» — итоговое КП будет содержать полный расчёт."))}
     </div>
   `;
+  nfSyncAllAddToRequestButtons();
 }
 
 function nfUpdateOverlayBody() {
@@ -2558,10 +5022,1110 @@ function nfCloseCartPanel() {
   nfUpdateOverlayBody();
 }
 
+/* ====== КАРТОЧКА ТОВАРА: ОПИСАНИЕ / УСТАНОВКА / ОБСЛУЖИВАНИЕ (страница + модалка) ====== */
+
+const NF_PRODUCT_DOCUMENTATION_NOTE =
+  "Документация по оборудованию доступна по запросу — приложим паспорта и инструкции в составе коммерческого предложения.";
+
+function nfProductDefaultServiceSteps() {
+  return [
+    nfT("product.defaultStep.1", "Анализ задач и требований заказчика"),
+    nfT("product.defaultStep.2", "Подготовка технического решения и КП"),
+    nfT("product.defaultStep.3", "Согласование конфигурации и сроков поставки"),
+    nfT("product.defaultStep.4", "Поставка и логистика"),
+    nfT("product.defaultStep.5", "Инсталляция и подключение к сетям"),
+    nfT("product.defaultStep.6", "Калибровка и настройка"),
+    nfT("product.defaultStep.7", "Интеграция с ИТ-системами"),
+    nfT("product.defaultStep.8", "Обучение персонала"),
+    nfT("product.defaultStep.9", "Тестовая эксплуатация"),
+    nfT("product.defaultStep.10", "Плановое сервисное сопровождение"),
+  ];
+}
+
+function nfProductServiceSteps(product) {
+  if (Array.isArray(product?.serviceSteps) && product.serviceSteps.length) {
+    return product.serviceSteps.map(String).filter(Boolean);
+  }
+  return nfProductDefaultServiceSteps();
+}
+
+function nfProductRequirementLists(product) {
+  const roomDefaults = [
+    nfT("product.defaultRoom.1", "Температура: +18°C до +25°C"),
+    nfT("product.defaultRoom.2", "Влажность: 30–75% без конденсата"),
+    nfT("product.defaultRoom.3", "Площадь: от 15 м²"),
+    nfT("product.defaultRoom.4", "Высота потолков: от 2,5 м"),
+  ];
+  const engineerDefaults = [
+    nfT("product.defaultEngineer.1", "Электропитание: 220В / 50Гц"),
+    nfT("product.defaultEngineer.2", "Заземление"),
+    nfT("product.defaultEngineer.3", "Интернет‑подключение (по необходимости)"),
+    nfT("product.defaultEngineer.4", "Вентиляция помещения"),
+  ];
+  const roomList =
+    Array.isArray(product?.roomRequirements) && product.roomRequirements.length
+      ? product.roomRequirements
+      : roomDefaults;
+  const engineerList =
+    Array.isArray(product?.engineerRequirements) && product.engineerRequirements.length
+      ? product.engineerRequirements
+      : engineerDefaults;
+  return { roomList, engineerList };
+}
+
+function nfSplitInstallMaintenanceSteps(steps) {
+  const list = Array.isArray(steps) ? steps.filter(Boolean).map(String) : [];
+  if (!list.length) return { install: nfProductDefaultServiceSteps(), maintenance: [] };
+  if (list.length <= 4) return { install: list, maintenance: [] };
+  const nMaint = list.length >= 9 ? 3 : list.length >= 6 ? 2 : 1;
+  const split = Math.max(1, list.length - nMaint);
+  return { install: list.slice(0, split), maintenance: list.slice(split) };
+}
+
+function nfFillProductDescriptionHost(descHost, product) {
+  if (!descHost) return;
+  descHost.innerHTML = "";
+  const raw =
+    product.description ||
+    nfT("product.defaultShortDesc", "Профессиональное медицинское оборудование.");
+  const p = document.createElement("p");
+  p.textContent = String(raw);
+  descHost.appendChild(p);
+}
+
+function nfFillProductSpecsList(specsUl, product) {
+  if (!specsUl) return;
+  specsUl.innerHTML = "";
+  if (!product.specs?.length) return;
+  product.specs.forEach((s) => {
+    const li = nfCreateEl("li", "nf-pdp-spec-row", "");
+    li.textContent = String(s);
+    specsUl.appendChild(li);
+  });
+}
+
+function nfProductStatusLabel(status) {
+  const s = String(status || "").toLowerCase();
+  if (s === "in_stock" || s === "available" || s === "instock")
+    return nfT("product.status.inStock", "В наличии");
+  return nfT("product.status.onOrder", "Под заказ");
+}
+
+function nfFillPdpDescriptionBlocks(descHost, product) {
+  if (!descHost) return;
+  descHost.innerHTML = "";
+  const raw = product.description && String(product.description).trim();
+  if (!raw) return;
+  const chunks = raw.split(/\n\s*\n+/).filter(Boolean);
+  const paragraphs = chunks.length > 1 ? chunks : raw.split(/\n/).map((x) => x.trim()).filter(Boolean);
+  paragraphs.forEach((chunk) => {
+    const p = nfCreateEl("p", "nf-pdp-prose-p", "");
+    p.textContent = chunk.replace(/\s+/g, " ").trim();
+    descHost.appendChild(p);
+  });
+}
+
+function nfFillPdpQuickSpecs(ulEl, product, category, partnerName) {
+  if (!ulEl) return;
+  ulEl.innerHTML = "";
+  const rows = [];
+  const specs = Array.isArray(product.specs) ? product.specs : [];
+  if (specs.length) {
+    specs.slice(0, 8).forEach((s) => rows.push({ k: "", v: String(s) }));
+  } else {
+    if (category?.name) rows.push({ k: nfT("product.quick.category", "Категория"), v: category.name });
+    if (partnerName) rows.push({ k: nfT("product.quick.partner", "Партнёр"), v: partnerName });
+    if (product.article) rows.push({ k: nfT("product.quick.article", "Артикул"), v: product.article });
+    if (product.model) rows.push({ k: nfT("product.quick.model", "Модель"), v: product.model });
+  }
+  rows.forEach(({ k, v }) => {
+    const li = document.createElement("li");
+    li.className = "nf-pdp-quick-spec";
+    if (k) {
+      li.appendChild(nfCreateElText("span", "nf-pdp-quick-spec-k", k));
+      li.appendChild(nfCreateElText("span", "nf-pdp-quick-spec-v", v));
+    } else {
+      li.appendChild(nfCreateElText("span", "nf-pdp-quick-spec-full", v));
+    }
+    ulEl.appendChild(li);
+  });
+}
+
+function nfFillPdpDocsSection(host, product) {
+  if (!host) return;
+  host.innerHTML = "";
+  const docs = product.docs;
+  if (Array.isArray(docs) && docs.length) {
+    const ul = nfCreateEl("ul", "nf-pdp-docs-list");
+    docs.forEach((d) => {
+      const label =
+        typeof d === "string"
+          ? d
+          : String(d?.title || d?.name || d?.label || d?.filename || "").trim();
+      if (!label) return;
+      ul.appendChild(nfCreateElText("li", "nf-pdp-docs-item", label));
+    });
+    if (ul.childNodes.length) {
+      host.appendChild(ul);
+      return;
+    }
+  }
+  host.appendChild(nfCreateElText("p", "nf-pdp-doc-note", nfT("product.docNote", NF_PRODUCT_DOCUMENTATION_NOTE)));
+}
+
+function nfPdpParseKV(line) {
+  const str = String(line || "").trim();
+  const idx = str.indexOf(":");
+  if (idx > 0 && idx < str.length - 1) {
+    return { label: str.slice(0, idx).trim(), value: str.slice(idx + 1).trim() };
+  }
+  return { label: "", value: str };
+}
+
+function nfPdpSpecIconSlug(label) {
+  const l = String(label || "").toLowerCase();
+  if (/температур|^temp/i.test(l)) return "temp";
+  if (/влажност|humidity/i.test(l)) return "humidity";
+  if (/площад|area|м²|m²/i.test(l)) return "area";
+  if (/высот|ceiling|потол/i.test(l)) return "height";
+  if (/заземлен|ground|earthing/i.test(l)) return "ground";
+  if (/электро|питан|power|напряж|вольт|220|380|watt|ампер/i.test(l)) return "power";
+  if (/вентиляц|vent|приток|вытяж|airflow/i.test(l)) return "vent";
+  if (/интернет|сети|wi-?fi|ethernet|it\s|ip/i.test(l)) return "network";
+  if (/свет|освещ|lumen/i.test(l)) return "light";
+  return "default";
+}
+
+function nfPdpInstallLineIconSlug(line) {
+  return nfPdpSpecIconSlug(String(line || ""));
+}
+
+function nfPdpIconSvgOpen() {
+  return '<svg class="nf-pdp-icon-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">';
+}
+
+/**
+ * Минималистичные stroke-иконки (единый стиль). kind: spec slug, installRoom, installEng, service* .
+ */
+function nfPdpGetPdpStrokeIcon(kind) {
+  const k = String(kind || "default");
+  const o = nfPdpIconSvgOpen();
+  const c = "</svg>";
+  if (k === "temp")
+    return o + '<path d="M10 2v7.1a4 4 0 1 0 4 0V2a2 2 0 0 0-2-2h0a2 2 0 0 0-2 2z"/><line x1="12" y1="14" x2="12" y2="18"/>' + c;
+  if (k === "humidity")
+    return o + '<path d="M12 2.7l5.6 5.6a7 7 0 1 1-11.2 0z"/>' + c;
+  if (k === "area")
+    return o + '<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>' + c;
+  if (k === "height")
+    return (
+      o +
+      '<line x1="7" y1="3" x2="7" y2="21"/><path d="M4 6l3-3 3 3M4 18l3 3 3-3"/><line x1="11" y1="5" x2="17" y2="5"/><line x1="11" y1="12" x2="17" y2="12"/><line x1="11" y1="19" x2="17" y2="19"/>' +
+      c
+    );
+  if (k === "power")
+    return (
+      o +
+      '<path d="M9 2v2M15 2v2M7 8h10a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2z"/><line x1="9" y1="15" x2="9" y2="22"/><line x1="15" y1="15" x2="15" y2="22"/>' +
+      c
+    );
+  if (k === "ground")
+    return o + '<path d="M2 20h20"/><path d="M6 20l4-4 4 4 4-4M10 8h4M9 4h6"/>' + c;
+  if (k === "vent")
+    return o + '<path d="M3 8h3M3 12h2M3 16h3"/><path d="M13 4l-3 3M13 20l-3-3"/><path d="M19 4l-3 3M19 20l-3-3"/>' + c;
+  if (k === "network")
+    return (
+      o +
+      '<path d="M5 12.5a7 7 0 0 1 14 0"/><path d="M8.5 9.3a3.5 3.5 0 0 1 7 0"/><path d="M2 8h.01M2 12h.01M2 16h.01M22 8h.01M22 12h.01M22 16h.01M12 2a9 9 0 0 0-9 9c0 1.7.4 3.2 1.1 4.5"/>' +
+      c
+    );
+  if (k === "light")
+    return o + '<circle cx="12" cy="12" r="4"/><path d="M12 2v1M12 21v1M2 12h1M21 12h1M4.6 4.6l.7.7M18.7 18.7l.7.7M4.6 19.4l.7-.7M18.7 5.3l.7-.7"/>' + c;
+  if (k === "installRoom")
+    return o + '<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>' + c;
+  if (k === "installEng")
+    return o + '<line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/>' + c;
+  if (k === "serviceTrain")
+    return (
+      o +
+      '<path d="M2 3h6a4 4 0 0 1 4 4v14a2 2 0 0 1-2 2H3a1 1 0 0 1-1-1V3z"/><path d="M18 2h2v2h-2"/><path d="M10 2h8v3"/><path d="M6 19h2"/>' +
+      c
+    );
+  if (k === "servicePilot")
+    return o + '<circle cx="12" cy="12" r="9"/><path d="M8 12l2.5 2.5L16 8"/>' + c;
+  if (k === "serviceCare")
+    return o + '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><line x1="9" y1="12" x2="12" y2="15"/><line x1="15" y1="9" x2="12" y2="12"/>' + c;
+  return o + '<circle cx="12" cy="12" r="2"/><path d="M7 12H5.5A6.5 6.5 0 0 1 5 3M12 2v.5M19 3a6.5 6.5 0 0 1 .5 9M19 19a6.5 6.5 0 0 1-7 0"/>' + c;
+}
+
+function nfPdpCollectSpecPairs(product) {
+  const pairs = [];
+  const seen = new Set();
+  const push = (label, value, raw) => {
+    const key = `${label}|${value}`;
+    if (seen.has(key)) return;
+    seen.add(key);
+    pairs.push({ label: label || nfT("product.spec.param", "Параметр"), value, raw: raw || `${label}: ${value}` });
+  };
+
+  if (Array.isArray(product.specs)) {
+    product.specs.forEach((s) => {
+      const str = String(s || "").trim();
+      if (!str) return;
+      const { label, value } = nfPdpParseKV(str);
+      if (label && value) push(label, value, str);
+      else push("", str, str);
+    });
+  }
+
+  const { roomList, engineerList } = nfProductRequirementLists(product);
+  [...roomList, ...engineerList].forEach((line) => {
+    const { label, value } = nfPdpParseKV(line);
+    if (label && value) push(label, value, line);
+    else if (value) push(nfT("product.spec.requirement", "Требование"), value, line);
+  });
+
+  return pairs;
+}
+
+function nfFillPdpHeroBadges(host, product) {
+  if (!host) return;
+  host.innerHTML = "";
+  host.setAttribute("aria-label", "");
+  host.hidden = true;
+}
+
+function nfPdpCollectHeroSpecPairs(product, category, partnerName, limit) {
+  const max = Number.isFinite(limit) ? Math.max(1, limit) : 3;
+  const rawSpecs = Array.isArray(product?.specs) ? product.specs : [];
+  const source = rawSpecs.length
+    ? rawSpecs
+        .map((line) => {
+          const str = String(line || "").trim();
+          if (!str) return null;
+          const { label, value } = nfPdpParseKV(str);
+          if (label && value) return { label, value, raw: str };
+          return { label: "", value: str, raw: str };
+        })
+        .filter(Boolean)
+    : nfPdpCollectSpecPairs(product);
+  const all = source.map((item) => {
+    const slug = nfPdpSpecIconSlug(item.label || item.raw);
+    return { ...item, slug };
+  });
+  const preferred = ["temp", "humidity", "area", "power"];
+  const chosen = [];
+  const used = new Set();
+
+  preferred.forEach((slug) => {
+    if (chosen.length >= max) return;
+    const idx = all.findIndex((x, i) => !used.has(i) && x.slug === slug && String(x.value || "").trim());
+    if (idx >= 0) {
+      chosen.push(all[idx]);
+      used.add(idx);
+    }
+  });
+
+  for (let i = 0; i < all.length && chosen.length < max; i++) {
+    if (used.has(i)) continue;
+    const item = all[i];
+    if (!String(item?.value || "").trim()) continue;
+    chosen.push(item);
+    used.add(i);
+  }
+
+  if (!chosen.length) {
+    const fallback = [];
+    if (product.article) fallback.push({ label: nfT("product.quick.article", "Артикул"), value: product.article });
+    if (partnerName) fallback.push({ label: nfT("product.quick.partner", "Партнёр"), value: partnerName });
+    if (product.model) fallback.push({ label: nfT("product.quick.model", "Модель"), value: product.model });
+    fallback.slice(0, max).forEach((item) => chosen.push({ ...item, raw: `${item.label}: ${item.value}`, slug: nfPdpSpecIconSlug(item.label) }));
+  }
+  return chosen.slice(0, max);
+}
+
+function nfFillPdpHeroSpecGrid(host, product, category, partnerName) {
+  if (!host) return;
+  host.innerHTML = "";
+  host.hidden = true;
+}
+
+function nfPdpPrimarySpecLabel(slug) {
+  if (slug === "temp") return nfT("product.spec.primary.temp", "Температура");
+  if (slug === "humidity") return nfT("product.spec.primary.humidity", "Влажность");
+  if (slug === "area") return nfT("product.spec.primary.area", "Площадь");
+  if (slug === "height") return nfT("product.spec.primary.height", "Высота потолков");
+  return nfT("product.spec.param", "Параметр");
+}
+
+function nfPdpParseSpecLine(line, fallbackLabel) {
+  const text = String(line || "").trim();
+  if (!text) return null;
+  const { label, value } = nfPdpParseKV(text);
+  if (label && value) return { label: label.trim(), value: value.trim(), raw: text };
+  return {
+    label: String(fallbackLabel || "").trim(),
+    value: text,
+    raw: text,
+  };
+}
+
+function nfPdpBuildSpecsLayout(product) {
+  const { roomList, engineerList } = nfProductRequirementLists(product);
+  const priority = ["temp", "humidity", "area", "height"];
+  const engineeringSlugs = new Set(["power", "ground", "network", "vent"]);
+  const roomSource = Array.isArray(roomList) ? roomList : [];
+  const engineerSource = Array.isArray(engineerList) ? engineerList : [];
+  const rawSpecs = Array.isArray(product?.specs) ? product.specs : [];
+
+  const parsedRoom = roomSource
+    .map((line) => nfPdpParseSpecLine(line, ""))
+    .filter(Boolean);
+  const parsedSpecs = rawSpecs
+    .map((line) => nfPdpParseSpecLine(line, ""))
+    .filter(Boolean);
+  const parsedEngineer = engineerSource
+    .map((line) => nfPdpParseSpecLine(line, ""))
+    .filter(Boolean);
+
+  const primaryMap = new Map();
+  const primaryFallback = [];
+  const primaryKeys = new Set();
+
+  const pushPrimary = (item) => {
+    if (!item?.value) return;
+    const slug = nfPdpSpecIconSlug(item.label || item.raw || item.value);
+    const normalizedLabel = String(item.label || "").trim() || nfPdpPrimarySpecLabel(slug);
+    const value = String(item.value || "").trim();
+    if (!value) return;
+    const key = `${normalizedLabel}|${value}`.toLowerCase();
+    if (primaryKeys.has(key)) return;
+
+    const entry = {
+      slug,
+      label: normalizedLabel,
+      value,
+      raw: item.raw,
+    };
+
+    primaryKeys.add(key);
+    if (priority.includes(slug) && !primaryMap.has(slug)) {
+      primaryMap.set(slug, entry);
+      return;
+    }
+    if (primaryFallback.length < 8) {
+      primaryFallback.push(entry);
+    }
+  };
+
+  [...parsedRoom, ...parsedSpecs].forEach((item) => {
+    const slug = nfPdpSpecIconSlug(item.label || item.raw || item.value);
+    if (engineeringSlugs.has(slug)) return;
+    pushPrimary(item);
+  });
+
+  const primary = [];
+  priority.forEach((slug) => {
+    const item = primaryMap.get(slug);
+    if (item) primary.push(item);
+  });
+  primaryFallback.forEach((item) => {
+    if (primary.length < 8) primary.push(item);
+  });
+
+  const engineering = [];
+  const engineeringKeys = new Set();
+  const pushEngineering = (item) => {
+    if (!item?.value) return;
+    const slug = nfPdpSpecIconSlug(item.label || item.raw || item.value);
+    if (!engineeringSlugs.has(slug)) return;
+    const label = String(item.label || "").trim();
+    const value = String(item.value || "").trim();
+    const text = label ? `${label}: ${value}` : value;
+    if (!text) return;
+    const key = text.toLowerCase();
+    if (engineeringKeys.has(key)) return;
+    engineeringKeys.add(key);
+    engineering.push({ slug, text });
+  };
+
+  parsedEngineer.forEach(pushEngineering);
+  parsedSpecs.forEach(pushEngineering);
+
+  return {
+    primary: primary.slice(0, 8),
+    engineering: engineering.slice(0, 8),
+  };
+}
+
+function nfFillPdpSpecsGrid(host, product) {
+  if (!host) return;
+  host.innerHTML = "";
+  const { primary, engineering } = nfPdpBuildSpecsLayout(product);
+
+  if (!primary.length && !engineering.length) {
+    const empty = nfCreateElText(
+      "p",
+      "nf-pdp-specs-empty",
+      nfT("product.info.pending", "Информация уточняется. Предоставим параметры по запросу.")
+    );
+    host.appendChild(empty);
+    return;
+  }
+
+  const layout = document.createElement("div");
+  layout.className = "nf-pdp-specs-layout";
+
+  if (primary.length) {
+    const primarySection = document.createElement("section");
+    primarySection.className = "nf-pdp-specs-panel nf-pdp-specs-panel--primary";
+
+    const primaryHead = document.createElement("header");
+    primaryHead.className = "nf-pdp-specs-panel-head";
+    primaryHead.innerHTML =
+      `<h3 class="nf-pdp-specs-panel-title">${nfEscapeHtml(
+        nfT("product.specs.primaryTitle", "Ключевые параметры")
+      )}</h3>` +
+      `<p class="nf-pdp-specs-panel-subtitle">${nfEscapeHtml(
+        nfT("product.specs.primaryLead", "Базовые условия размещения и эксплуатации")
+      )}</p>`;
+
+    const primaryList = document.createElement("div");
+    primaryList.className = "nf-pdp-specs-primary-list";
+    primary.forEach((item) => {
+      const pill = document.createElement("article");
+      pill.className = "nf-pdp-spec-chip nf-pdp-spec-chip--" + (item.slug || "default");
+      pill.innerHTML =
+        `<span class="nf-pdp-spec-chip-icon" aria-hidden="true">${nfPdpGetPdpStrokeIcon(item.slug)}</span>` +
+        `<span class="nf-pdp-spec-chip-text">` +
+        `<span class="nf-pdp-spec-chip-label">${nfEscapeHtml(item.label || nfT("product.spec.param", "Параметр"))}</span>` +
+        `<span class="nf-pdp-spec-chip-value">${nfEscapeHtml(item.value)}</span>` +
+        `</span>`;
+      primaryList.appendChild(pill);
+    });
+
+    primarySection.appendChild(primaryHead);
+    primarySection.appendChild(primaryList);
+    layout.appendChild(primarySection);
+  }
+
+  if (engineering.length) {
+    const engineeringSection = document.createElement("section");
+    engineeringSection.className = "nf-pdp-specs-panel nf-pdp-specs-panel--engineering";
+
+    const engineeringHead = document.createElement("header");
+    engineeringHead.className = "nf-pdp-specs-panel-head";
+    engineeringHead.innerHTML =
+      `<h3 class="nf-pdp-specs-panel-title">${nfEscapeHtml(
+        nfT("product.specs.engineeringTitle", "Инженерные требования")
+      )}</h3>` +
+      `<p class="nf-pdp-specs-panel-subtitle">${nfEscapeHtml(
+        nfT("product.specs.engineeringLead", "Подключения и инфраструктура для запуска")
+      )}</p>`;
+
+    const engineeringList = document.createElement("ul");
+    engineeringList.className = "nf-pdp-specs-engineering-list";
+    engineering.forEach((item) => {
+      const li = document.createElement("li");
+      li.className = "nf-pdp-spec-engineering-item nf-pdp-spec-engineering-item--" + (item.slug || "default");
+      li.innerHTML =
+        `<span class="nf-pdp-spec-engineering-icon" aria-hidden="true">${nfPdpGetPdpStrokeIcon(item.slug)}</span>` +
+        `<span class="nf-pdp-spec-engineering-text">${nfEscapeHtml(item.text)}</span>`;
+      engineeringList.appendChild(li);
+    });
+
+    engineeringSection.appendChild(engineeringHead);
+    engineeringSection.appendChild(engineeringList);
+    layout.appendChild(engineeringSection);
+  }
+
+  host.appendChild(layout);
+}
+
+function nfFillPdpDescriptionRich(descHost, calloutEl, product, category) {
+  if (descHost) descHost.innerHTML = "";
+  const raw = product.description && String(product.description).trim();
+
+  if (calloutEl) {
+    if (category?.name) {
+      calloutEl.hidden = false;
+      calloutEl.textContent = nfT(
+        "product.desc.callout",
+        "Подходит для задач направления «{category}».",
+        { category: category.name }
+      );
+    } else {
+      calloutEl.hidden = true;
+    }
+  }
+
+  if (!raw || !descHost) return;
+
+  const chunks = raw.split(/\n\s*\n+/).filter(Boolean);
+  const paragraphs = chunks.length > 1 ? chunks : raw.split(/\n/).map((x) => x.trim()).filter(Boolean);
+
+  paragraphs.forEach((chunk) => {
+    const text = chunk.replace(/\s+/g, " ").trim();
+    if (!text) return;
+    const p = nfCreateEl("p", "nf-pdp-prose-p", "");
+    const parts = text.split(/(\*\*[^*]+\*\*)/g);
+    parts.forEach((part) => {
+      const m = part.match(/^\*\*([^*]+)\*\*$/);
+      if (m) {
+        const strong = document.createElement("strong");
+        strong.className = "nf-pdp-prose-strong";
+        strong.textContent = m[1];
+        p.appendChild(strong);
+      } else if (part) {
+        p.appendChild(document.createTextNode(part));
+      }
+    });
+    descHost.appendChild(p);
+  });
+}
+
+function nfFillPdpKitSection(host, product) {
+  if (!host) return;
+  const kitSec = document.getElementById("pdp-kit");
+  host.innerHTML = "";
+  const attrs = product.attributes;
+  if (Array.isArray(attrs) && attrs.length) {
+    const ul = nfCreateEl("ul", "nf-pdp-kit-list nf-pdp-kit-list--rich");
+    attrs.forEach((a) => {
+      let text = "";
+      if (typeof a === "string") text = a.trim();
+      else if (a && typeof a === "object") {
+        const label = a.label || a.name || "";
+        const val = a.value != null ? String(a.value) : "";
+        text = label && val ? `${label}: ${val}` : label || val || "";
+      }
+      if (text) ul.appendChild(nfCreateElText("li", "nf-pdp-kit-item", text));
+    });
+    if (ul.childNodes.length) {
+      host.appendChild(ul);
+      if (kitSec) kitSec.hidden = false;
+      return;
+    }
+  }
+  if (kitSec) kitSec.hidden = true;
+}
+
+function nfFillPdpServiceCards(product) {
+  const host = nfEl("productPageServiceCards");
+  if (!host) return;
+  host.innerHTML = "";
+  const steps = nfProductServiceSteps(product);
+  const { maintenance: maintSteps } = nfSplitInstallMaintenanceSteps(steps);
+
+  const cards = [
+    {
+      stroke: "serviceTrain",
+      mod: "nf-pdp-service-card__icon--train",
+      title: nfT("product.serviceCard.trainingTitle", "Обучение"),
+      body:
+        maintSteps[0] ||
+        nfT(
+          "product.serviceCard.trainingFallback",
+          "Практическое обучение персонала работе с оборудованием и базовым обслуживанию."
+        ),
+    },
+    {
+      stroke: "servicePilot",
+      mod: "nf-pdp-service-card__icon--pilot",
+      title: nfT("product.serviceCard.pilotTitle", "Тестовая эксплуатация"),
+      body:
+        maintSteps[1] ||
+        nfT(
+          "product.serviceCard.pilotFallback",
+          "Контрольный запуск и проверка сценариев использования до полной нагрузки."
+        ),
+    },
+    {
+      stroke: "serviceCare",
+      mod: "nf-pdp-service-card__icon--care",
+      title: nfT("product.serviceCard.careTitle", "Сервисное сопровождение"),
+      body:
+        maintSteps[2] ||
+        nfT(
+          "product.serviceCard.careFallback",
+          "Регулярное обслуживание, калибровка и консультации по договору."
+        ),
+    },
+  ];
+
+  cards.forEach((c) => {
+    const art = document.createElement("article");
+    art.className = "nf-pdp-service-card";
+    const iconInner = nfPdpGetPdpStrokeIcon(c.stroke);
+    art.innerHTML =
+      `<div class="nf-pdp-service-card__icon ${c.mod}" aria-hidden="true">${iconInner}</div>` +
+      `<h3 class="nf-pdp-service-card__title">${nfEscapeHtml(c.title)}</h3>` +
+      `<p class="nf-pdp-service-card__text">${nfEscapeHtml(c.body)}</p>`;
+    host.appendChild(art);
+  });
+}
+
+function nfPdpInjectInstallEnvHeaderIcon(ulEl, kind) {
+  if (!ulEl) return;
+  const card = ulEl.closest(".nf-pdp-install-env-card");
+  const h = card && card.querySelector(".nf-pdp-install-env-h");
+  if (!h || h.querySelector(".nf-pdp-install-env-h-icon")) return;
+  const wrap = document.createElement("span");
+  wrap.className = "nf-pdp-install-env-h-icon";
+  wrap.setAttribute("aria-hidden", "true");
+  wrap.innerHTML = nfPdpGetPdpStrokeIcon(kind);
+  h.insertBefore(wrap, h.firstChild);
+}
+
+function nfPdpAppendInstallFeatureLine(ul, line) {
+  const text = String(line || "").trim();
+  if (!text) return;
+  const { label } = nfPdpParseKV(text);
+  const li = document.createElement("li");
+  li.className = "nf-pdp-install-feature";
+  const slug = label ? nfPdpSpecIconSlug(label) : nfPdpInstallLineIconSlug(text);
+  const mark = document.createElement("span");
+  mark.className = "nf-pdp-install-feature__mark";
+  mark.setAttribute("aria-hidden", "true");
+  mark.innerHTML = nfPdpGetPdpStrokeIcon(slug);
+  const body = document.createElement("span");
+  body.className = "nf-pdp-install-feature__text";
+  body.textContent = text;
+  li.appendChild(mark);
+  li.appendChild(body);
+  ul.appendChild(li);
+}
+
+function nfFillPdpInstallSection(product) {
+  const roomUl = nfEl("productPageInstallRoom");
+  const engineerUl = nfEl("productPageInstallEngineer");
+  const timelineOl = nfEl("productPageInstallTimeline");
+  if (!roomUl || !engineerUl || !timelineOl) return;
+
+  const { roomList, engineerList } = nfProductRequirementLists(product);
+  const { install: installSteps } = nfSplitInstallMaintenanceSteps(nfProductServiceSteps(product));
+
+  roomUl.classList.add("nf-pdp-install-feature-list");
+  engineerUl.classList.add("nf-pdp-install-feature-list");
+  nfPdpInjectInstallEnvHeaderIcon(roomUl, "installRoom");
+  nfPdpInjectInstallEnvHeaderIcon(engineerUl, "installEng");
+
+  roomUl.innerHTML = "";
+  roomList.forEach((item) => nfPdpAppendInstallFeatureLine(roomUl, item));
+
+  engineerUl.innerHTML = "";
+  engineerList.forEach((item) => nfPdpAppendInstallFeatureLine(engineerUl, item));
+
+  timelineOl.innerHTML = "";
+  installSteps.forEach((s, i) => {
+    const li = document.createElement("li");
+    li.className = "nf-pdp-timeline__step";
+    li.innerHTML =
+      `<span class="nf-pdp-timeline__dot">${i + 1}</span>` +
+      `<div class="nf-pdp-timeline__content">` +
+      `<p class="nf-pdp-timeline__text">${nfEscapeHtml(String(s))}</p>` +
+      `</div>`;
+    timelineOl.appendChild(li);
+  });
+}
+
+function nfFillPdpMaintenanceSection(product) {
+  nfFillPdpServiceCards(product);
+}
+
+function nfPdpMountRevealScroll(pageRoot) {
+  if (!pageRoot || typeof IntersectionObserver === "undefined") return () => {};
+  const els = pageRoot.querySelectorAll("[data-pdp-reveal-scroll]");
+  if (!els.length) return () => {};
+  const io = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((en) => {
+        if (en.isIntersecting) en.target.classList.add("nf-pdp-reveal--in");
+      });
+    },
+    { threshold: 0.14, rootMargin: "0px 0px -8% 0px" }
+  );
+  els.forEach((el) => io.observe(el));
+  return () => {
+    io.disconnect();
+    els.forEach((el) => el.classList.remove("nf-pdp-reveal--in"));
+  };
+}
+
+function nfPdpMountSmoothAnchors(pageRoot) {
+  const nav = pageRoot.querySelector(".nf-pdp-subnav");
+  if (!nav) return () => {};
+  const onClick = (e) => {
+    const a = e.target.closest('a[href^="#"]');
+    if (!a || !nav.contains(a)) return;
+    const id = (a.getAttribute("href") || "").replace(/^#/, "");
+    const target = id ? document.getElementById(id) : null;
+    if (!target) return;
+    e.preventDefault();
+    target.scrollIntoView({ behavior: nfPrefersReducedMotion() ? "auto" : "smooth", block: "start" });
+  };
+  nav.addEventListener("click", onClick);
+  return () => nav.removeEventListener("click", onClick);
+}
+
+function nfDisposePdpPageEnhancements(pageRoot) {
+  if (!pageRoot || typeof pageRoot !== "object") return;
+  if (typeof pageRoot._nfPdpCleanup === "function") {
+    try {
+      pageRoot._nfPdpCleanup();
+    } catch (_e) {}
+    pageRoot._nfPdpCleanup = null;
+  }
+}
+
+function nfPdpSyncSubnav(pageRoot) {
+  const pairs = [
+    ["description", "pdp-description"],
+    ["specs", "pdp-specs"],
+    ["kit", "pdp-kit"],
+    ["install", "pdp-install"],
+    ["service", "pdp-service"],
+  ];
+  pairs.forEach(([key, id]) => {
+    const sec = document.getElementById(id);
+    const link = pageRoot.querySelector(`[data-pdp-section-link="${key}"]`);
+    if (!link || !sec) return;
+    link.hidden = sec.hasAttribute("hidden");
+  });
+}
+
+function nfPdpMountScrollSpy(pageRoot) {
+  const nav = pageRoot.querySelector(".nf-pdp-subnav");
+  if (!nav || typeof IntersectionObserver === "undefined") return () => {};
+
+  const links = [...nav.querySelectorAll('a[href^="#"]')];
+  const toObserve = [];
+  links.forEach((a) => {
+    const id = (a.getAttribute("href") || "").replace(/^#/, "");
+    if (!id) return;
+    const el = document.getElementById(id);
+    if (el && !el.hidden && !a.hidden) toObserve.push(el);
+  });
+
+  const clearActive = () => links.forEach((l) => l.classList.remove("nf-pdp-subnav-link--active"));
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      const visible = entries
+        .filter((e) => e.isIntersecting)
+        .sort((a, b) => (b.intersectionRatio || 0) - (a.intersectionRatio || 0))[0];
+      if (!visible?.target?.id) return;
+      clearActive();
+      const activeLink = nav.querySelector(`a[href="#${visible.target.id}"]`);
+      if (activeLink) activeLink.classList.add("nf-pdp-subnav-link--active");
+    },
+    { root: null, rootMargin: "-12% 0px -62% 0px", threshold: [0, 0.08, 0.25] }
+  );
+
+  toObserve.forEach((el) => observer.observe(el));
+
+  const firstNav = links.find((l) => !l.hidden);
+  if (firstNav) firstNav.classList.add("nf-pdp-subnav-link--active");
+
+  return () => {
+    observer.disconnect();
+    clearActive();
+  };
+}
+
+function nfFillProductInstallMaintenancePanels(installEl, maintEl, product) {
+  if (!installEl || !maintEl) return;
+
+  const { roomList, engineerList } = nfProductRequirementLists(product);
+  const { install: installSteps, maintenance: maintSteps } = nfSplitInstallMaintenanceSteps(
+    nfProductServiceSteps(product)
+  );
+
+  installEl.innerHTML = "";
+  maintEl.innerHTML = "";
+
+  const note = nfCreateEl("div", "nf-install-note");
+  const rows = nfCreateEl("div", "nf-install-note-rows");
+
+  const roomCol = nfCreateEl("div", "", "");
+  roomCol.appendChild(nfCreateEl("h4", "", nfT("product.install.roomConditions", "Помещение и условия")));
+  const roomUl = nfCreateEl("ul", "", "");
+  roomList.forEach((item) => roomUl.appendChild(nfCreateElText("li", "", item)));
+  roomCol.appendChild(roomUl);
+
+  const engineerCol = nfCreateEl("div", "", "");
+  engineerCol.appendChild(nfCreateEl("h4", "", nfT("product.install.engineering", "Инженерные коммуникации")));
+  const engineerUl = nfCreateEl("ul", "", "");
+  engineerList.forEach((item) => engineerUl.appendChild(nfCreateElText("li", "", item)));
+  engineerCol.appendChild(engineerUl);
+
+  rows.appendChild(roomCol);
+  rows.appendChild(engineerCol);
+  note.appendChild(rows);
+  installEl.appendChild(note);
+
+  const titleSteps = nfCreateEl("div", "nf-tab-section-title", nfT("product.install.stepsTitle", "Этапы установки и ввода"));
+  const ol = nfCreateEl("ol", "nf-install-steps");
+  installSteps.forEach((s) => ol.appendChild(nfCreateElText("li", "", s)));
+  installEl.appendChild(titleSteps);
+  installEl.appendChild(ol);
+
+  if (maintSteps.length) {
+    const om = nfCreateEl("ol", "nf-install-steps nf-install-steps--maintenance");
+    maintSteps.forEach((s) => om.appendChild(nfCreateElText("li", "", s)));
+    maintEl.appendChild(om);
+  } else {
+    maintEl.appendChild(
+      nfCreateEl(
+        "p",
+        "nf-product-page-maint-fallback",
+        nfT("product.maintenanceFallback", "Регулярное сервисное сопровождение, калибровка и консультации доступны по договору. Формат поддержки согласуется при поставке.")
+      )
+    );
+  }
+}
+
+const NF_IMAGE_ZOOM_DISPOSE = {
+  pdp: null,
+  modal: null,
+  lightbox: null,
+};
+
+/** Сила hover-zoom в модалке товара и полноэкранном lightbox (на PDP остаётся 1.38). */
+const NF_MODAL_LIGHTBOX_ZOOM_SCALE = 2.28;
+
+/** Верхний предел масштаба при прокрутке колёсика (модалка / lightbox). */
+const NF_MODAL_LIGHTBOX_WHEEL_MAX_SCALE = 4.25;
+
+function nfDisposeImageZoomPan(key) {
+  const k = key || "pdp";
+  if (NF_IMAGE_ZOOM_DISPOSE[k]) {
+    NF_IMAGE_ZOOM_DISPOSE[k]();
+    NF_IMAGE_ZOOM_DISPOSE[k] = null;
+  }
+}
+
+/**
+ * Десктоп: hover-zoom + pan по курсору внутри viewport (карточка товара, модалка, lightbox).
+ * opts.disposeKey: 'pdp' | 'modal' | 'lightbox'
+ * opts.wheelZoom: колесо мыши — плавный zoom к точке под курсором (модалка / lightbox).
+ */
+function nfAttachImageZoomPan(opts) {
+  const viewport = opts.viewport;
+  const img = opts.img;
+  const isAllowed = opts.isAllowed || (() => true);
+  const ZOOM = opts.scale || 1.38;
+  const disposeKey = opts.disposeKey || "pdp";
+  const wheelZoom = !!opts.wheelZoom;
+  const maxWheelScale =
+    opts.maxScale != null ? opts.maxScale : wheelZoom ? NF_MODAL_LIGHTBOX_WHEEL_MAX_SCALE : ZOOM;
+
+  nfDisposeImageZoomPan(disposeKey);
+
+  if (!viewport || !img) return () => {};
+
+  const canHoverZoom = () =>
+    window.matchMedia("(hover: hover) and (pointer: fine)").matches && !nfPrefersReducedMotion();
+
+  if (!canHoverZoom()) {
+    img.style.transform = "";
+    return () => {};
+  }
+
+  let hover = false;
+  let panMaxX = 0;
+  let panMaxY = 0;
+  let ttx = 0;
+  let tty = 0;
+  let px = 0;
+  let py = 0;
+  let sc = 1;
+  let raf = null;
+  let lastCX = 0;
+  let lastCY = 0;
+  /** Целевой масштаб при hover (для wheelZoom меняется колесом; старт = ZOOM при входе). */
+  let desiredSc = ZOOM;
+
+  const recomputeBounds = () => {
+    if (!img.offsetWidth || !img.offsetHeight) return;
+    const cw = viewport.clientWidth;
+    const ch = viewport.clientHeight;
+    const iw = img.offsetWidth;
+    const ih = img.offsetHeight;
+    if (wheelZoom) {
+      const sForBounds = Math.max(desiredSc, sc);
+      panMaxX = Math.max(0, (iw * sForBounds - cw) / 2);
+      panMaxY = Math.max(0, (ih * sForBounds - ch) / 2);
+    } else {
+      panMaxX = Math.max(0, (iw * ZOOM - cw) / 2);
+      panMaxY = Math.max(0, (ih * ZOOM - ch) / 2);
+    }
+  };
+
+  const clampPanToBounds = () => {
+    recomputeBounds();
+    px = Math.max(-panMaxX, Math.min(panMaxX, px));
+    py = Math.max(-panMaxY, Math.min(panMaxY, py));
+    ttx = Math.max(-panMaxX, Math.min(panMaxX, ttx));
+    tty = Math.max(-panMaxY, Math.min(panMaxY, tty));
+  };
+
+  const updateTargetsFromClient = (clientX, clientY) => {
+    const r = viewport.getBoundingClientRect();
+    if (r.width < 1 || r.height < 1) return;
+    lastCX = clientX;
+    lastCY = clientY;
+    const mx = ((clientX - r.left) / r.width) * 2 - 1;
+    const my = ((clientY - r.top) / r.height) * 2 - 1;
+    ttx = -mx * panMaxX;
+    tty = -my * panMaxY;
+  };
+
+  const tick = () => {
+    const kPan = hover ? 0.2 : 0.22;
+    const kSc = wheelZoom ? 0.14 : 0.16;
+    px += (ttx - px) * kPan;
+    py += (tty - py) * kPan;
+    const targetSc = hover && isAllowed() ? (wheelZoom ? desiredSc : ZOOM) : 1;
+    sc += (targetSc - sc) * kSc;
+    const inv = sc > 0.08 ? sc : 1;
+    img.style.transform = `scale(${sc}) translate(${px / inv}px, ${py / inv}px)`;
+
+    const panSettled = Math.abs(ttx - px) < 0.4 && Math.abs(tty - py) < 0.4;
+    const scSettled = Math.abs(targetSc - sc) < 0.006;
+    if (!hover && panSettled && scSettled && Math.abs(sc - 1) < 0.008) {
+      px = py = ttx = tty = 0;
+      sc = 1;
+      desiredSc = ZOOM;
+      img.style.transform = "";
+      viewport.classList.remove("nf-pdp-zoom-viewport--active");
+      img.classList.remove("nf-pdp-media-img--zooming");
+      raf = null;
+      return;
+    }
+    raf = requestAnimationFrame(tick);
+  };
+
+  const ensureLoop = () => {
+    if (raf == null) raf = requestAnimationFrame(tick);
+  };
+
+  const onEnter = (e) => {
+    if (!isAllowed() || !canHoverZoom()) return;
+    if (wheelZoom) desiredSc = ZOOM;
+    recomputeBounds();
+    hover = true;
+    viewport.classList.add("nf-pdp-zoom-viewport--active");
+    img.classList.add("nf-pdp-media-img--zooming");
+    updateTargetsFromClient(e.clientX, e.clientY);
+    ensureLoop();
+  };
+
+  const onMove = (e) => {
+    if (!hover || !isAllowed()) return;
+    recomputeBounds();
+    updateTargetsFromClient(e.clientX, e.clientY);
+    ensureLoop();
+  };
+
+  const onLeave = () => {
+    hover = false;
+    ttx = 0;
+    tty = 0;
+    if (wheelZoom) desiredSc = ZOOM;
+    ensureLoop();
+  };
+
+  const onWheel = (e) => {
+    if (!wheelZoom || !hover || !isAllowed() || !canHoverZoom()) return;
+    if (e.ctrlKey || e.metaKey) return;
+    e.preventDefault();
+    e.stopPropagation();
+    let d = e.deltaY;
+    if (e.deltaMode === 1) d *= 16;
+    if (e.deltaMode === 2) d *= Math.min(400, Math.max(120, viewport.clientHeight * 0.2));
+    const prevD = desiredSc;
+    const step = Math.exp(-d * 0.00032);
+    desiredSc = Math.min(Math.max(prevD * step, 1), maxWheelScale);
+    const ratio = desiredSc / prevD;
+    if (Math.abs(ratio - 1) > 1e-6) {
+      const r = viewport.getBoundingClientRect();
+      const mx = e.clientX - r.left;
+      const my = e.clientY - r.top;
+      const cx = r.width * 0.5;
+      const cy = r.height * 0.5;
+      const ax = mx - cx;
+      const ay = my - cy;
+      px = ax + (px - ax) * ratio;
+      py = ay + (py - ay) * ratio;
+      ttx = px;
+      tty = py;
+      clampPanToBounds();
+    } else {
+      recomputeBounds();
+    }
+    ensureLoop();
+  };
+
+  const onImgLoad = () => {
+    recomputeBounds();
+    if (hover && isAllowed()) {
+      updateTargetsFromClient(lastCX, lastCY);
+      ensureLoop();
+    } else {
+      px = py = ttx = tty = 0;
+      sc = 1;
+      if (wheelZoom) desiredSc = ZOOM;
+      img.style.transform = "";
+    }
+  };
+
+  viewport.addEventListener("mouseenter", onEnter);
+  viewport.addEventListener("mousemove", onMove);
+  viewport.addEventListener("mouseleave", onLeave);
+  if (wheelZoom) viewport.addEventListener("wheel", onWheel, { passive: false });
+  img.addEventListener("load", onImgLoad);
+  window.addEventListener("resize", recomputeBounds);
+
+  let ro = null;
+  if (typeof ResizeObserver !== "undefined") {
+    ro = new ResizeObserver(() => {
+      recomputeBounds();
+      if (hover && isAllowed()) updateTargetsFromClient(lastCX, lastCY);
+    });
+    ro.observe(viewport);
+  }
+
+  const dispose = () => {
+    if (raf != null) cancelAnimationFrame(raf);
+    raf = null;
+    viewport.removeEventListener("mouseenter", onEnter);
+    viewport.removeEventListener("mousemove", onMove);
+    viewport.removeEventListener("mouseleave", onLeave);
+    if (wheelZoom) viewport.removeEventListener("wheel", onWheel);
+    img.removeEventListener("load", onImgLoad);
+    window.removeEventListener("resize", recomputeBounds);
+    if (ro) ro.disconnect();
+    img.style.transform = "";
+    img.classList.remove("nf-pdp-media-img--zooming");
+    viewport.classList.remove("nf-pdp-zoom-viewport--active");
+    NF_IMAGE_ZOOM_DISPOSE[disposeKey] = null;
+  };
+
+  NF_IMAGE_ZOOM_DISPOSE[disposeKey] = dispose;
+  return dispose;
+}
+
+function nfAttachPdpImageZoom(opts) {
+  return nfAttachImageZoomPan({ ...opts, disposeKey: "pdp" });
+}
+
 /* ====== МОДАЛКА ТОВАРА ====== */
 function nfOpenProductModal(productId) {
   const p = NF_DATA.products.find((x) => x.id === productId);
   if (!p) return;
+
+  nfDisposeImageZoomPan("modal");
 
   NF_STATE.productModalProductId = productId;
 
@@ -2569,18 +6133,11 @@ function nfOpenProductModal(productId) {
   const backdrop = nfEl("productModalBackdrop");
   if (!modal || !backdrop) return;
 
-  backdrop.style.display = "block";
-  backdrop.style.visibility = "visible";
-  backdrop.style.opacity = "1";
-  modal.style.display = "block";
-  modal.style.visibility = "visible";
-  modal.style.opacity = "1";
-
   nfSafeText("productModalTitle", p.name);
-  nfSafeText("productModalShortDesc", p.shortDesc || "Профессиональное медицинское оборудование.");
-  nfSafeText("productModalArticle", `Артикул: ${p.article}`);
-  nfSafeText("productModalPartner", `Партнёр: ${nfGetPartnerName(p.partnerId)}`);
-  nfSafeText("productModalModel", `Модель: ${p.model}`);
+  nfSafeText("productModalShortDesc", p.shortDesc || nfT("product.defaultShortDesc", "Профессиональное медицинское оборудование."));
+  nfSafeText("productModalArticle", nfT("product.article", "Артикул: {value}", { value: p.article || "" }));
+  nfSafeText("productModalPartner", nfT("product.partner", "Партнёр: {value}", { value: nfGetPartnerName(p.partnerId) }));
+  nfSafeText("productModalModel", nfT("product.model", "Модель: {value}", { value: p.model || "" }));
 
   const img = nfEl("productModalImage");
   if (img) {
@@ -2636,145 +6193,85 @@ function nfOpenProductModal(productId) {
   const primaryBtn = nfEl("productModalPrimaryBtn");
 
   if (p.price != null) {
-    if (priceEl) priceEl.textContent = `Цена за единицу: ${nfFormatPrice(p.price)}`;
-    if (totalEl && qtyInput) totalEl.textContent = `Итого: ${nfFormatPrice(p.price * Number(qtyInput.value))}`;
-    if (primaryBtn) primaryBtn.textContent = "Добавить в запрос";
+    if (priceEl) priceEl.textContent = nfT("product.unitPrice", "Цена за единицу: {value}", { value: nfFormatPrice(p.price) });
+    if (totalEl && qtyInput) totalEl.textContent = nfT("product.total", "Итого: {value}", { value: nfFormatPrice(p.price * Number(qtyInput.value)) });
+    if (primaryBtn) nfInitAddToRequestControl(primaryBtn, p.id, nfT("common.addToRequest", "Добавить в запрос"), {});
   } else {
-    if (priceEl) priceEl.textContent = "Цена рассчитывается индивидуально";
+    if (priceEl) priceEl.textContent = nfT("product.priceIndividual", "Цена рассчитывается индивидуально");
     if (totalEl) totalEl.textContent = "";
-    if (primaryBtn) primaryBtn.textContent = "Запросить цену по этой модели";
+    if (primaryBtn) {
+      primaryBtn.removeAttribute("data-nf-add-product");
+      primaryBtn.classList.remove(
+        "nf-add-request",
+        "nf-add-request--compact",
+        "nf-add-request--in-cart",
+        "nf-add-request--success-run",
+        "nf-add-request--reverting",
+        "nf-add-request--pressed"
+      );
+      primaryBtn.textContent = nfT("product.requestPriceModel", "Запросить цену по этой модели");
+    }
   }
 
   if (qtyInput) {
     qtyInput.oninput = () => {
       const v = Math.max(1, Number(qtyInput.value) || 1);
       qtyInput.value = v;
-      if (p.price != null && totalEl) totalEl.textContent = `Итого: ${nfFormatPrice(p.price * v)}`;
+      if (p.price != null && totalEl) totalEl.textContent = nfT("product.total", "Итого: {value}", { value: nfFormatPrice(p.price * v) });
     };
   }
 
   if (primaryBtn) {
     primaryBtn.onclick = () => {
       const qty = Number(qtyInput?.value) || 1;
-      nfAddToCart(p.id, qty);
+      nfAddToCart(p.id, qty, { sourceButton: null });
       nfCloseProductModal();
-      nfShowToast("Товар добавлен в запрос.");
     };
   }
 
-  const specsTab = nfEl("tab-specs");
-  const installTab = nfEl("tab-install");
+  const modalDesc = nfEl("productModalDescription");
+  const modalSpecsWrap = nfEl("productModalSpecsWrap");
+  const modalSpecsUl = nfEl("productModalSpecs");
+  const modalInstall = nfEl("productModalInstall");
+  const modalMaint = nfEl("productModalMaintenance");
+  const modalDoc = nfEl("productModalDocNote");
 
-  if (specsTab) {
-    specsTab.innerHTML = "";
-    const wrap = nfCreateEl("div", "nf-tab-description");
-    const title = nfCreateEl("div", "nf-tab-section-title", "Описание");
-    const p1 = nfCreateEl(
-      "p",
-      "",
-      p.description ||
-        "Профессиональное медицинское оборудование для оснащения операционных, реанимации и диагностических подразделений."
-    );
-    wrap.appendChild(title);
-    wrap.appendChild(p1);
+  nfFillProductDescriptionHost(modalDesc, p);
+  nfFillProductSpecsList(modalSpecsUl, p);
+  if (modalSpecsWrap) modalSpecsWrap.hidden = !p.specs?.length;
 
-    if (p.specs?.length) {
-      const subtitle = nfCreateEl("div", "nf-tab-section-title", "Основные характеристики");
-      wrap.appendChild(subtitle);
-      const ul = nfCreateEl("ul", "");
-      p.specs.forEach((s) => ul.appendChild(nfCreateEl("li", "", s)));
-      wrap.appendChild(ul);
-    }
+  nfFillProductInstallMaintenancePanels(modalInstall, modalMaint, p);
 
-    specsTab.appendChild(wrap);
-  }
-
-  if (installTab) {
-    installTab.innerHTML = "";
-    const steps =
-      Array.isArray(p.serviceSteps) && p.serviceSteps.length
-        ? p.serviceSteps
-        : [
-            "Анализ задач и требований заказчика",
-            "Подготовка технического решения и КП",
-            "Согласование конфигурации и сроков поставки",
-            "Поставка и логистика",
-            "Инсталляция и подключение к сетям",
-            "Калибровка и настройка",
-            "Интеграция с ИТ-системами",
-            "Обучение персонала",
-            "Тестовая эксплуатация",
-            "Плановое сервисное сопровождение",
-          ];
-
-    const note = nfCreateEl("div", "nf-install-note");
-    note.innerHTML = `
-      <div class="nf-install-note-rows">
-        <div>
-          <h4>Помещение и условия</h4>
-          <ul>
-            <li>Температура: +18°C до +25°C</li>
-            <li>Влажность: 30–75% без конденсата</li>
-            <li>Площадь: от 15 м²</li>
-            <li>Высота потолков: от 2,5 м</li>
-          </ul>
-        </div>
-        <div>
-          <h4>Инженерные коммуникации</h4>
-          <ul>
-            <li>Электропитание: 220В / 50Гц</li>
-            <li>Заземление</li>
-            <li>Интернет‑подключение (по необходимости)</li>
-            <li>Вентиляция помещения</li>
-          </ul>
-        </div>
-      </div>
-    `;
-
-    const titleSteps = nfCreateEl("div", "nf-tab-section-title", "Процесс установки");
-    const ol = nfCreateEl("ol", "nf-install-steps");
-    steps.forEach((s) => ol.appendChild(nfCreateEl("li", "", s)));
-
-    installTab.appendChild(note);
-    installTab.appendChild(titleSteps);
-    installTab.appendChild(ol);
-  }
-
-  // tabs safe init
-  document.querySelectorAll(".nf-tab-btn").forEach((btn) => btn.classList.remove("nf-tab-btn-active"));
-  document.querySelectorAll(".nf-tab").forEach((t) => t.classList.remove("nf-tab-active"));
-
-  const specsBtn = document.querySelector('[data-tab="specs"]');
-  if (specsBtn) specsBtn.classList.add("nf-tab-btn-active");
-  if (specsTab) specsTab.classList.add("nf-tab-active");
-
-  document.querySelectorAll(".nf-tab-btn").forEach((btn) => {
-    btn.onclick = () => {
-      const tab = btn.dataset.tab;
-      document.querySelectorAll(".nf-tab-btn").forEach((b) => b.classList.toggle("nf-tab-btn-active", b === btn));
-      document.querySelectorAll(".nf-tab").forEach((t) => t.classList.toggle("nf-tab-active", t.id === `tab-${tab}`));
-    };
-  });
+  if (modalDoc) modalDoc.textContent = nfT("product.docNote", NF_PRODUCT_DOCUMENTATION_NOTE);
 
   modal.classList.add("nf-modal-visible");
   backdrop.classList.add("nf-backdrop-visible");
   modal.setAttribute("aria-hidden", "false");
   backdrop.setAttribute("aria-hidden", "false");
   nfUpdateOverlayBody();
+
+  const modalImgWrap = modal.querySelector(".nf-modal-product-imgwrap");
+  if (modalImgWrap && img) {
+    nfAttachImageZoomPan({
+      viewport: modalImgWrap,
+      img,
+      scale: NF_MODAL_LIGHTBOX_ZOOM_SCALE,
+      disposeKey: "modal",
+      wheelZoom: true,
+      maxScale: NF_MODAL_LIGHTBOX_WHEEL_MAX_SCALE,
+      isAllowed: () =>
+        !!img?.src && !String(img.src).startsWith("data:image/svg+xml"),
+    });
+  }
 }
 
 function nfCloseProductModal() {
+  nfDisposeImageZoomPan("modal");
   const modal = nfEl("productModal");
   const backdrop = nfEl("productModalBackdrop");
   if (!modal || !backdrop) return;
   modal.classList.remove("nf-modal-visible");
   backdrop.classList.remove("nf-backdrop-visible");
-  backdrop.style.display = "";
-  backdrop.style.visibility = "";
-  backdrop.style.opacity = "";
-  modal.style.display = "";
-  modal.style.visibility = "";
-  modal.style.opacity = "";
   modal.setAttribute("aria-hidden", "true");
   backdrop.setAttribute("aria-hidden", "true");
   nfUpdateOverlayBody();
@@ -2787,45 +6284,56 @@ function nfRenderPartners() {
 
   container.innerHTML = "";
 
-  NF_DATA.partners.forEach((p) => {
-    const card = nfCreateEl("button", "nf-partner-card nf-partner-btn");
+  NF_DATA.partners.forEach((p, i) => {
+    const card = nfCreateEl("button", "nf-partner nf-partner-btn nf-page-partner-tile nf-vp-reveal");
+    card.style.setProperty("--nf-vp-stagger", `${Math.min(i, 20) * 32}ms`);
     card.type = "button";
     card.dataset.partnerId = p.id;
 
+    const brand = nfEscapeHtml(nfPartnerShortName(p));
     card.innerHTML = `
-      <div class="nf-partner-logo-wrap">
-        <img class="nf-partner-logo-img" alt="" loading="lazy" />
+      <span class="nf-page-partner-logo-slot">
+        <img class="nf-partner-logo-img" alt="${brand}" loading="lazy" />
+      </span>
+      <div class="nf-partner-meta">
+        <span class="nf-partner-name">${brand}</span>
+        <span class="nf-partner-country">${nfEscapeHtml(p.country || "—")}</span>
       </div>
-      <div class="nf-partner-name">${nfPartnerShortName(p)}</div>
-      <div class="nf-partner-meta">${p.country || "—"} · ${p.equipment || "—"}</div>
+      <span class="nf-partner-action" aria-hidden="true">
+        <span class="nf-partner-action__label">${nfEscapeHtml(nfT("partners.card.cta", "Решения бренда"))}</span>
+        <span class="nf-partner-action__arrow">→</span>
+      </span>
     `;
 
     const img = card.querySelector(".nf-partner-logo-img");
     if (img) nfSetPartnerLogo(img, p.id);
 
-    card.addEventListener("click", () => nfOpenPartnerModal(p.id));
+    card.addEventListener("click", () => {
+      nfGoPath(nfPartnerOpenUrlBySlug(nfPartnerSlug(p)));
+    });
     container.appendChild(card);
   });
+
+  const meta = nfEl("partnersHeroMeta");
+  if (meta) {
+    meta.textContent = nfPartnerShowcaseMetaText(NF_DATA.partners.length);
+  }
 }
 
-function nfOpenPartnerModal(partnerId) {
+function nfOpenPartnerModalBySlug(slug, options = {}) {
+  const normalized = String(slug || "").trim().toLowerCase();
+  if (!normalized) return;
+  const partner = NF_DATA.partners.find((p) => nfPartnerSlug(p) === normalized);
+  if (partner) nfOpenPartnerModal(partner.id, options);
+}
+
+function nfOpenPartnerModal(partnerId, options = {}) {
   const p = NF_DATA.partners.find((x) => x.id === partnerId);
   if (!p) return;
 
   const modal = nfEl("partnerModal");
   const backdrop = nfEl("partnerModalBackdrop");
   if (!modal || !backdrop) return;
-
-  // reset inline state to let CSS bottom-sheet animation control transforms
-  modal.style.transform = "";
-  modal.style.transition = "";
-
-  backdrop.style.display = "block";
-  backdrop.style.visibility = "visible";
-  backdrop.style.opacity = "1";
-  modal.style.display = "block";
-  modal.style.visibility = "visible";
-  modal.style.opacity = "1";
 
   NF_STATE.selectedPartnerId = partnerId;
 
@@ -2841,10 +6349,10 @@ function nfOpenPartnerModal(partnerId) {
   if (titleEl) titleEl.textContent = p.name;
   if (metaEl) {
     const short = nfPartnerShortName(p);
-    const years = p.years ? `${p.years} лет` : "";
+    const years = nfPartnerYearsLabel(p.years);
     metaEl.textContent = [short, years].filter(Boolean).join(" · ");
   }
-  if (descEl) descEl.textContent = p.description || "Описание партнёра будет добавлено позже.";
+  if (descEl) descEl.textContent = p.description || nfT("partners.descriptionFallback", "Описание партнёра будет добавлено позже.");
   if (countryEl) countryEl.textContent = p.country || "—";
   if (equipEl) equipEl.textContent = p.equipment || "—";
 
@@ -2891,8 +6399,8 @@ function nfOpenPartnerModal(partnerId) {
   if (toCatalogBtn) {
     toCatalogBtn.onclick = () => {
       NF_STATE.filters.partnerIds = new Set([p.id]);
-      nfClosePartnerModal();
-      nfNavigate("catalog");
+      nfClosePartnerModal({ skipUrlSync: true });
+      nfGoPath("/catalog");
     };
   }
 
@@ -2900,8 +6408,33 @@ function nfOpenPartnerModal(partnerId) {
   if (addAllBtn) {
     addAllBtn.onclick = () => {
       if (!products.length) return;
-      products.forEach((prod) => nfAddToCart(prod.id, 1));
-      nfShowToast("Добавлено в запрос");
+      const ops = products.map((prod) => ({ productId: prod.id, qty: 1 }));
+      ops.forEach((op) => {
+        const ex = nfGetCartItem(op.productId);
+        if (ex) ex.qty += op.qty;
+        else NF_STATE.cart.push({ productId: op.productId, qty: op.qty });
+      });
+      nfUpdateCartBadge();
+      nfRenderCart();
+      nfPushToast({
+        message: nfT("toast.addedManyToRequest", "Добавлено в запрос: {count} {items}", {
+          count: ops.length,
+          items: nfItemsCountLabel(ops.length).replace(`${ops.length} `, ""),
+        }),
+        variant: "success",
+        duration: 8200,
+        actionLabel: nfT("toast.undo", "Отменить"),
+        pauseOnHover: true,
+        onAction: () => {
+          ops.forEach((op) => nfUndoCartAdjust(op.productId, op.qty));
+          nfUpdateCartBadge();
+          nfRenderCart();
+          nfSyncAllAddToRequestButtons();
+          nfPushToast({ message: nfT("toast.addCancelled", "Добавление отменено"), variant: "info", duration: 3400 });
+          return true;
+        },
+      });
+      nfSyncAllAddToRequestButtons();
     };
   }
 
@@ -2909,6 +6442,13 @@ function nfOpenPartnerModal(partnerId) {
   backdrop.classList.add("nf-backdrop-visible");
   modal.setAttribute("aria-hidden", "false");
   backdrop.setAttribute("aria-hidden", "false");
+  if (!options.skipUrlSync) {
+    const slug = nfPartnerSlug(p);
+    const nextUrl = nfPartnerOpenUrlBySlug(slug);
+    if (`${location.pathname}${location.search}` !== nextUrl) {
+      window.history.pushState({ page: "partners" }, "", nextUrl);
+    }
+  }
   nfUpdateOverlayBody();
 }
 
@@ -2919,7 +6459,7 @@ function nfRenderPartnerModalProducts(list) {
   box.innerHTML = "";
 
   if (!list.length) {
-    box.innerHTML = `<div class="nf-empty" style="margin-top:6px;">Нет товаров у этого партнёра.</div>`;
+    box.innerHTML = `<div class="nf-empty nf-partner-modal-empty">${nfEscapeHtml(nfT("partner.noProducts", "Нет товаров у этого партнёра."))}</div>`;
     return;
   }
 
@@ -2929,28 +6469,28 @@ function nfRenderPartnerModalProducts(list) {
 
     row.innerHTML = `
       <div class="nf-partner-prod-main">
-        <div class="nf-partner-prod-title">${prod.name}</div>
-        <div class="nf-partner-prod-meta">${prod.article} · ${cat} · ${
-          prod.price ? nfFormatPrice(prod.price) : "по запросу"
-        }</div>
+        <div class="nf-partner-prod-title">${nfEscapeHtml(prod.name)}</div>
+        <div class="nf-partner-prod-meta">${nfEscapeHtml(prod.article)} · ${nfEscapeHtml(cat)} · ${nfEscapeHtml(
+          prod.price ? nfFormatPrice(prod.price) : nfT("common.priceOnRequest", "Цена по запросу")
+        )}</div>
       </div>
       <div class="nf-partner-prod-actions"></div>
     `;
 
     const actions = row.querySelector(".nf-partner-prod-actions");
 
-    const openBtn = nfCreateEl("button", "nf-btn nf-btn-secondary nf-btn-sm", "Открыть");
+    const openBtn = nfCreateEl("button", "nf-btn nf-btn-secondary nf-btn-sm", nfT("common.open", "Открыть"));
     openBtn.type = "button";
     openBtn.onclick = () => {
       nfClosePartnerModal();
       nfOpenProductPage(prod.id);
     };
 
-    const addBtn = nfCreateEl("button", "nf-btn nf-btn-primary nf-btn-sm nf-btn-checkable", "В запрос");
+    const addBtn = nfCreateEl("button", "nf-btn nf-btn-primary nf-btn-sm nf-btn-checkable", "");
     addBtn.type = "button";
+    nfInitAddToRequestControl(addBtn, prod.id, nfT("common.addToRequest", "В запрос"), {});
     addBtn.onclick = () => {
-      nfAddToCart(prod.id, 1);
-      nfAnimateAddToCartButton(addBtn);
+      nfAddToCart(prod.id, 1, { sourceButton: addBtn });
     };
 
     actions.append(openBtn, addBtn);
@@ -2958,80 +6498,195 @@ function nfRenderPartnerModalProducts(list) {
   });
 }
 
-function nfClosePartnerModal() {
+function nfClosePartnerModal(options = {}) {
   const modal = nfEl("partnerModal");
   const backdrop = nfEl("partnerModalBackdrop");
   if (!modal || !backdrop) return;
   modal.classList.remove("nf-modal-visible");
   backdrop.classList.remove("nf-backdrop-visible");
-  backdrop.style.display = "";
-  backdrop.style.visibility = "";
-  backdrop.style.opacity = "";
-  modal.style.display = "";
-  modal.style.visibility = "";
-  modal.style.opacity = "";
-  modal.style.transform = "";
-  modal.style.transition = "";
   modal.setAttribute("aria-hidden", "true");
   backdrop.setAttribute("aria-hidden", "true");
+  if (!options.skipUrlSync) {
+    const segs = nfPathSegments();
+    if (segs[0] === "partners") {
+      window.history.replaceState({ page: "partners" }, document.title, nfPartnersPageUrlWithoutOpen());
+    }
+  }
   nfUpdateOverlayBody();
 }
 
-/* ====== NEWS (Missing impl) ====== */
-function nfRenderNews() {
-  // expects (optional) containers inside pages/news.html
-  const listEl = nfEl("newsList");
-  const detailsEl = nfEl("newsDetails");
+/* ====== NEWS ====== */
+function nfNewsTitle(item) {
+  return String(nfGetLocalizedField(item, "title", nfT("news.articleFallback", "Материал")) || "");
+}
 
-  const dateFilter = nfEl("newsDateFilter");
-  const searchInput = nfEl("newsSearchInput");
+function nfNewsExcerpt(item) {
+  return String(
+    nfGetLocalizedField(
+      item,
+      "shortDescription",
+      nfGetLocalizedField(item, "excerpt", nfNewsTitle(item))
+    ) || ""
+  );
+}
 
-  const q = String(searchInput?.value || "").trim().toLowerCase();
-  const dateMode = String(dateFilter?.value || "all");
+function nfNewsCategory(item) {
+  return String(nfGetLocalizedField(item, "category", nfT("common.news", "Новости")) || "");
+}
+
+function nfNewsCountLabel(count) {
+  const forms = {
+    one: nfT("news.count.one", "новость"),
+    few: nfT("news.count.few", "новости"),
+    many: nfT("news.count.many", "новостей"),
+    other: nfT("news.count.other", "news"),
+  };
+  return `${count} ${nfPluralForm(count, forms)}`;
+}
+
+function nfNewsSortLabel(sort) {
+  if (sort === "old") return nfT("news.sort.old", "Сначала старые");
+  if (sort === "all") return nfT("news.sort.all", "За всё время");
+  return nfT("news.sort.recent", "Сначала новые");
+}
+
+function nfGetFilteredNews() {
+  const view = NF_STATE.newsView || {};
+  const q = String(view.search || "").trim().toLowerCase();
+  const category = String(view.category || "all");
+  const sort = String(view.sort || "recent");
 
   let items = [...NF_DATA.news];
-
   if (q) {
     items = items.filter((n) => {
-      const t = `${n.title} ${n.category} ${n.author} ${n.excerpt}`.toLowerCase();
-      return t.includes(q);
+      const hay = nfEntitySearchHaystack(n, [
+        nfNewsTitle(n),
+        nfNewsCategory(n),
+        n.author || "",
+        nfNewsExcerpt(n),
+        nfGetLocalizedField(n, "description", ""),
+      ]);
+      return hay.includes(q);
+    });
+  }
+  if (category !== "all") items = items.filter((n) => nfNewsCategory(n) === category);
+
+  if (sort === "old") items.sort((a, b) => new Date(a.date) - new Date(b.date));
+  else items.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+  return items;
+}
+
+function nfRenderNews() {
+  const listEl = nfEl("newsList");
+  const featuredEl = nfEl("newsFeatured");
+  const chipsEl = nfEl("newsCategoryChips");
+  const metaEl = nfEl("newsResultsMeta");
+  if (!listEl || !featuredEl || !chipsEl) return;
+
+  const items = nfGetFilteredNews();
+  const categories = Array.from(new Set(NF_DATA.news.map((n) => nfNewsCategory(n)).filter(Boolean)));
+  const currentCategory = NF_STATE.newsView?.category || "all";
+
+  chipsEl.innerHTML = `
+    <button type="button" class="news-category-chip${currentCategory === "all" ? " is-active" : ""}" data-news-category="all">${nfEscapeHtml(nfT("news.categoryAll", "Все"))}</button>
+    ${categories
+      .map(
+        (cat) =>
+          `<button type="button" class="news-category-chip${currentCategory === cat ? " is-active" : ""}" data-news-category="${nfEscapeHtml(cat)}">${nfEscapeHtml(cat)}</button>`
+      )
+      .join("")}
+  `;
+  chipsEl.querySelectorAll("[data-news-category]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      NF_STATE.newsView.category = btn.dataset.newsCategory || "all";
+      nfRenderNews();
+    });
+  });
+
+  const totalNews = (NF_DATA.news || []).length;
+  if (chipsEl) chipsEl.hidden = totalNews <= 1;
+
+  if (metaEl) {
+    metaEl.textContent = items.length
+      ? nfNewsCountLabel(items.length)
+      : nfT("news.noResultsByFilters", "Нет новостей по фильтрам");
+  }
+
+  featuredEl.innerHTML = "";
+  listEl.innerHTML = "";
+  featuredEl.hidden = false;
+  if (!items.length) {
+    featuredEl.innerHTML = `<article class="news-featured-card"><div class="nf-empty">${nfEscapeHtml(nfT("news.nothingFound", "Ничего не найдено. Измените фильтры или поисковый запрос."))}</div></article>`;
+    return;
+  }
+
+  function nfAppendNewsListCard(n, i) {
+    const card = nfCreateEl("article", "nf-news-card news-feed-card news-feed-card--row nf-vp-reveal");
+    card.style.setProperty("--nf-vp-stagger", `${Math.min(i + 1, 12) * 45}ms`);
+    card.innerHTML = `
+      <div class="news-feed-card-media">
+        ${
+          n.image
+            ? `<img src="${nfEscapeHtml(n.image)}" alt="" loading="lazy" />`
+            : `<div class="news-feed-card-media-empty"><span>${nfEscapeHtml(nfT("common.news", "News"))}</span></div>`
+        }
+      </div>
+      <div class="news-feed-card-body">
+        <h3 class="nf-news-card-title">${nfEscapeHtml(nfNewsTitle(n))}</h3>
+        <p class="nf-news-card-text">${nfEscapeHtml(nfNewsExcerpt(n))}</p>
+        <div class="nf-news-card-meta">${nfEscapeHtml(nfFormatDate(n.date))} · ${nfEscapeHtml(nfNewsCategory(n))}${n.author ? ` · ${nfEscapeHtml(n.author)}` : ""}</div>
+      </div>
+    `;
+    card.addEventListener("click", () => {
+      NF_STATE.newsArticleId = n.id;
+      nfGoPath(`/news/${nfNewsPermalinkSlug(n)}`);
+    });
+    listEl.appendChild(card);
+  }
+
+  if (items.length === 1) {
+    featuredEl.hidden = true;
+    nfAppendNewsListCard(items[0], 0);
+  } else {
+    const [featured, ...rest] = items;
+    const featuredCard = nfCreateEl("article", "news-featured-card news-featured-card--editorial nf-vp-reveal");
+    featuredCard.style.setProperty("--nf-vp-stagger", "40ms");
+    featuredCard.innerHTML = `
+    <div class="news-featured-media">
+      ${
+        featured.image
+          ? `<img src="${nfEscapeHtml(featured.image)}" alt="" loading="lazy" />`
+          : `<div class="news-featured-media-empty"><span>${nfEscapeHtml(nfT("news.placeholderMediaLabel", "НаноФарм Новости"))}</span></div>`
+      }
+    </div>
+    <div class="news-featured-body">
+      <div class="news-featured-body-stack">
+        <div class="news-featured-chip">${nfEscapeHtml(nfNewsCategory(featured))}</div>
+        <h2 class="news-featured-title">${nfEscapeHtml(nfNewsTitle(featured))}</h2>
+        <p class="news-featured-text">${nfEscapeHtml(nfNewsExcerpt(featured))}</p>
+        <div class="news-featured-foot">
+          <div class="news-featured-meta">${nfEscapeHtml(nfFormatDate(featured.date))}${featured.author ? ` · ${nfEscapeHtml(featured.author)}` : ""}</div>
+          <span class="news-featured-cta" aria-hidden="true"><span class="news-featured-cta-label">${nfEscapeHtml(nfT("common.readMaterial", "Читать материал"))}</span><span class="news-featured-cta-arrow">→</span></span>
+        </div>
+      </div>
+    </div>
+  `;
+    featuredCard.addEventListener("click", () => {
+      NF_STATE.newsArticleId = featured.id;
+      nfGoPath(`/news/${nfNewsPermalinkSlug(featured)}`);
+    });
+    featuredEl.appendChild(featuredCard);
+
+    rest.forEach((n, i) => {
+      nfAppendNewsListCard(n, i);
     });
   }
 
-  if (dateMode === "recent") {
-    items.sort((a, b) => new Date(b.date) - new Date(a.date));
-  } else if (dateMode === "old") {
-    items.sort((a, b) => new Date(a.date) - new Date(b.date));
-  }
-
-  if (listEl) {
-    listEl.innerHTML = "";
-    if (!items.length) {
-      listEl.innerHTML = `<div class="nf-empty">Ничего не найдено.</div>`;
-    } else {
-      items.forEach((n) => {
-        const card = nfCreateEl("article", "nf-news-card");
-        card.innerHTML = `
-          <div class="nf-news-card-chip">${n.category}</div>
-          <div class="nf-news-card-main">
-            <h3 class="nf-news-card-title">${n.title}</h3>
-            <div class="nf-news-card-meta">${nfFormatDate(n.date)} · ${n.category}</div>
-            <p class="nf-news-card-text">${n.excerpt}</p>
-          </div>
-        `;
-        card.addEventListener("click", () => {
-          NF_STATE.selectedNewsId = n.id;
-          nfOpenNewsModal(n.id);
-        });
-        listEl.appendChild(card);
-      });
-    }
-  }
-
-  // Встроенная статья на странице больше не используется: новости открываются только в модальном окне
-  if (detailsEl) {
-    detailsEl.innerHTML = "";
-  }
+  const pending = document.querySelectorAll(
+    "#newsFeatured .nf-vp-reveal:not(.is-visible), #newsList .nf-vp-reveal:not(.is-visible)"
+  );
+  if (pending.length) nfRevealObserveElements(Array.from(pending));
 }
 
 function nfOpenNewsModal(newsId) {
@@ -3046,12 +6701,14 @@ function nfOpenNewsModal(newsId) {
   if (!item) return;
 
   NF_STATE.selectedNewsId = item.id;
+  const newsTitle = nfNewsTitle(item);
+  const newsSummary = nfNewsExcerpt(item);
 
   const titleEl = nfEl("newsModalTitle");
   const metaEl = nfEl("newsModalMeta");
   const bodyEl = nfEl("newsModalBody");
 
-  if (titleEl) titleEl.textContent = item.title;
+  if (titleEl) titleEl.textContent = newsTitle;
   if (metaEl) {
     const date = nfFormatDate(item.date);
     const parts = [date];
@@ -3059,25 +6716,128 @@ function nfOpenNewsModal(newsId) {
     if (item.category) parts.push(item.category);
     metaEl.textContent = parts.join(" · ");
   }
+
+  const figEl = nfEl("newsModalFigure");
+  const imgEl = nfEl("newsModalImage");
+  const fallbackEl = nfEl("newsModalMediaFallback");
+  const galleryEl = nfEl("newsModalGallery");
+  const galleryTrack = nfEl("newsModalGalleryTrack");
+  const mediaSources = [];
+  if (Array.isArray(item.images)) {
+    item.images.forEach((src) => {
+      const safeSrc = String(src || "").trim();
+      if (safeSrc && !mediaSources.includes(safeSrc)) mediaSources.push(safeSrc);
+    });
+  }
+  const hero = String(item.image || "").trim();
+  if (hero && !mediaSources.includes(hero)) mediaSources.unshift(hero);
+
+  const activeIndex = Number(item._newsModalImageIndex) || 0;
+  const safeIndex = Math.max(0, Math.min(activeIndex, Math.max(0, mediaSources.length - 1)));
+  item._newsModalImageIndex = safeIndex;
+
+  if (figEl && imgEl && fallbackEl) {
+    if (mediaSources.length) {
+      const activeSrc = mediaSources[safeIndex];
+      imgEl.src = activeSrc;
+      imgEl.alt = newsTitle
+        ? nfFormatTemplate(nfT("news.coverAlt", "Обложка: {title}"), { title: newsTitle })
+        : nfT("news.inlineImageAlt", "Иллюстрация к материалу");
+      figEl.hidden = false;
+      fallbackEl.hidden = true;
+    } else {
+      imgEl.removeAttribute("src");
+      imgEl.alt = "";
+      figEl.hidden = true;
+      fallbackEl.hidden = false;
+    }
+  }
+
+  if (galleryEl && galleryTrack) {
+    if (mediaSources.length > 1) {
+      galleryTrack.innerHTML = mediaSources
+        .map(
+          (src, idx) => `
+            <button
+              type="button"
+              class="nf-news-modal-gallery-thumb${idx === safeIndex ? " is-active" : ""}"
+              data-news-gallery-index="${idx}"
+              aria-label="Изображение ${idx + 1}"
+            >
+              <img src="${nfEscapeHtml(src)}" alt="" loading="lazy" />
+            </button>
+          `
+        )
+        .join("");
+      galleryEl.hidden = false;
+    } else {
+      galleryTrack.innerHTML = "";
+      galleryEl.hidden = true;
+    }
+  }
+
   if (bodyEl) {
-    const paragraphs = Array.isArray(item.content) && item.content.length ? item.content : [item.excerpt];
-    bodyEl.innerHTML = paragraphs
-      .map((p) => `<p class="nf-news-modal-paragraph">${p}</p>`)
-      .join("");
+    const htmlBody = nfBuildNewsArticleBodyHtml(item);
+    if (htmlBody) {
+      bodyEl.innerHTML = htmlBody;
+      const firstParagraph = bodyEl.querySelector("p");
+      if (firstParagraph) firstParagraph.classList.add("nf-news-modal-intro");
+    } else {
+      const paragraphs = [newsSummary];
+      bodyEl.innerHTML = paragraphs
+        .map((p, idx) => `<p class="nf-news-modal-paragraph${idx === 0 ? " nf-news-modal-intro" : ""}">${nfEscapeHtml(p)}</p>`)
+        .join("");
+    }
     bodyEl.scrollTop = 0;
   }
 
-  backdrop.style.display = "block";
-  backdrop.style.visibility = "visible";
-  backdrop.style.opacity = "1";
-  modal.style.display = "block";
-  modal.style.visibility = "visible";
-  modal.style.opacity = "1";
   modal.classList.add("nf-modal-visible");
   backdrop.classList.add("nf-backdrop-visible");
   modal.setAttribute("aria-hidden", "false");
   backdrop.setAttribute("aria-hidden", "false");
   nfUpdateOverlayBody();
+}
+
+function nfInitNewsModalMediaControls() {
+  const modal = nfEl("newsModal");
+  const prevBtn = nfEl("newsModalGalleryPrev");
+  const nextBtn = nfEl("newsModalGalleryNext");
+  const track = nfEl("newsModalGalleryTrack");
+  if (!modal || !track) return;
+
+  const step = (delta) => {
+    const current =
+      NF_DATA.news.find((x) => x.id === NF_STATE.selectedNewsId) ||
+      NF_DATA.news[0];
+    if (!current) return;
+    const pool = [];
+    if (Array.isArray(current.images)) {
+      current.images.forEach((src) => {
+        const safeSrc = String(src || "").trim();
+        if (safeSrc && !pool.includes(safeSrc)) pool.push(safeSrc);
+      });
+    }
+    const hero = String(current.image || "").trim();
+    if (hero && !pool.includes(hero)) pool.unshift(hero);
+    if (pool.length < 2) return;
+    const idx = Number(current._newsModalImageIndex) || 0;
+    const next = (idx + delta + pool.length) % pool.length;
+    current._newsModalImageIndex = next;
+    nfOpenNewsModal(current.id);
+  };
+
+  if (prevBtn) prevBtn.onclick = () => step(-1);
+  if (nextBtn) nextBtn.onclick = () => step(1);
+  track.addEventListener("click", (e) => {
+    const thumb = e.target.closest("[data-news-gallery-index]");
+    if (!thumb) return;
+    const current =
+      NF_DATA.news.find((x) => x.id === NF_STATE.selectedNewsId) ||
+      NF_DATA.news[0];
+    if (!current) return;
+    current._newsModalImageIndex = Number(thumb.dataset.newsGalleryIndex) || 0;
+    nfOpenNewsModal(current.id);
+  });
 }
 
 function nfCloseNewsModal() {
@@ -3086,14 +6846,6 @@ function nfCloseNewsModal() {
   if (!modal || !backdrop) return;
   modal.classList.remove("nf-modal-visible");
   backdrop.classList.remove("nf-backdrop-visible");
-  backdrop.style.display = "";
-  backdrop.style.visibility = "";
-  backdrop.style.opacity = "";
-  modal.style.display = "";
-  modal.style.visibility = "";
-  modal.style.opacity = "";
-  modal.style.transform = "";
-  modal.style.transition = "";
   modal.setAttribute("aria-hidden", "true");
   backdrop.setAttribute("aria-hidden", "true");
   nfUpdateOverlayBody();
@@ -3192,28 +6944,28 @@ function nfAdminCategoriesContent() {
             .map(
               (c) =>
                 `<tr>
-                  <td><code>${c.id}</code></td>
+                  <td><code>${nfEscapeHtml(c.id)}</code></td>
                   <td class="nf-admin-actions">
-                    <button type="button" class="nf-admin-row-edit" data-admin-edit="category" data-id="${c.id}">
+                    <button type="button" class="nf-admin-row-edit" data-admin-edit="category" data-id="${nfEscapeHtml(c.id)}">
                       <span class="nf-admin-row-icon" aria-hidden="true">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <path d="M4 20h4l10-10-4-4L4 16v4Z" stroke="#e0f2f1" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                          <path d="M4 20h4l10-10-4-4L4 16v4Z" stroke="${NF_PALETTE.accentSoft}" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
                       </span>
                       <span class="nf-admin-row-label">Редактировать</span>
                     </button>
-                    <button type="button" class="nf-admin-row-del" data-admin-del="category" data-id="${c.id}">
+                    <button type="button" class="nf-admin-row-del" data-admin-del="category" data-id="${nfEscapeHtml(c.id)}">
                       <span class="nf-admin-row-icon" aria-hidden="true">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <path d="M6 7h12M10 11v6M14 11v6M9 7l1-2h4l1 2M8 7h8l-1 11H9L8 7Z" stroke="#fecaca" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                          <path d="M6 7h12M10 11v6M14 11v6M9 7l1-2h4l1 2M8 7h8l-1 11H9L8 7Z" stroke="${NF_PALETTE.error}" stroke-opacity="0.62" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
                       </span>
                       <span class="nf-admin-row-label">Удалить</span>
                     </button>
                   </td>
-                  <td>${c.name}</td>
-                  <td>${c.description || ""}</td>
-                  <td>${c.count ?? 0}</td>
+                  <td>${nfEscapeHtml(c.name)}</td>
+                  <td>${nfEscapeHtml(c.description || "")}</td>
+                  <td>${nfEscapeHtml(c.count ?? 0)}</td>
                 </tr>`,
             )
             .join("")}</tbody>
@@ -3244,28 +6996,28 @@ function nfAdminPartnersContent() {
             .map(
               (p) =>
                 `<tr>
-                  <td><code>${p.id}</code></td>
+                  <td><code>${nfEscapeHtml(p.id)}</code></td>
                   <td class="nf-admin-actions">
-                    <button type="button" class="nf-admin-row-edit" data-admin-edit="partner" data-id="${p.id}">
+                    <button type="button" class="nf-admin-row-edit" data-admin-edit="partner" data-id="${nfEscapeHtml(p.id)}">
                       <span class="nf-admin-row-icon" aria-hidden="true">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <path d="M4 20h4l10-10-4-4L4 16v4Z" stroke="#e0f2f1" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                          <path d="M4 20h4l10-10-4-4L4 16v4Z" stroke="${NF_PALETTE.accentSoft}" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
                       </span>
                       <span class="nf-admin-row-label">Редактировать</span>
                     </button>
-                    <button type="button" class="nf-admin-row-del" data-admin-del="partner" data-id="${p.id}">
+                    <button type="button" class="nf-admin-row-del" data-admin-del="partner" data-id="${nfEscapeHtml(p.id)}">
                       <span class="nf-admin-row-icon" aria-hidden="true">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <path d="M6 7h12M10 11v6M14 11v6M9 7l1-2h4l1 2M8 7h8l-1 11H9L8 7Z" stroke="#fecaca" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                          <path d="M6 7h12M10 11v6M14 11v6M9 7l1-2h4l1 2M8 7h8l-1 11H9L8 7Z" stroke="${NF_PALETTE.error}" stroke-opacity="0.62" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
                       </span>
                       <span class="nf-admin-row-label">Удалить</span>
                     </button>
                   </td>
-                  <td>${p.name}</td>
-                  <td>${p.country || ""}</td>
-                  <td>${p.equipment || ""}</td>
+                  <td>${nfEscapeHtml(p.name)}</td>
+                  <td>${nfEscapeHtml(p.country || "")}</td>
+                  <td>${nfEscapeHtml(p.equipment || "")}</td>
                 </tr>`,
             )
             .join("")}</tbody>
@@ -3299,30 +7051,30 @@ function nfAdminProductsContent() {
               const price = p.price != null ? nfFormatPrice(p.price) : "—";
               const popular = p.popular ? "Да" : "—";
               return `<tr>
-                <td><code>${p.id}</code></td>
+                <td><code>${nfEscapeHtml(p.id)}</code></td>
                 <td class="nf-admin-actions">
-                  <button type="button" class="nf-admin-row-edit" data-admin-edit="product" data-id="${p.id}">
+                  <button type="button" class="nf-admin-row-edit" data-admin-edit="product" data-id="${nfEscapeHtml(p.id)}">
                     <span class="nf-admin-row-icon" aria-hidden="true">
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M4 20h4l10-10-4-4L4 16v4Z" stroke="#e0f2f1" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M4 20h4l10-10-4-4L4 16v4Z" stroke="${NF_PALETTE.accentSoft}" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
                       </svg>
                     </span>
                     <span class="nf-admin-row-label">Редактировать</span>
                   </button>
-                  <button type="button" class="nf-admin-row-del" data-admin-del="product" data-id="${p.id}">
+                  <button type="button" class="nf-admin-row-del" data-admin-del="product" data-id="${nfEscapeHtml(p.id)}">
                     <span class="nf-admin-row-icon" aria-hidden="true">
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M6 7h12M10 11v6M14 11v6M9 7l1-2h4l1 2M8 7h8l-1 11H9L8 7Z" stroke="#fecaca" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M6 7h12M10 11v6M14 11v6M9 7l1-2h4l1 2M8 7h8l-1 11H9L8 7Z" stroke="${NF_PALETTE.error}" stroke-opacity="0.62" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
                       </svg>
                     </span>
                     <span class="nf-admin-row-label">Удалить</span>
                   </button>
                 </td>
-                <td>${p.name || ""}</td>
-                <td>${cat ? cat.name : p.categoryId}</td>
-                <td>${part ? part.name : p.partnerId}</td>
-                <td>${price}</td>
-                <td>${popular}</td>
+                <td>${nfEscapeHtml(p.name || "")}</td>
+                <td>${nfEscapeHtml(cat ? cat.name : p.categoryId)}</td>
+                <td>${nfEscapeHtml(part ? part.name : p.partnerId)}</td>
+                <td>${nfEscapeHtml(price)}</td>
+                <td>${nfEscapeHtml(popular)}</td>
               </tr>`;
             })
             .join("")}</tbody>
@@ -3356,29 +7108,29 @@ function nfAdminNewsContent() {
             .map(
               (n) =>
                 `<tr>
-                  <td><code>${n.id}</code></td>
+                  <td><code>${nfEscapeHtml(n.id)}</code></td>
                   <td class="nf-admin-actions">
-                    <button type="button" class="nf-admin-row-edit" data-admin-edit="news" data-id="${n.id}">
+                    <button type="button" class="nf-admin-row-edit" data-admin-edit="news" data-id="${nfEscapeHtml(n.id)}">
                       <span class="nf-admin-row-icon" aria-hidden="true">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <path d="M4 20h4l10-10-4-4L4 16v4Z" stroke="#e0f2f1" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                          <path d="M4 20h4l10-10-4-4L4 16v4Z" stroke="${NF_PALETTE.accentSoft}" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
                       </span>
                       <span class="nf-admin-row-label">Редактировать</span>
                     </button>
-                    <button type="button" class="nf-admin-row-del" data-admin-del="news" data-id="${n.id}">
+                    <button type="button" class="nf-admin-row-del" data-admin-del="news" data-id="${nfEscapeHtml(n.id)}">
                       <span class="nf-admin-row-icon" aria-hidden="true">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <path d="M6 7h12M10 11v6M14 11v6M9 7l1-2h4l1 2M8 7h8l-1 11H9L8 7Z" stroke="#fecaca" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                          <path d="M6 7h12M10 11v6M14 11v6M9 7l1-2h4l1 2M8 7h8l-1 11H9L8 7Z" stroke="${NF_PALETTE.error}" stroke-opacity="0.62" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
                       </span>
                       <span class="nf-admin-row-label">Удалить</span>
                     </button>
                   </td>
-                  <td>${n.title || ""}</td>
-                  <td>${n.category || ""}</td>
-                  <td>${n.date || ""}</td>
-                  <td>${n.author || ""}</td>
+                  <td>${nfEscapeHtml(n.title || "")}</td>
+                  <td>${nfEscapeHtml(n.category || "")}</td>
+                  <td>${nfEscapeHtml(n.date || "")}</td>
+                  <td>${nfEscapeHtml(n.author || "")}</td>
                 </tr>`,
             )
             .join("")}</tbody>
@@ -3591,16 +7343,16 @@ function nfAdminOpenForm(kind, id) {
             <div class="nf-admin-section-body">
               <div class="nf-admin-product-meta">
                 <label>Идентификатор (латиница)
-                  <input name="id" class="nf-input" value="${entity.id || ""}" ${id ? "readonly" : ""} />
+                  <input name="id" class="nf-input" value="${nfEscapeHtml(entity.id || "")}" ${id ? "readonly" : ""} />
                 </label>
                 <label>Название
-                  <input name="name" class="nf-input" value="${entity.name || ""}" />
+                  <input name="name" class="nf-input" value="${nfEscapeHtml(entity.name || "")}" />
                 </label>
                 <label>Кол-во позиций
-                  <input name="count" type="number" class="nf-input" value="${entity.count ?? 0}" />
+                  <input name="count" type="number" class="nf-input" value="${nfEscapeHtml(entity.count ?? 0)}" />
                 </label>
                 <label>Порядок сортировки
-                  <input name="sortOrder" type="number" class="nf-input" value="${entity.sortOrder ?? 0}" />
+                  <input name="sortOrder" type="number" class="nf-input" value="${nfEscapeHtml(entity.sortOrder ?? 0)}" />
                 </label>
                 <label class="nf-admin-checkbox">
                   <input name="isHidden" type="checkbox" ${entity.isHidden ? "checked" : ""} />
@@ -3619,7 +7371,7 @@ function nfAdminOpenForm(kind, id) {
             </button>
             <div class="nf-admin-section-body">
               <label>Описание категории
-                <textarea name="description" class="nf-textarea" rows="4" placeholder="Какой тип оборудования и задач покрывает раздел">${entity.description || ""}</textarea>
+                <textarea name="description" class="nf-textarea" rows="4" placeholder="Какой тип оборудования и задач покрывает раздел">${nfEscapeHtml(entity.description || "")}</textarea>
               </label>
             </div>
           </div>
@@ -3633,15 +7385,15 @@ function nfAdminOpenForm(kind, id) {
               <div class="nf-admin-product-split">
                 <div>
                   <label>Мета-заголовок
-                    <input name="metaTitle" class="nf-input" value="${entity.seo.metaTitle || ""}" />
+                    <input name="metaTitle" class="nf-input" value="${nfEscapeHtml(entity.seo.metaTitle || "")}" />
                   </label>
                   <label>Мета-описание
-                    <textarea name="metaDescription" class="nf-textarea" rows="2">${entity.seo.metaDescription || ""}</textarea>
+                    <textarea name="metaDescription" class="nf-textarea" rows="2">${nfEscapeHtml(entity.seo.metaDescription || "")}</textarea>
                   </label>
                 </div>
                 <div>
                   <label>ЧПУ (адрес страницы)
-                    <input name="slug" class="nf-input" value="${entity.seo.slug || ""}" placeholder="naprimer-anesteziologiya-reanimaciya" />
+                    <input name="slug" class="nf-input" value="${nfEscapeHtml(entity.seo.slug || "")}" placeholder="naprimer-anesteziologiya-reanimaciya" />
                   </label>
                 </div>
               </div>
@@ -3695,7 +7447,7 @@ function nfAdminOpenForm(kind, id) {
             </button>
             <div class="nf-admin-section-body">
               <div class="nf-admin-image-preview-wrap nf-admin-product-image-wrap">
-                <img src="${logoSrc || ""}" alt="" class="nf-admin-image-preview" data-admin-preview="logo" />
+                <img src="${nfEscapeHtml(logoSrc || "")}" alt="" class="nf-admin-image-preview" data-admin-preview="logo" />
                 <div class="nf-admin-image-fields">
                   <label class="nf-admin-image-label">
                     <span>Логотип партнёра</span>
@@ -3703,7 +7455,7 @@ function nfAdminOpenForm(kind, id) {
                       <span class="nf-admin-file-label">Выберите файл</span>
                       <input type="file" name="logoFile" class="nf-admin-file-input" accept="image/*" />
                     </div>
-                    <input type="hidden" name="logo" value="${logoSrc}" />
+                    <input type="hidden" name="logo" value="${nfEscapeHtml(logoSrc)}" />
                     <span class="nf-admin-image-hint">PNG/JPG до 5&nbsp;МБ, загрузится автоматически</span>
                   </label>
                   <button type="button" class="nf-admin-image-clear" data-admin-clear-image="logo">Удалить логотип</button>
@@ -3724,30 +7476,30 @@ function nfAdminOpenForm(kind, id) {
               <div class="nf-admin-product-split">
                 <div>
                   <label>ID партнёра
-                    <input name="id" class="nf-input" value="${entity.id || ""}" ${id ? "readonly" : ""} />
+                    <input name="id" class="nf-input" value="${nfEscapeHtml(entity.id || "")}" ${id ? "readonly" : ""} />
                   </label>
                   <label>Название компании
-                    <input name="name" class="nf-input" value="${entity.name || ""}" />
+                    <input name="name" class="nf-input" value="${nfEscapeHtml(entity.name || "")}" />
                   </label>
                   <label>Страна
-                    <input name="country" class="nf-input" value="${entity.country || ""}" />
+                    <input name="country" class="nf-input" value="${nfEscapeHtml(entity.country || "")}" />
                   </label>
                   <label>Город
-                    <input name="city" class="nf-input" value="${entity.city || ""}" />
+                    <input name="city" class="nf-input" value="${nfEscapeHtml(entity.city || "")}" />
                   </label>
                   <label>Сайт
-                    <input name="website" class="nf-input" value="${entity.website || ""}" placeholder="https://example.com" />
+                    <input name="website" class="nf-input" value="${nfEscapeHtml(entity.website || "")}" placeholder="https://example.com" />
                   </label>
                 </div>
                 <div>
                   <label>Оборудование (направления)
-                    <input name="equipment" class="nf-input" value="${entity.equipment || ""}" placeholder="Например: реанимация, радиология" />
+                    <input name="equipment" class="nf-input" value="${nfEscapeHtml(entity.equipment || "")}" placeholder="Например: реанимация, радиология" />
                   </label>
                   <label>Лет партнёрства
-                    <input name="years" type="number" class="nf-input" value="${entity.years ?? 0}" />
+                    <input name="years" type="number" class="nf-input" value="${nfEscapeHtml(entity.years ?? 0)}" />
                   </label>
                   <label>Порядок сортировки
-                    <input name="sortOrder" type="number" class="nf-input" value="${entity.sortOrder ?? 0}" />
+                    <input name="sortOrder" type="number" class="nf-input" value="${nfEscapeHtml(entity.sortOrder ?? 0)}" />
                   </label>
                   <label class="nf-admin-checkbox">
                     <input name="isHidden" type="checkbox" ${entity.isHidden ? "checked" : ""} />
@@ -3757,7 +7509,7 @@ function nfAdminOpenForm(kind, id) {
               </div>
 
               <label>Описание
-                <textarea name="description" class="nf-textarea" rows="3">${entity.description || ""}</textarea>
+                <textarea name="description" class="nf-textarea" rows="3">${nfEscapeHtml(entity.description || "")}</textarea>
               </label>
             </div>
           </div>
@@ -3771,15 +7523,15 @@ function nfAdminOpenForm(kind, id) {
               <div class="nf-admin-product-split">
                 <div>
                   <label>Мета-заголовок
-                    <input name="metaTitle" class="nf-input" value="${entity.seo.metaTitle || ""}" />
+                    <input name="metaTitle" class="nf-input" value="${nfEscapeHtml(entity.seo.metaTitle || "")}" />
                   </label>
                   <label>Мета-описание
-                    <textarea name="metaDescription" class="nf-textarea" rows="2">${entity.seo.metaDescription || ""}</textarea>
+                    <textarea name="metaDescription" class="nf-textarea" rows="2">${nfEscapeHtml(entity.seo.metaDescription || "")}</textarea>
                   </label>
                 </div>
                 <div>
                   <label>ЧПУ (адрес страницы)
-                    <input name="slug" class="nf-input" value="${entity.seo.slug || ""}" placeholder="naprimer-ardo-medical" />
+                    <input name="slug" class="nf-input" value="${nfEscapeHtml(entity.seo.slug || "")}" placeholder="naprimer-ardo-medical" />
                   </label>
                 </div>
               </div>
@@ -3895,10 +7647,16 @@ function nfAdminOpenForm(kind, id) {
 
     const initialImages = nfGetProductImages(entity);
     const catOptions = (NF_DATA.categories || [])
-      .map((c) => `<option value="${c.id}" ${c.id === entity.categoryId ? "selected" : ""}>${c.name}</option>`)
+      .map(
+        (c) =>
+          `<option value="${nfEscapeHtml(c.id)}" ${c.id === entity.categoryId ? "selected" : ""}>${nfEscapeHtml(c.name)}</option>`
+      )
       .join("");
     const partnerOptions = (NF_DATA.partners || [])
-      .map((p) => `<option value="${p.id}" ${p.id === entity.partnerId ? "selected" : ""}>${p.name}</option>`)
+      .map(
+        (p) =>
+          `<option value="${nfEscapeHtml(p.id)}" ${p.id === entity.partnerId ? "selected" : ""}>${nfEscapeHtml(p.name)}</option>`
+      )
       .join("");
     const imageSrc = initialImages[0] || "";
     const specsText = Array.isArray(entity.specs) ? entity.specs.join("\n") : "";
@@ -3915,7 +7673,7 @@ function nfAdminOpenForm(kind, id) {
           <div class="nf-admin-section">
             <h3 class="nf-admin-section-title">Медиа</h3>
             <div class="nf-admin-image-preview-wrap nf-admin-product-image-wrap">
-              <img src="${imageSrc || ""}" alt="" class="nf-admin-image-preview" data-admin-preview="image" />
+              <img src="${nfEscapeHtml(imageSrc || "")}" alt="" class="nf-admin-image-preview" data-admin-preview="image" />
               <div class="nf-admin-image-fields">
                 <label class="nf-admin-image-label">
                   <span>Фото товара</span>
@@ -3923,7 +7681,7 @@ function nfAdminOpenForm(kind, id) {
                     <span class="nf-admin-file-label">Выберите файл</span>
                     <input type="file" name="imageFile" class="nf-admin-file-input" accept="image/*" />
                   </div>
-                  <input type="hidden" name="image" value="${imageSrc}" />
+                  <input type="hidden" name="image" value="${nfEscapeHtml(imageSrc)}" />
                   <span class="nf-admin-image-hint">JPG/PNG до 10&nbsp;МБ, загрузится автоматически</span>
                 </label>
                 <button type="button" class="nf-admin-image-clear" data-admin-clear-image="image">Удалить фото</button>
@@ -3946,13 +7704,13 @@ function nfAdminOpenForm(kind, id) {
             <h3 class="nf-admin-section-title">Параметры</h3>
             <div class="nf-admin-product-meta">
               <label>ID товара
-                <input name="id" class="nf-input" value="${entity.id || ""}" ${id ? "readonly" : ""} />
+                <input name="id" class="nf-input" value="${nfEscapeHtml(entity.id || "")}" ${id ? "readonly" : ""} />
               </label>
               <label>Артикул
-                <input name="article" class="nf-input" value="${entity.article || ""}" placeholder="Автоматически: NF001, NF002…" readonly />
+                <input name="article" class="nf-input" value="${nfEscapeHtml(entity.article || "")}" placeholder="Автоматически: NF001, NF002…" readonly />
               </label>
               <label>Модель
-                <input name="model" class="nf-input" value="${entity.model || ""}" placeholder="Например: PowerCube" />
+                <input name="model" class="nf-input" value="${nfEscapeHtml(entity.model || "")}" placeholder="Например: PowerCube" />
               </label>
               <label>Категория
                 <select name="categoryId" class="nf-select">${catOptions}</select>
@@ -3961,7 +7719,7 @@ function nfAdminOpenForm(kind, id) {
                 <select name="partnerId" class="nf-select">${partnerOptions}</select>
               </label>
               <label>Цена
-                <input name="price" type="number" class="nf-input" value="${entity.price ?? ""}" />
+                <input name="price" type="number" class="nf-input" value="${nfEscapeHtml(entity.price ?? "")}" />
               </label>
               <label>Валюта
                 <select name="currency" class="nf-select">
@@ -3978,10 +7736,10 @@ function nfAdminOpenForm(kind, id) {
                 </select>
               </label>
               <label>Производитель
-                <input name="manufacturer" class="nf-input" value="${entity.manufacturer || ""}" placeholder="Отличается от партнёра, если нужно" />
+                <input name="manufacturer" class="nf-input" value="${nfEscapeHtml(entity.manufacturer || "")}" placeholder="Отличается от партнёра, если нужно" />
               </label>
               <label>Порядок сортировки
-                <input name="sortOrder" type="number" class="nf-input" value="${entity.sortOrder ?? 0}" />
+                <input name="sortOrder" type="number" class="nf-input" value="${nfEscapeHtml(entity.sortOrder ?? 0)}" />
               </label>
             </div>
 
@@ -4008,10 +7766,10 @@ function nfAdminOpenForm(kind, id) {
           <div class="nf-admin-section">
             <h3 class="nf-admin-section-title">Основная информация</h3>
             <label>Название
-              <input name="name" class="nf-input" value="${entity.name || ""}" />
+              <input name="name" class="nf-input" value="${nfEscapeHtml(entity.name || "")}" />
             </label>
             <label>Краткое описание
-              <textarea name="shortDesc" class="nf-textarea" rows="2" placeholder="Короткий текст для карточек и списка">${entity.shortDesc || ""}</textarea>
+              <textarea name="shortDesc" class="nf-textarea" rows="2" placeholder="Короткий текст для карточек и списка">${nfEscapeHtml(entity.shortDesc || "")}</textarea>
             </label>
             <label>Полное описание</label>
             <div class="nf-admin-wysiwyg" data-admin-wysiwyg>
@@ -4075,24 +7833,24 @@ function nfAdminOpenForm(kind, id) {
             <div class="nf-admin-product-split">
               <div>
                 <label>Мета-заголовок
-                  <input name="metaTitle" class="nf-input" value="${entity.seo.metaTitle || ""}" />
+                  <input name="metaTitle" class="nf-input" value="${nfEscapeHtml(entity.seo.metaTitle || "")}" />
                 </label>
                 <label>Мета-описание
-                  <textarea name="metaDescription" class="nf-textarea" rows="2">${entity.seo.metaDescription || ""}</textarea>
+                  <textarea name="metaDescription" class="nf-textarea" rows="2">${nfEscapeHtml(entity.seo.metaDescription || "")}</textarea>
                 </label>
                 <label>ЧПУ (адрес страницы)
-                  <input name="slug" class="nf-input" value="${entity.seo.slug || ""}" placeholder="naprimer-apparat-ivl-neo" />
+                  <input name="slug" class="nf-input" value="${nfEscapeHtml(entity.seo.slug || "")}" placeholder="naprimer-apparat-ivl-neo" />
                 </label>
               </div>
               <div>
                 <label>OpenGraph заголовок
-                  <input name="ogTitle" class="nf-input" value="${entity.seo.ogTitle || ""}" />
+                  <input name="ogTitle" class="nf-input" value="${nfEscapeHtml(entity.seo.ogTitle || "")}" />
                 </label>
                 <label>OpenGraph описание
-                  <textarea name="ogDescription" class="nf-textarea" rows="2">${entity.seo.ogDescription || ""}</textarea>
+                  <textarea name="ogDescription" class="nf-textarea" rows="2">${nfEscapeHtml(entity.seo.ogDescription || "")}</textarea>
                 </label>
                 <label>Связанные товары (ID через запятую)
-                  <textarea name="related" class="nf-textarea" rows="2" placeholder="ardo-ncpap, fujifilm-fdr-go">${relatedRaw}</textarea>
+                  <textarea name="related" class="nf-textarea" rows="2" placeholder="ardo-ncpap, fujifilm-fdr-go">${nfEscapeHtml(relatedRaw)}</textarea>
                 </label>
               </div>
             </div>
@@ -4723,7 +8481,7 @@ function nfAdminOpenForm(kind, id) {
             </button>
             <div class="nf-admin-section-body">
               <div class="nf-admin-image-preview-wrap nf-admin-product-image-wrap">
-                <img src="${primaryImage || ""}" alt="" class="nf-admin-image-preview" data-admin-preview="image" />
+                <img src="${nfEscapeHtml(primaryImage || "")}" alt="" class="nf-admin-image-preview" data-admin-preview="image" />
                 <div class="nf-admin-image-fields">
                   <label class="nf-admin-image-label">
                     <span>Обложка новости</span>
@@ -4731,7 +8489,7 @@ function nfAdminOpenForm(kind, id) {
                       <span class="nf-admin-file-label">Выберите файл</span>
                       <input type="file" name="newsCoverFile" class="nf-admin-file-input" accept="image/*" />
                     </div>
-                    <input type="hidden" name="image" value="${primaryImage}" />
+                    <input type="hidden" name="image" value="${nfEscapeHtml(primaryImage)}" />
                     <span class="nf-admin-image-hint">JPG/PNG до 10&nbsp;МБ, не обязательно</span>
                   </label>
                   <button type="button" class="nf-admin-image-clear" data-admin-clear-image="image">Удалить фото</button>
@@ -4762,22 +8520,22 @@ function nfAdminOpenForm(kind, id) {
               <div class="nf-admin-product-split">
                 <div>
                   <label>ID новости
-                    <input name="id" class="nf-input" value="${entity.id || ""}" ${id ? "readonly" : ""} />
+                    <input name="id" class="nf-input" value="${nfEscapeHtml(entity.id || "")}" ${id ? "readonly" : ""} />
                   </label>
                   <label>Заголовок
-                    <input name="title" class="nf-input" value="${entity.title || ""}" />
+                    <input name="title" class="nf-input" value="${nfEscapeHtml(entity.title || "")}" />
                   </label>
                   <label>Категория (тип)
-                    <input name="category" class="nf-input" value="${entity.category || ""}" />
+                    <input name="category" class="nf-input" value="${nfEscapeHtml(entity.category || "")}" />
                   </label>
                   <label>Дата
-                    <input name="date" type="date" class="nf-input" value="${entity.date || new Date().toISOString().slice(0, 10)}" />
+                    <input name="date" type="date" class="nf-input" value="${nfEscapeHtml(entity.date || new Date().toISOString().slice(0, 10))}" />
                   </label>
                   <label>Автор
-                    <input name="author" class="nf-input" value="${entity.author || ""}" />
+                    <input name="author" class="nf-input" value="${nfEscapeHtml(entity.author || "")}" />
                   </label>
                   <label>Порядок сортировки
-                    <input name="sortOrder" type="number" class="nf-input" value="${entity.sortOrder ?? 0}" />
+                    <input name="sortOrder" type="number" class="nf-input" value="${nfEscapeHtml(entity.sortOrder ?? 0)}" />
                   </label>
                   <label class="nf-admin-checkbox">
                     <input name="isHidden" type="checkbox" ${entity.isHidden ? "checked" : ""} />
@@ -4786,10 +8544,10 @@ function nfAdminOpenForm(kind, id) {
                 </div>
                 <div>
                   <label>Краткое описание
-                    <textarea name="excerpt" class="nf-textarea" rows="3">${entity.excerpt || ""}</textarea>
+                    <textarea name="excerpt" class="nf-textarea" rows="3">${nfEscapeHtml(entity.excerpt || "")}</textarea>
                   </label>
                   <label>Текст новости (каждый абзац с новой строки)
-                    <textarea name="content" class="nf-textarea" rows="8">${contentText}</textarea>
+                    <textarea name="content" class="nf-textarea" rows="8">${nfEscapeHtml(contentText)}</textarea>
                   </label>
                 </div>
               </div>
@@ -4805,15 +8563,15 @@ function nfAdminOpenForm(kind, id) {
               <div class="nf-admin-product-split">
                 <div>
                   <label>Мета-заголовок
-                    <input name="metaTitle" class="nf-input" value="${entity.seo.metaTitle || ""}" />
+                    <input name="metaTitle" class="nf-input" value="${nfEscapeHtml(entity.seo.metaTitle || "")}" />
                   </label>
                   <label>Мета-описание
-                    <textarea name="metaDescription" class="nf-textarea" rows="2">${entity.seo.metaDescription || ""}</textarea>
+                    <textarea name="metaDescription" class="nf-textarea" rows="2">${nfEscapeHtml(entity.seo.metaDescription || "")}</textarea>
                   </label>
                 </div>
                 <div>
                   <label>ЧПУ (адрес страницы)
-                    <input name="slug" class="nf-input" value="${entity.seo.slug || ""}" placeholder="naprimer-lab-automation" />
+                    <input name="slug" class="nf-input" value="${nfEscapeHtml(entity.seo.slug || "")}" placeholder="naprimer-lab-automation" />
                   </label>
                 </div>
               </div>
@@ -4852,7 +8610,7 @@ function nfAdminOpenForm(kind, id) {
         item.className = "nf-admin-gallery-item";
         item.innerHTML = `
           <div class="nf-admin-gallery-thumb-wrap">
-            <img src="${url}" alt="" class="nf-admin-gallery-thumb" />
+            <img src="${nfEscapeHtml(url)}" alt="" class="nf-admin-gallery-thumb" />
           </div>
           <button type="button" class="nf-admin-gallery-remove" aria-label="Удалить фото">×</button>
         `;
@@ -5434,8 +9192,6 @@ function nfRenderAdminLogin() {
           if (errEl) {
             errEl.textContent = data.error || "Ошибка входа";
             errEl.hidden = false;
-            errEl.classList.add("is-visible-shake");
-            setTimeout(() => errEl.classList.remove("is-visible-shake"), 260);
           }
           return;
         }
@@ -5447,8 +9203,6 @@ function nfRenderAdminLogin() {
         if (errEl) {
           errEl.textContent = "Ошибка сети";
           errEl.hidden = false;
-          errEl.classList.add("is-visible-shake");
-          setTimeout(() => errEl.classList.remove("is-visible-shake"), 260);
         }
       } finally {
         if (submitBtn) {
@@ -5504,9 +9258,9 @@ function nfRenderAdmin() {
       .slice(0, 3)
       .map(
         (n) =>
-          `<li><span class="nf-admin-list-title">${n.title}</span><span class="nf-admin-list-meta">${n.date || ""} · ${
+          `<li><span class="nf-admin-list-title">${nfEscapeHtml(n.title)}</span><span class="nf-admin-list-meta">${nfEscapeHtml(n.date || "")} · ${nfEscapeHtml(
             n.category || ""
-          }</span></li>`,
+          )}</span></li>`,
       )
       .join("");
     const latestNewsHtml =
@@ -5562,7 +9316,13 @@ function nfRenderAdmin() {
         <h2 style="margin:0 0 8px;">Заявки (${requests.length})</h2>
         <div class="nf-admin-table-wrap">
           <table class="nf-admin-table"><thead><tr><th>Дата</th><th>Тип</th><th>Имя</th><th>Компания</th><th>Контакты</th></tr></thead>
-          <tbody>${requests.slice(0, 50).map((r) => `<tr><td>${(r.createdAt || "").slice(0, 10)}</td><td>${r.type || ""}</td><td>${r.name || ""}</td><td>${r.company || ""}</td><td>${r.phone || ""} ${r.email || ""}</td></tr>`).join("")}</tbody>
+          <tbody>${requests
+            .slice(0, 50)
+            .map(
+              (r) =>
+                `<tr><td>${nfEscapeHtml((r.createdAt || "").slice(0, 10))}</td><td>${nfEscapeHtml(r.type || "")}</td><td>${nfEscapeHtml(r.name || "")}</td><td>${nfEscapeHtml(r.company || "")}</td><td>${nfEscapeHtml(r.phone || "")} ${nfEscapeHtml(r.email || "")}</td></tr>`,
+            )
+            .join("")}</tbody>
           </table>
         </div>
       </div>
@@ -5571,7 +9331,7 @@ function nfRenderAdmin() {
     content = `
       <div class="nf-admin-card">
         <h2 style="margin:0 0 8px;">${tabs.find((t) => t.id === sec)?.label || "Раздел"}</h2>
-        <p style="margin:0;color:#6b7280;">Раздел в разработке.</p>
+        <p style="margin:0;color:${NF_PALETTE.muted};">Раздел в разработке.</p>
       </div>
     `;
   }
@@ -5740,51 +9500,713 @@ function nfValidateForm(form) {
 
 /* ====== ИНИЦИАЛИЗАТОРЫ СТРАНИЦ ====== */
 function nfInitHomePage() {
-  console.log("[home] init home page");
+  NF_STATE.homeLazy = {
+    popular: false,
+    categories: false,
+    partners: false,
+    news: false,
+  };
   nfUpdateSeo({
-    title: "НаноФарм — Медицинское оборудование для клиник и лабораторий",
-    description:
-      "Поставка, установка и сервисное обслуживание медицинского оборудования для клиник, лабораторий и диагностических центров.",
+    title: nfT("seo.home.title", "НаноФарм — Медицинское оборудование для клиник и лабораторий"),
+    description: nfT(
+      "seo.home.description",
+      "Поставка, установка и сервисное обслуживание медицинского оборудования для клиник, лабораторий и диагностических центров."
+    ),
     ogType: "website",
   });
-  nfInitPopularCarouselResponsiveWatcher();
-  nfInitPopularVisibilityObserver();
-  console.log("[home] calling popular carousel render");
-  requestAnimationFrame(() => {
-    requestAnimationFrame(() => {
-      nfRenderPopularCarousel();
-    });
+  nfInitHomeHeroReveal();
+  nfInitHomeHeroParallax();
+  nfInitPremiumHeroMotion();
+  nfInitHomeLazyHeavySections();
+  nfInitHomeFadeUpReveal();
+}
+
+function nfInitHomeFadeUpReveal() {
+  const blocks = document.querySelectorAll(".fade-up");
+  if (!blocks.length) return;
+
+  if (nfPrefersReducedMotion()) {
+    blocks.forEach((el) => el.classList.add("visible"));
+    return;
+  }
+
+  const io = new IntersectionObserver(
+    (entries, observer) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add("visible");
+        observer.unobserve(entry.target);
+      });
+    },
+    { threshold: 0.14, rootMargin: "0px 0px -8% 0px" }
+  );
+
+  blocks.forEach((el) => io.observe(el));
+}
+
+/**
+ * Home below-fold sections: static-first — always mount content immediately.
+ * data-nf-lazy-section remains as a semantic hook; optional deferred render can be reintroduced behind html.nf-motion-enhanced only.
+ */
+function nfInitHomeLazyHeavySections() {
+  const root = nfEl("page-root");
+  if (!root) return;
+
+  if (!NF_STATE.homeLazy.categories) {
+    NF_STATE.homeLazy.categories = true;
+    nfRenderHomeCategories();
+  }
+  if (!NF_STATE.homeLazy.partners) {
+    NF_STATE.homeLazy.partners = true;
+    nfRenderHomePartners();
+  }
+  if (!NF_STATE.homeLazy.news) {
+    NF_STATE.homeLazy.news = true;
+    nfRenderHomeNews();
+  }
+  if (!NF_STATE.homeLazy.popular) {
+    NF_STATE.homeLazy.popular = true;
+    nfRenderPopularCarousel();
+  }
+}
+
+function nfInitHomeHeroReveal() {
+  const firstScreen = document.querySelector(".nf-home-firstscreen");
+  const heroContent = document.querySelector(".nf-home-firstscreen .nf-hero__content");
+  if (!firstScreen && !heroContent) return;
+  if (firstScreen && firstScreen.dataset.revealReady === "1") return;
+  if (firstScreen) firstScreen.dataset.revealReady = "1";
+
+  if (heroContent) {
+    heroContent
+      .querySelectorAll(
+        ".nf-hero__headline-line--lead, .nf-hero__headline-line--sub, .nf-hero__lead--brand, .nf-hero__note--brand, .nf-hero__buttons"
+      )
+      .forEach((el, i) => {
+        el.classList.add("nf-vp-reveal");
+        el.style.setProperty("--nf-vp-stagger", `${i * 55}ms`);
+      });
+  }
+
+  const advHead = firstScreen?.querySelector(".nf-advantages__head");
+  if (advHead) {
+    const eyebrow = advHead.querySelector(".nf-advantages__eyebrow");
+    const lede = advHead.querySelector(".nf-advantages__lede");
+    if (eyebrow) {
+      eyebrow.classList.add("nf-vp-reveal");
+      eyebrow.style.setProperty("--nf-vp-stagger", "0ms");
+    }
+    if (lede) {
+      lede.classList.add("nf-vp-reveal");
+      lede.style.setProperty("--nf-vp-stagger", "45ms");
+    }
+  }
+
+  if (firstScreen) firstScreen.classList.add("is-ready");
+}
+
+function nfInitHomeHeroParallax() {
+  const hero = document.querySelector(".nf-home-firstscreen .nf-hero");
+  const bg = hero?.querySelector(".hero-bg");
+  if (!hero || !bg) return;
+  if (hero.dataset.parallaxReady === "1") return;
+  hero.dataset.parallaxReady = "1";
+
+  const prefersReduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const coarsePointer = window.matchMedia && window.matchMedia("(pointer: coarse)").matches;
+  if (prefersReduced || coarsePointer) return;
+
+  const limit = 20;
+  let raf = null;
+  let currentX = 0;
+  let currentY = 0;
+  let targetX = 0;
+  let targetY = 0;
+
+  const tick = () => {
+    currentX += (targetX - currentX) * 0.12;
+    currentY += (targetY - currentY) * 0.12;
+    bg.style.transform = `translate3d(${currentX.toFixed(2)}px, ${currentY.toFixed(2)}px, 0)`;
+
+    if (Math.abs(targetX - currentX) > 0.1 || Math.abs(targetY - currentY) > 0.1) {
+      raf = requestAnimationFrame(tick);
+    } else {
+      raf = null;
+    }
+  };
+
+  const schedule = () => {
+    if (raf == null) raf = requestAnimationFrame(tick);
+  };
+
+  hero.addEventListener("mousemove", (e) => {
+    const rect = hero.getBoundingClientRect();
+    const px = (e.clientX - rect.left) / Math.max(rect.width, 1);
+    const py = (e.clientY - rect.top) / Math.max(rect.height, 1);
+    targetX = (px - 0.5) * 2 * limit;
+    targetY = (py - 0.5) * 2 * limit;
+    schedule();
   });
-  nfRenderHomeCategories();
-  nfRenderHomePartners();
-  nfRenderHomeNews();
+
+  hero.addEventListener("mouseleave", () => {
+    targetX = 0;
+    targetY = 0;
+    schedule();
+  });
+}
+
+/**
+ * Premium hero: лёгкий parallax декора + миниатюры логотипа (только transform, rAF).
+ * На coarse / узких экранах — без магнита к курсору; при prefers-reduced-motion — статика.
+ */
+function nfInitPremiumHeroMotion() {
+  nfDisconnectPremiumHeroMotion();
+
+  const root = document.querySelector("#nf-premium-hero-root[data-nf-premium-hero]");
+  const mount = root && root.querySelector(".nf-hero-brand-particles");
+  if (!root || !mount) return;
+  mount.innerHTML = "";
+
+  const reduced = nfPrefersReducedMotion();
+  let fineHover = false;
+  try {
+    fineHover = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+  } catch (_e) {
+    fineHover = true;
+  }
+  let wide = false;
+  try {
+    wide = window.matchMedia("(min-width: 1024px)").matches;
+  } catch (_e2) {
+    wide = window.innerWidth >= 1024;
+  }
+
+  const interactive = !reduced && fineHover && wide;
+  const count = reduced || !wide ? 0 : interactive ? 9 : 5;
+
+  const particles = [];
+  const logoSrc = "/img/logo-footer.png";
+
+  for (let i = 0; i < count; i++) {
+    const img = document.createElement("img");
+    img.className = "nf-hero-brand-particle";
+    img.src = logoSrc;
+    img.alt = "";
+    img.decoding = "async";
+    img.draggable = false;
+    const w = 22 + Math.floor(Math.random() * 28);
+    img.style.setProperty("--nf-hp-w", `${w}px`);
+    img.style.setProperty("--nf-hp-o", String(0.09 + Math.random() * 0.1));
+    const ax = 0.06 + Math.random() * 0.88;
+    const ay = 0.1 + Math.random() * 0.8;
+    img.style.left = `${ax * 100}%`;
+    img.style.top = `${ay * 100}%`;
+    particles.push({
+      el: img,
+      ax,
+      ay,
+      phx: Math.random() * Math.PI * 2,
+      phy: Math.random() * Math.PI * 2,
+      sp: 0.2 + Math.random() * 0.32,
+      amp: 16 + Math.random() * 30,
+      vx: 0,
+      vy: 0,
+      scale: 0.82 + Math.random() * 0.38,
+    });
+    mount.appendChild(img);
+  }
+
+  let raf = null;
+  let running = false;
+  let time = 0;
+  let pointerIn = false;
+  let pmx = 0.5;
+  let pmy = 0.5;
+  let smx = 0.5;
+  let smy = 0.5;
+  let pvx = 0;
+  let pvy = 0;
+  let mrx = 0;
+  let mry = 0;
+  let ggx = 42;
+  let ggy = 36;
+  const hasSculpture = !!root.querySelector(".nf-hero-medtech-sculpture");
+  const sculptTilt = hasSculpture && !reduced && fineHover && wide;
+
+  const schedule = () => {
+    if (!running) return;
+    if (raf == null) raf = requestAnimationFrame(tick);
+  };
+
+  const tick = () => {
+    raf = null;
+    if (!running) return;
+
+    const rect = root.getBoundingClientRect();
+    const w = Math.max(rect.width, 1);
+    const h = Math.max(rect.height, 1);
+
+    time += 0.016 * 0.34;
+
+    smx += (pmx - smx) * 0.085;
+    smy += (pmy - smy) * 0.085;
+    const tpx = (smx - 0.5) * 24;
+    const tpy = (smy - 0.5) * 19;
+    pvx += (tpx - pvx) * 0.065;
+    pvy += (tpy - pvy) * 0.065;
+
+    if (!reduced) {
+      root.style.setProperty("--nf-hero-pvx", `${pvx.toFixed(3)}px`);
+      root.style.setProperty("--nf-hero-pvy", `${pvy.toFixed(3)}px`);
+    }
+
+    if (sculptTilt) {
+      const nx = (smx - 0.5) * 2;
+      const ny = (smy - 0.5) * 2;
+      const tgtRx = pointerIn ? ny * -5.2 : 0;
+      const tgtRy = pointerIn ? nx * 6.2 : 0;
+      mrx += (tgtRx - mrx) * 0.065;
+      mry += (tgtRy - mry) * 0.065;
+      const tgtGx = 42 + nx * 10;
+      const tgtGy = 36 + ny * 8.5;
+      ggx += (tgtGx - ggx) * 0.072;
+      ggy += (tgtGy - ggy) * 0.072;
+      root.style.setProperty("--nf-mt-rx", `${mrx.toFixed(3)}deg`);
+      root.style.setProperty("--nf-mt-ry", `${mry.toFixed(3)}deg`);
+      root.style.setProperty("--nf-mt-gx", `${ggx.toFixed(2)}%`);
+      root.style.setProperty("--nf-mt-gy", `${ggy.toFixed(2)}%`);
+    }
+
+    const pull = pointerIn && interactive ? 1 : 0;
+
+    for (let p = 0; p < particles.length; p++) {
+      const q = particles[p];
+      const axPx = q.ax * w;
+      const ayPx = q.ay * h;
+      const autoX = Math.sin(time * q.sp + q.phx) * q.amp;
+      const autoY = Math.cos(time * q.sp * 0.91 + q.phy) * q.amp * 0.88;
+
+      let magX = 0;
+      let magY = 0;
+      if (pull) {
+        const mx = pmx * w;
+        const my = pmy * h;
+        const dx = mx - axPx;
+        const dy = my - ayPx;
+        const len = Math.sqrt(dx * dx + dy * dy) + 48;
+        magX = (dx / len) * 56;
+        magY = (dy / len) * 56;
+      }
+
+      const tx = autoX * (1 - pull * 0.94) + magX;
+      const ty = autoY * (1 - pull * 0.94) + magY;
+      const ease = pull ? 0.12 : 0.048;
+      q.vx += (tx - q.vx) * ease;
+      q.vy += (ty - q.vy) * ease;
+
+      const wob = Math.sin(time * 0.72 + q.phx) * (pull ? 1.8 : 3.2);
+      const r = wob;
+      q.el.style.transform = `translate3d(-50%, -50%, 0) translate3d(${q.vx.toFixed(2)}px, ${q.vy.toFixed(
+        2
+      )}px, 0) rotate(${r.toFixed(2)}deg) scale(${q.scale.toFixed(3)})`;
+    }
+
+    const parallaxMoving = !reduced && (pointerIn || Math.abs(pvx - tpx) > 0.04 || Math.abs(pvy - tpy) > 0.04);
+    const tiltActive =
+      sculptTilt &&
+      (pointerIn ||
+        Math.abs(mrx) > 0.025 ||
+        Math.abs(mry) > 0.025 ||
+        Math.abs(ggx - 42) > 0.45 ||
+        Math.abs(ggy - 36) > 0.4);
+    if (particles.length > 0 || parallaxMoving || tiltActive) schedule();
+  };
+
+  const onMove = (e) => {
+    const rect = root.getBoundingClientRect();
+    pmx = (e.clientX - rect.left) / Math.max(rect.width, 1);
+    pmy = (e.clientY - rect.top) / Math.max(rect.height, 1);
+    schedule();
+  };
+
+  const onEnter = () => {
+    pointerIn = true;
+    schedule();
+  };
+
+  const onLeave = () => {
+    pointerIn = false;
+    pmx = 0.5;
+    pmy = 0.5;
+    schedule();
+  };
+
+  running = true;
+  if (!reduced && fineHover) {
+    root.addEventListener("pointermove", onMove, { passive: true });
+    root.addEventListener("pointerenter", onEnter);
+    root.addEventListener("pointerleave", onLeave);
+  }
+
+  if (particles.length > 0 || (!reduced && fineHover)) schedule();
+
+  window._nfPremiumHeroCleanup = () => {
+    running = false;
+    if (raf != null) cancelAnimationFrame(raf);
+    raf = null;
+    root.removeEventListener("pointermove", onMove);
+    root.removeEventListener("pointerenter", onEnter);
+    root.removeEventListener("pointerleave", onLeave);
+    root.style.removeProperty("--nf-hero-pvx");
+    root.style.removeProperty("--nf-hero-pvy");
+    root.style.removeProperty("--nf-mt-rx");
+    root.style.removeProperty("--nf-mt-ry");
+    root.style.removeProperty("--nf-mt-gx");
+    root.style.removeProperty("--nf-mt-gy");
+    particles.forEach((particle) => {
+      try {
+        particle.el.remove();
+      } catch (_e) {}
+    });
+    mount.innerHTML = "";
+  };
+}
+
+function nfInitHomeAdvantageCardsAnimation() {
+  const cards = document.querySelectorAll(".nf-advantages .nf-adv");
+  if (!cards.length) return;
+
+  cards.forEach((card, index) => {
+    card.style.setProperty("--nf-item-idx", String(index));
+    card.classList.add("nf-vp-reveal");
+    card.style.setProperty("--nf-vp-stagger", `${index * 55}ms`);
+  });
+}
+
+function nfInitCategoryPage() {
+  const cat = NF_DATA.categories.find((c) => c.id === NF_STATE.categoryDetailId);
+  const titleEl = nfEl("categoryPageTitle");
+  const descEl = nfEl("categoryPageDesc");
+  const grid = nfEl("categoryPageProducts");
+  if (!cat || !titleEl || !grid) {
+    nfGoPath("/catalog");
+    return;
+  }
+  nfUpdateSeo({
+    title: nfT("seo.category.title", "{name} — каталог НаноФарм", { name: cat.name }),
+    description: cat.description || nfT("seo.category.descriptionFallback", "Оборудование: {name}", { name: cat.name }),
+    ogType: "website",
+  });
+  titleEl.textContent = cat.name;
+  const crumb = nfEl("categoryPageCrumb");
+  if (crumb) crumb.textContent = cat.name;
+  if (descEl) descEl.textContent = cat.description || "";
+
+  const products = (NF_DATA.products || []).filter((p) => p.categoryId === cat.id && !p.isHidden);
+  grid.innerHTML = "";
+  grid.className = "nf-products-grid nf-catalog-grid nf-products-grid-mode";
+  products.forEach((p, i) => {
+    const staggerMs = i < 8 ? i * 42 : 0;
+    grid.appendChild(nfCreateCatalogProductCard(p, staggerMs > 0 ? { staggerMs } : null));
+  });
+  nfCatalogObserveAddedCards(Array.from(grid.querySelectorAll(".nf-vp-reveal")));
+}
+
+function nfBuildNewsArticleProseHtml(item) {
+  const blocks = Array.isArray(item.contentBlocks) ? item.contentBlocks : [];
+  if (blocks.length) {
+    return blocks
+      .map((block) => {
+        if (!block || typeof block !== "object") return "";
+        const type = String(block.type || "paragraph");
+        const text = String(block.text || "").trim();
+        const caption = String(block.caption || "").trim();
+        if (type === "heading" && text) {
+          return `<h2 class="nf-news-editorial__section-h">${nfEscapeHtml(text)}</h2>`;
+        }
+        if (type === "quote" && text) {
+          return `<blockquote class="nf-news-editorial__quote"><p>${nfEscapeHtml(text)}</p></blockquote>`;
+        }
+        if (type === "callout" && (text || caption)) {
+          const titleHtml = caption
+            ? `<strong class="nf-news-editorial__callout-title">${nfEscapeHtml(caption)}</strong>`
+            : "";
+          const bodyHtml = text
+            ? `<p class="nf-news-editorial__callout-text">${nfEscapeHtml(text)}</p>`
+            : "";
+          return `<aside class="nf-news-editorial__callout" role="note">${titleHtml}${bodyHtml}</aside>`;
+        }
+        if (!text) return "";
+        return `<p class="nf-news-editorial__p">${nfEscapeHtml(text)}</p>`;
+      })
+      .join("");
+  }
+  const paras = Array.isArray(item.content) && item.content.length ? item.content : [nfNewsExcerpt(item)];
+  let out = "";
+  let pIdx = 0;
+  paras.forEach((entry) => {
+    if (typeof entry === "string") {
+      out += `<p class="nf-news-editorial__p">${nfEscapeHtml(entry)}</p>`;
+      if (pIdx === 0 && item.pullQuote) {
+        out += `<blockquote class="nf-news-editorial__quote"><p>${nfEscapeHtml(String(item.pullQuote))}</p></blockquote>`;
+      }
+      if (pIdx === 1 && item.callout && (item.callout.title || item.callout.text)) {
+        const t = item.callout.title ? `<strong class="nf-news-editorial__callout-title">${nfEscapeHtml(String(item.callout.title))}</strong>` : "";
+        const b = item.callout.text ? `<p class="nf-news-editorial__callout-text">${nfEscapeHtml(String(item.callout.text))}</p>` : "";
+        out += `<aside class="nf-news-editorial__callout" role="note">${t}${b}</aside>`;
+      }
+      pIdx += 1;
+    } else if (entry && typeof entry === "object" && entry.h2) {
+      out += `<h2 class="nf-news-editorial__section-h">${nfEscapeHtml(String(entry.h2))}</h2>`;
+    } else if (entry && typeof entry === "object" && entry.p) {
+      out += `<p class="nf-news-editorial__p">${nfEscapeHtml(String(entry.p))}</p>`;
+      if (pIdx === 0 && item.pullQuote) {
+        out += `<blockquote class="nf-news-editorial__quote"><p>${nfEscapeHtml(String(item.pullQuote))}</p></blockquote>`;
+      }
+      if (pIdx === 1 && item.callout && (item.callout.title || item.callout.text)) {
+        const t = item.callout.title ? `<strong class="nf-news-editorial__callout-title">${nfEscapeHtml(String(item.callout.title))}</strong>` : "";
+        const b = item.callout.text ? `<p class="nf-news-editorial__callout-text">${nfEscapeHtml(String(item.callout.text))}</p>` : "";
+        out += `<aside class="nf-news-editorial__callout" role="note">${t}${b}</aside>`;
+      }
+      pIdx += 1;
+    }
+  });
+  return out;
+}
+
+function nfNewsHtmlContent(item) {
+  const html = String(
+    nfGetLocalizedField(
+      item,
+      "contentHtml",
+      nfGetLocalizedField(item, "content", nfGetLocalizedField(item, "description", ""))
+    ) || ""
+  ).trim();
+  if (!html) return "";
+  if (!/[<][a-z!/]/i.test(html)) return "";
+  return html;
+}
+
+function nfBuildNewsArticleBodyHtml(item) {
+  const html = nfNewsHtmlContent(item);
+  if (html) return html;
+  return nfBuildNewsArticleProseHtml(item);
+}
+
+function nfInitNewsArticlePage() {
+  const item =
+    (NF_DATA.news || []).find((x) => x.id === NF_STATE.newsArticleId) ||
+    (NF_DATA.news || []).find((x) => x.id === NF_STATE.selectedNewsId);
+  const titleEl = nfEl("newsArticleTitle");
+  const bodyEl = nfEl("newsArticleBody");
+  const heroImg = nfEl("newsArticleHeroImg");
+  const heroPh = nfEl("newsArticleHeroPlaceholder");
+  const metaRow = nfEl("newsArticleMetaRow");
+  const leadEl = nfEl("newsArticleLead");
+  const crumbCur = nfEl("newsArticleCrumbCurrent");
+  const catEl = nfEl("newsArticleCategory");
+  const asideSum = nfEl("newsArticleAsideSummary");
+  const copyBtn = nfEl("newsArticleCopyLink");
+  const relatedSec = nfEl("newsArticleRelated");
+  const relatedList = nfEl("newsArticleRelatedList");
+  const galleryEl = nfEl("newsArticleGallery");
+  const galleryGrid = nfEl("newsArticleGalleryGrid");
+  const tagsWrap = nfEl("newsArticleTags");
+  const tagsInner = nfEl("newsArticleTagsInner");
+  const inlineFig = nfEl("newsArticleInlineFigure");
+  const inlineImg = nfEl("newsArticleInlineImg");
+  const inlineCap = nfEl("newsArticleInlineCaption");
+
+  if (!item || !titleEl || !bodyEl) {
+    nfGoPath("/news");
+    return;
+  }
+
+  const newsTitle = nfNewsTitle(item);
+  const newsSummary = nfNewsExcerpt(item);
+
+  nfUpdateSeo({
+    title: `${newsTitle} — ${nfT("brand.name", "НаноФарм")}`,
+    description: newsSummary || newsTitle,
+    ogType: "article",
+    ogImage: item.image || (Array.isArray(item.images) ? item.images[0] : null),
+  });
+
+  titleEl.textContent = newsTitle;
+  if (crumbCur) {
+    const short = String(newsTitle || nfT("news.articleFallback", "Материал")).trim();
+    crumbCur.textContent = short.length > 56 ? `${short.slice(0, 54)}…` : short;
+  }
+
+  if (catEl) {
+    const cat = nfNewsCategory(item);
+    if (cat) {
+      catEl.textContent = cat;
+      catEl.hidden = false;
+    } else {
+      catEl.textContent = "";
+      catEl.hidden = true;
+    }
+  }
+
+  if (metaRow) {
+    const dateStr = item.date ? nfFormatDate(item.date) : "";
+    const author = String(item.author || "").trim();
+    metaRow.innerHTML = `
+      <span class="nf-news-editorial__meta-item nf-news-editorial__meta-item--date">${nfEscapeHtml(dateStr)}</span>
+      ${author ? `<span class="nf-news-editorial__meta-dot" aria-hidden="true">·</span><span class="nf-news-editorial__meta-item">${nfEscapeHtml(author)}</span>` : ""}
+      <span class="nf-news-editorial__meta-dot" aria-hidden="true">·</span>
+      <span class="nf-news-editorial__meta-item nf-news-editorial__meta-item--muted">${nfEscapeHtml(nfT("brand.name", "НаноФарм"))}</span>`;
+  }
+
+  if (leadEl) {
+    leadEl.textContent = newsSummary || newsTitle;
+  }
+  if (asideSum) {
+    asideSum.textContent = newsSummary || newsTitle;
+  }
+
+  bodyEl.innerHTML = nfBuildNewsArticleBodyHtml(item);
+
+  const hero = String(item.image || "").trim();
+  if (heroImg && heroPh) {
+    if (hero) {
+      heroImg.src = hero;
+      heroImg.alt = newsTitle ? nfFormatTemplate(nfT("news.coverAlt", "Обложка: {title}"), { title: newsTitle }) : "";
+      heroImg.hidden = false;
+      heroPh.hidden = true;
+    } else {
+      heroImg.removeAttribute("src");
+      heroImg.hidden = true;
+      heroPh.hidden = false;
+    }
+  }
+
+  if (inlineFig && inlineImg && inlineCap) {
+    const mid = String(item.inlineImage || "").trim();
+    const cap = String(item.inlineCaption || "").trim();
+    if (mid) {
+      inlineImg.src = mid;
+      inlineImg.alt = cap || nfT("news.inlineImageAlt", "Иллюстрация к материалу");
+      inlineCap.textContent = cap;
+      inlineCap.hidden = !cap;
+      inlineFig.hidden = false;
+    } else {
+      inlineImg.removeAttribute("src");
+      inlineFig.hidden = true;
+    }
+  }
+
+  if (galleryEl && galleryGrid) {
+    const imgs = Array.isArray(item.images) ? item.images.filter(Boolean) : [];
+    const caps = Array.isArray(item.imageCaptions) ? item.imageCaptions : [];
+    if (imgs.length >= 2) {
+      const slice = imgs.slice(0, 6);
+      galleryGrid.dataset.galleryCount = String(slice.length);
+      galleryGrid.innerHTML = slice
+        .map((src, i) => {
+          const c = caps[i] ? `<figcaption class="nf-news-editorial__gallery-cap">${nfEscapeHtml(String(caps[i]))}</figcaption>` : "";
+          return `<figure class="nf-news-editorial__gallery-cell nf-news-editorial__gallery-cell--i${i}"><div class="nf-news-editorial__gallery-cell-frame"><img src="${nfEscapeHtml(String(src).trim())}" alt="" loading="lazy" decoding="async" /></div>${c}</figure>`;
+        })
+        .join("");
+      galleryEl.hidden = false;
+    } else {
+      galleryGrid.innerHTML = "";
+      delete galleryGrid.dataset.galleryCount;
+      galleryEl.hidden = true;
+    }
+  }
+
+  if (tagsWrap && tagsInner) {
+    const raw = Array.isArray(item.tags) ? item.tags : item.category ? [item.category] : [];
+    const tags = [...new Set(raw.map((t) => String(t).trim()).filter(Boolean))];
+    if (tags.length) {
+      tagsInner.innerHTML = tags.map((t) => `<span class="nf-news-editorial__tag-pill">${nfEscapeHtml(t)}</span>`).join("");
+      tagsWrap.hidden = false;
+    } else {
+      tagsInner.innerHTML = "";
+      tagsWrap.hidden = true;
+    }
+  }
+
+  if (relatedSec && relatedList) {
+    const others = (NF_DATA.news || []).filter((n) => n && n.id !== item.id);
+    const pick = others.slice(0, 3);
+    if (pick.length) {
+      relatedList.innerHTML = pick
+        .map((n) => {
+          const href = `/news/${nfNewsPermalinkSlug(n)}`;
+          const media = n.image
+            ? `<img src="${nfEscapeHtml(n.image)}" alt="" loading="lazy" decoding="async" />`
+            : `<div class="news-feed-card-media-empty"><span>${nfEscapeHtml(nfT("common.news", "News"))}</span></div>`;
+          return `<a class="nf-news-card news-feed-card nf-news-editorial__related-card" href="${href}">
+            <div class="news-feed-card-media">${media}</div>
+            <div class="news-feed-card-body">
+              <span class="nf-news-card-chip">${nfEscapeHtml(nfNewsCategory(n))}</span>
+              <h3 class="nf-news-card-title">${nfEscapeHtml(nfNewsTitle(n))}</h3>
+              <div class="nf-news-card-meta">${nfEscapeHtml(nfFormatDate(n.date))}${n.author ? ` · ${nfEscapeHtml(n.author)}` : ""}</div>
+              <p class="nf-news-card-text">${nfEscapeHtml(nfNewsExcerpt(n))}</p>
+            </div>
+          </a>`;
+        })
+        .join("");
+      relatedSec.hidden = false;
+    } else {
+      relatedList.innerHTML = "";
+      relatedSec.hidden = true;
+    }
+  }
+
+  if (copyBtn) {
+    copyBtn.onclick = async () => {
+      const url = String(location.href || "");
+      try {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          await navigator.clipboard.writeText(url);
+        } else {
+          const ta = document.createElement("textarea");
+          ta.value = url;
+          ta.style.position = "fixed";
+          ta.style.left = "-9999px";
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand("copy");
+          ta.remove();
+        }
+        nfShowToast(nfT("toast.linkCopied", "Ссылка скопирована"));
+      } catch (_e) {
+        nfShowToast(nfT("toast.linkCopyFailed", "Не удалось скопировать ссылку"));
+      }
+    };
+  }
 }
 
 function nfInitCatalogPage() {
+  const pageRootEl = nfEl("page-root");
+  if (pageRootEl) nfAbortEnhancedSelectsInRoot(pageRootEl);
+
   nfUpdateSeo({
-    title: "Каталог медицинского оборудования — НаноФарм",
-    description:
-      "Каталог медицинского оборудования НаноФарм: аппараты ИВЛ, радиология, функциональная диагностика, нейрохирургия и другие направления.",
+    title: nfT("seo.catalog.title", "Каталог медицинского оборудования — НаноФарм"),
+    description: nfT(
+      "seo.catalog.description",
+      "Каталог медицинского оборудования НаноФарм: аппараты ИВЛ, радиология, функциональная диагностика, нейрохирургия и другие направления."
+    ),
     ogType: "website",
   });
-  nfRenderCatalog();
+  nfCatalogApplyFiltersFromLocationSearch();
+  nfApplyCatalogFilters(NF_STATE.filters, { navigateToCatalog: false });
 
-  const searchInput = nfEl("catalogSearchInput"); // сейчас поля нет, но оставляем на будущее
+  const catRoot = document.querySelector(".nf-page-catalog");
+  if (catRoot) {
+    catRoot.querySelectorAll(".nf-filters, .nf-catalog-main").forEach((el, i) => {
+      el.classList.add("nf-vp-reveal");
+      el.style.setProperty("--nf-vp-stagger", `${i * 55}ms`);
+    });
+  }
+
   const modelInput = nfEl("filterModelInput");
   const resetBtn = nfEl("filtersResetBtn");
-  const sortSelect = nfEl("sortSelect");
-
-  if (searchInput) {
-    searchInput.value = NF_STATE.filters.search;
-    searchInput.addEventListener(
-      "input",
-      nfDebounce((e) => {
-        NF_STATE.filters.search = e.target.value.trim();
-        NF_STATE.filters.page = 1;
-        nfRenderCatalog();
-      }, 220)
-    );
-  }
+  const sortSelect = nfEl("catalogSort") || nfEl("sortSelect");
 
   if (modelInput) {
     modelInput.value = NF_STATE.filters.model || "";
@@ -5793,66 +10215,36 @@ function nfInitCatalogPage() {
       nfDebounce((e) => {
         NF_STATE.filters.model = e.target.value.trim();
         NF_STATE.filters.page = 1;
-        nfRenderCatalog();
+        nfApplyCatalogFilters(NF_STATE.filters, { navigateToCatalog: false });
       }, 220)
     );
   }
 
   if (resetBtn) {
     resetBtn.onclick = () => {
-      NF_STATE.filters = {
-        search: "",
-        categoryIds: new Set(),
-        partnerIds: new Set(),
-        model: "",
-        sort: "popular",
-        viewMode: NF_STATE.filters.viewMode || "grid",
-        page: 1,
-      };
-      if (searchInput) searchInput.value = "";
+      nfCatalogResetFiltersState();
       if (modelInput) modelInput.value = "";
-
-      const catSelect = nfEl("filterCategorySelect");
-      const partnerSelect = nfEl("filterPartnerSelect");
-
-      if (catSelect) {
-        catSelect.value = "";
-        catSelect.dispatchEvent(new Event("change", { bubbles: true }));
-      }
-
-      if (partnerSelect) {
-        partnerSelect.value = "";
-        partnerSelect.dispatchEvent(new Event("change", { bubbles: true }));
-      }
-
-      if (sortSelect) {
-        sortSelect.value = "popular";
-        sortSelect.dispatchEvent(new Event("change", { bubbles: true }));
-      }
-
-      nfRenderCatalog();
+      nfApplyCatalogFilters(NF_STATE.filters, { navigateToCatalog: false });
     };
   }
 
   if (sortSelect) {
+    nfEnhanceSelectDropdown(sortSelect);
     sortSelect.value = NF_STATE.filters.sort;
+    sortSelect.dispatchEvent(new CustomEvent("nf-enhanced-select-sync", { bubbles: false }));
     sortSelect.onchange = (e) => {
       NF_STATE.filters.sort = e.target.value;
       NF_STATE.filters.page = 1;
       console.log("[catalog] sort =", NF_STATE.filters.sort);
-      nfRenderCatalog();
+      nfApplyCatalogFilters(NF_STATE.filters, { navigateToCatalog: false });
     };
-
-    // Используем кастомный dropdown на всех устройствах (desktop + mobile)
-    nfEnhanceSelectDropdown(sortSelect);
   }
 
   const syncCatalogViewButtons = () => {
     document.querySelectorAll(".nf-view-switch-btn").forEach((btn) => {
-      btn.classList.toggle(
-        "nf-view-switch-btn-active",
-        btn.dataset.viewmode === NF_STATE.filters.viewMode
-      );
+      const isActive = btn.dataset.viewmode === NF_STATE.filters.viewMode;
+      btn.classList.toggle("nf-view-switch-btn-active", isActive);
+      btn.classList.toggle("is-active", isActive);
     });
   };
 
@@ -5865,7 +10257,7 @@ function nfInitCatalogPage() {
       console.log("[catalog] viewMode =", NF_STATE.filters.viewMode);
       console.log("[catalog] sort =", NF_STATE.filters.sort);
       syncCatalogViewButtons();
-      nfRenderCatalog();
+      nfApplyCatalogFilters(NF_STATE.filters, { navigateToCatalog: false });
     };
   });
 
@@ -5874,18 +10266,7 @@ function nfInitCatalogPage() {
   // Управление фильтрами каталога (desktop: сворачивание панели, mobile: bottom-sheet)
   const filtersSheetBtn = nfEl("catalogFiltersSheetBtn");
   const catalogLayout = document.querySelector(".nf-catalog-layout");
-  const FILTERS_COLLAPSED_KEY = "nf_catalog_filters_collapsed";
 
-  const applyCollapsedState = (collapsed) => {
-    if (!catalogLayout) return;
-    catalogLayout.classList.toggle("is-filters-collapsed", collapsed);
-    if (filtersSheetBtn) {
-      filtersSheetBtn.classList.toggle("is-active", !collapsed);
-      filtersSheetBtn.setAttribute("aria-expanded", String(!collapsed));
-    }
-  };
-
-  // Инициализация состояния только на десктопе; на мобильных фильтры работают как bottom-sheet
   const initDesktopFiltersState = () => {
     if (!catalogLayout || !filtersSheetBtn) return;
     const isDesktop = window.matchMedia("(min-width: 1025px)").matches;
@@ -5895,137 +10276,261 @@ function nfInitCatalogPage() {
       filtersSheetBtn.removeAttribute("aria-expanded");
       return;
     }
-    const saved = localStorage.getItem(FILTERS_COLLAPSED_KEY);
-    const initialCollapsed = saved === "1";
-    applyCollapsedState(initialCollapsed);
+    const initialCollapsed = localStorage.getItem(NF_CATALOG_FILTERS_COLLAPSED_KEY) === "1";
+    nfCatalogApplyFiltersCollapsedUI(initialCollapsed, { noReflowEvent: false });
   };
 
   if (filtersSheetBtn) {
-    // Десктоп: сворачиваем панель фильтров. На мобильных bottom-sheet отключён.
     filtersSheetBtn.onclick = () => {
       const isDesktop = window.matchMedia("(min-width: 1025px)").matches;
       if (isDesktop) {
         const collapsed = !catalogLayout?.classList.contains("is-filters-collapsed");
-        applyCollapsedState(collapsed);
-        localStorage.setItem(FILTERS_COLLAPSED_KEY, collapsed ? "1" : "0");
+        nfCatalogApplyFiltersCollapsedUI(collapsed, { noReflowEvent: false });
+        localStorage.setItem(NF_CATALOG_FILTERS_COLLAPSED_KEY, collapsed ? "1" : "0");
       }
     };
   }
 
+  nfDisconnectCatalogLayoutResize();
   initDesktopFiltersState();
-  window.addEventListener("resize", initDesktopFiltersState);
+  window.addEventListener("resize", nfCatalogDesktopFiltersSyncFromWindow);
+  NF_CATALOG_LAYOUT_RESIZE_BOUND = true;
+}
+
+function nfClearPdpLoadingMask(pageRoot) {
+  pageRoot?.querySelector("[data-nf-pdp-loading]")?.remove();
 }
 
 function nfInitProductPage() {
-  const id =
+  const pageRoot = document.querySelector(".nf-pdp");
+  if (!pageRoot) return;
+
+  nfDisposePdpPageEnhancements(pageRoot);
+
+  const pend = NF_STATE.pendingProductPermalink;
+  if (pend) {
+    const pMatch = nfFindProductByPermalink(pend);
+    if (pMatch) {
+      NF_STATE.pendingProductPermalink = null;
+      NF_STATE.productDetailProductId = pMatch.id;
+      NF_STATE.productModalProductId = pMatch.id;
+    }
+  }
+
+  let id =
     NF_STATE.productDetailProductId ||
     NF_STATE.productModalProductId ||
     NF_STATE.pendingCatalogProductId;
 
-  const pageRoot = document.querySelector(".nf-product-page");
-  if (!pageRoot) return;
+  nfDisposeImageZoomPan("pdp");
 
-  const fallback = (message) => {
-    pageRoot.innerHTML = `<div class="nf-empty">${message}</div>`;
+  const fallbackNotFound = (message) => {
+    nfClearPdpLoadingMask(pageRoot);
+    pageRoot.innerHTML = `
+      <div class="nf-pdp-toolbar">
+        <button type="button" class="nf-pdp-back" data-page="catalog" aria-label="Вернуться в каталог">← В каталог</button>
+      </div>
+      <div class="nf-container" style="padding:48px 20px;max-width:720px;">
+        <div class="nf-empty" role="status">${nfEscapeHtml(message)}</div>
+      </div>`;
+    nfUpdateSeo({
+      title: nfT("seo.productNotFound.title", "Товар не найден — НаноФарм"),
+      description: nfT("seo.productNotFound.description", "Запрошенная позиция отсутствует в каталоге или ссылка устарела."),
+      ogType: "website",
+    });
   };
 
   if (!id) {
-    fallback("Товар не найден. Вернитесь в каталог и выберите модель ещё раз.");
+    const waiting =
+      NF_STATE.pendingProductPermalink &&
+      (NF_CATALOG_LOAD_STATE === "loading" || NF_CATALOG_LOAD_STATE === "idle");
+    if (waiting) {
+      let mask = pageRoot.querySelector("[data-nf-pdp-loading]");
+      if (!mask) {
+        mask = document.createElement("div");
+        mask.dataset.nfPdpLoading = "1";
+        mask.setAttribute("aria-busy", "true");
+        mask.className = "nf-pdp-loading-mask";
+        mask.style.cssText =
+          "position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.88);backdrop-filter:blur(4px);z-index:12;";
+        mask.innerHTML = `<div class="nf-empty">Загрузка каталога…</div>`;
+        const pos = window.getComputedStyle(pageRoot).position;
+        if (!pos || pos === "static") pageRoot.style.position = "relative";
+        pageRoot.appendChild(mask);
+      }
+      return;
+    }
+    if (NF_STATE.pendingProductPermalink) {
+      NF_STATE.pendingProductPermalink = null;
+      fallbackNotFound(
+        nfT(
+          "errors.productPermalinkNotFound",
+          "Товар по этой ссылке не найден. Проверьте адрес или откройте каталог и выберите модель из списка."
+        )
+      );
+      return;
+    }
+    fallbackNotFound(nfT("errors.productNotFoundGeneric", "Товар не найден. Вернитесь в каталог и выберите модель ещё раз."));
     return;
   }
 
+  nfClearPdpLoadingMask(pageRoot);
+
   const product = NF_DATA.products.find((x) => x.id === id);
   if (!product) {
-    fallback("Товар не найден в каталоге. Возможно, он был удалён.");
+    fallbackNotFound(nfT("errors.productRemoved", "Товар не найден в каталоге. Возможно, он был удалён."));
     return;
   }
 
   NF_STATE.productDetailProductId = product.id;
   NF_STATE.productModalProductId = product.id;
 
+  const urlSeg = nfPathSegments()[1];
+  const canonSeg = nfProductPermalinkSegment(product);
+  if (urlSeg && canonSeg && urlSeg !== canonSeg) {
+    try {
+      history.replaceState({}, "", `/catalog/${canonSeg}`);
+    } catch (_e) {}
+  }
+
   const category = NF_DATA.categories.find((c) => c.id === product.categoryId);
   const partnerName = nfGetPartnerName(product.partnerId);
 
   const seo = product.seo || {};
   nfUpdateSeo({
-    title: seo.metaTitle || product.name || "Товар каталога — НаноФарм",
+    title: seo.metaTitle || product.name || nfT("seo.product.fallbackTitle", "Товар каталога — НаноФарм"),
     description:
       seo.metaDescription ||
       product.shortDesc ||
-      "Профессиональное медицинское оборудование из каталога НаноФарм.",
+      nfT("seo.product.fallbackDescription", "Профессиональное медицинское оборудование из каталога НаноФарм."),
     ogTitle: seo.ogTitle || seo.metaTitle || product.name,
     ogDescription:
       seo.ogDescription ||
       seo.metaDescription ||
       product.shortDesc ||
-      "Профессиональное медицинское оборудование из каталога НаноФарм.",
+      nfT("seo.product.fallbackDescription", "Профессиональное медицинское оборудование из каталога НаноФарм."),
     ogImage: seo.ogImage || (nfGetProductImages(product)[0] || ""),
     ogType: "product",
   });
+
+  pageRoot.classList.remove("nf-pdp--ready");
 
   nfSafeText("productPageTitle", product.name);
   nfSafeText(
     "productPageShortDesc",
     product.shortDesc ||
-      "Профессиональное медицинское оборудование для оснащения реанимации, операционных и диагностических отделений."
+      nfT("product.defaultShortDesc", "Профессиональное медицинское оборудование.")
   );
 
-  const metaEl = nfEl("productPageMeta");
-  if (metaEl) {
-    const meta = [];
-    if (product.article) meta.push(`Артикул: <strong>${product.article}</strong>`);
-    if (product.model) meta.push(`Модель: <strong>${product.model}</strong>`);
-    if (partnerName) meta.push(`Партнёр: <strong>${partnerName}</strong>`);
-    metaEl.innerHTML = meta.join(" · ");
+  const heroKicker = nfEl("productPageHeroKicker");
+  if (heroKicker) {
+    heroKicker.textContent = category?.name ? String(category.name).toUpperCase() : "";
+    heroKicker.hidden = !category?.name;
   }
 
-  const catBadge = nfEl("productPageCategoryBadge");
-  if (catBadge) catBadge.textContent = category ? category.name : "";
+  nfFillPdpHeroBadges(nfEl("productPageHeroBadges"), product);
+  nfFillPdpHeroSpecGrid(nfEl("productPageHeroSpecGrid"), product, category, partnerName);
 
-  const partnerBadge = nfEl("productPagePartnerBadge");
-  if (partnerBadge) partnerBadge.textContent = partnerName || "";
+  const skuEl = nfEl("productPageSku");
+  if (skuEl) {
+    skuEl.textContent = product.article ? nfT("product.article", "Артикул: {value}", { value: product.article }) : "";
+    skuEl.hidden = !product.article;
+  }
+
+  const brandEl = nfEl("productPageBrand");
+  if (brandEl) {
+    const parts = [];
+    if (partnerName) parts.push(nfT("product.partner", "Партнёр: {value}", { value: partnerName }));
+    if (product.model) parts.push(nfT("product.model", "Модель: {value}", { value: product.model }));
+    brandEl.textContent = parts.join(" · ");
+    brandEl.hidden = parts.length === 0;
+  }
+  const heroMeta = pageRoot.querySelector(".nf-pdp-meta-compact");
+  if (heroMeta) {
+    const skuHidden = !skuEl || skuEl.hidden;
+    const brandHidden = !brandEl || brandEl.hidden;
+    heroMeta.hidden = skuHidden && brandHidden;
+  }
+
+  const descHost = nfEl("productPageDescription");
+  const calloutEl = nfEl("productPageDescCallout");
+  nfFillPdpDescriptionRich(descHost, calloutEl, product, category);
+
+  const descSection = document.getElementById("pdp-description");
+  if (descSection) {
+    const hasDesc = !!(product.description && String(product.description).trim());
+    const hasCallout = !!(category?.name);
+    descSection.hidden = !hasDesc && !hasCallout;
+  }
+
+  nfFillPdpSpecsGrid(nfEl("productPageSpecsGrid"), product);
+
+  nfFillPdpKitSection(nfEl("productPageKitBody"), product);
+
+  const docsSec = document.getElementById("pdp-docs");
+  const docsBody = nfEl("productPageDocsBody");
+  const hasDocFiles = Array.isArray(product.docs) && product.docs.length > 0;
+  if (docsSec) docsSec.hidden = !hasDocFiles;
+  if (hasDocFiles) nfFillPdpDocsSection(docsBody, product);
+  else if (docsBody) docsBody.innerHTML = "";
+
+  nfFillPdpInstallSection(product);
+  nfFillPdpMaintenanceSection(product);
 
   const galleryImages = nfGetProductImages(product);
   let currentImageIndex = 0;
 
   const img = nfEl("productPageImage");
-  const hintEl = document.querySelector(".nf-product-page-image-hint");
+  const hintEl = pageRoot.querySelector(".nf-pdp-media-hint");
   const counterEl = nfEl("productPageImageCounter");
+  const navPrev = nfEl("productPageNavPrev");
+  const navNext = nfEl("productPageNavNext");
+  const multi = galleryImages.length > 1;
+
+  if (navPrev) navPrev.hidden = !multi;
+  if (navNext) navNext.hidden = !multi;
+  if (counterEl) {
+    counterEl.hidden = !multi;
+    if (!multi) counterEl.textContent = "";
+  }
 
   const updateCounter = () => {
-    if (!counterEl) return;
-    if (!galleryImages.length) {
-      counterEl.textContent = "";
-      counterEl.style.display = "none";
-      return;
-    }
+    if (!counterEl || !multi) return;
     counterEl.textContent = `${currentImageIndex + 1} / ${galleryImages.length}`;
-    counterEl.style.display = "";
   };
 
   const setMainImageSrc = (src, options) => {
     if (!img) return;
     const opts = options || {};
-    const fallback = nfProductPlaceholderSvg();
-    const safeSrc = src && String(src).trim() ? src : fallback;
+    const fallbackSvg = nfProductPlaceholderSvg();
+    const safeSrc = src && String(src).trim() ? src : fallbackSvg;
 
     if (opts.immediate) {
       img.style.opacity = "1";
+      img.classList.remove("nf-product-img-swapping");
       img.src = safeSrc;
       return;
     }
 
-    img.style.transition = "opacity 200ms ease";
-    img.style.opacity = "0";
-    requestAnimationFrame(() => {
-      img.src = safeSrc;
-      img.onload = () => {
+    img.classList.add("nf-product-img-swapping");
+    window.setTimeout(
+      () => {
+        img.src = safeSrc;
+        img.classList.remove("nf-product-img-swapping");
         img.style.opacity = "1";
-      };
-    });
+      },
+      nfPrefersReducedMotion() ? 0 : 200
+    );
   };
 
   const thumbs = nfEl("productPageThumbs");
+  const galleryRoot = pageRoot.querySelector(".nf-pdp-gallery--product");
+  if (galleryRoot) galleryRoot.classList.toggle("nf-pdp-gallery--single", !multi);
+
+  if (thumbs) {
+    thumbs.hidden = !multi;
+    thumbs.innerHTML = "";
+  }
 
   const showImageAt = (nextIndex, options) => {
     if (!galleryImages.length) return;
@@ -6037,16 +10542,18 @@ function nfInitProductPage() {
 
     setMainImageSrc(galleryImages[idx], options);
 
-    if (thumbs) {
-      const thumbNodes = thumbs.querySelectorAll(".nf-product-page-thumb");
+    if (thumbs && multi) {
+      const thumbNodes = thumbs.querySelectorAll(".nf-pdp-thumb");
       thumbNodes.forEach((el, i) => {
-        if (i === idx) el.classList.add("nf-product-page-thumb-active");
-        else el.classList.remove("nf-product-page-thumb-active");
+        el.classList.toggle("nf-pdp-thumb--active", i === idx);
       });
     }
 
     updateCounter();
   };
+
+  if (navPrev) navPrev.onclick = () => showImageAt(currentImageIndex - 1);
+  if (navNext) navNext.onclick = () => showImageAt(currentImageIndex + 1);
 
   if (img) {
     img.alt = product.name;
@@ -6062,32 +10569,41 @@ function nfInitProductPage() {
       img.onerror = () => {
         setMainImageSrc(null, { immediate: true });
       };
-      if (hintEl) hintEl.style.display = "none";
+      if (hintEl) hintEl.hidden = true;
       updateCounter();
     } else {
       setMainImageSrc(null, { immediate: true });
       img.onerror = null;
-      if (hintEl) hintEl.style.display = "";
-      if (counterEl) counterEl.style.display = "none";
+      if (hintEl) hintEl.hidden = false;
     }
-    img.style.cursor = galleryImages.length ? "zoom-in" : "default";
+    const canClickLightbox = () => galleryImages.length > 0;
+    img.style.cursor = canClickLightbox() ? "zoom-in" : "default";
     img.onclick = () => {
-      if (galleryImages.length) {
+      if (canClickLightbox()) {
         nfOpenProductLightbox(galleryImages, currentImageIndex, product.name);
       }
     };
   }
 
-  if (thumbs) {
-    thumbs.innerHTML = "";
+  const imgWrap = pageRoot.querySelector(".nf-pdp-media-imgwrap");
+  nfAttachPdpImageZoom({
+    viewport: imgWrap,
+    img,
+    scale: 1.38,
+    isAllowed: () =>
+      galleryImages.length > 0 &&
+      !!img?.src &&
+      !String(img.src).startsWith("data:image/svg+xml"),
+  });
+
+  if (thumbs && multi) {
     galleryImages.slice(0, 6).forEach((src, idx) => {
-      const t = nfCreateEl(
-        "div",
-        "nf-product-page-thumb" + (idx === 0 ? " nf-product-page-thumb-active" : "")
-      );
+      const t = nfCreateEl("button", "nf-pdp-thumb" + (idx === 0 ? " nf-pdp-thumb--active" : ""), "");
+      t.type = "button";
+      t.setAttribute("aria-label", `Миниатюра фото ${idx + 1}`);
       const ti = document.createElement("img");
       ti.src = src;
-      ti.alt = product.name;
+      ti.alt = "";
       nfConfigureImageElement(ti, {
         loading: "lazy",
         decoding: "async",
@@ -6103,8 +10619,8 @@ function nfInitProductPage() {
     });
   }
 
-  const mainImageWrap = pageRoot.querySelector(".nf-product-page-main-image");
-  if (mainImageWrap && galleryImages.length > 1) {
+  const mainImageWrap = pageRoot.querySelector(".nf-pdp-media-stage");
+  if (mainImageWrap && multi) {
     let touchStartXMain = null;
     mainImageWrap.addEventListener(
       "touchstart",
@@ -6134,24 +10650,28 @@ function nfInitProductPage() {
   const priceEl = nfEl("productPagePrice");
   const totalEl = nfEl("productPageTotal");
   const primaryBtn = nfEl("productPagePrimaryBtn");
+  const secondaryBtn = nfEl("productPageSecondaryBtn");
+
+  if (primaryBtn) {
+    nfInitAddToRequestControl(primaryBtn, product.id, nfT("common.addToRequest", "В запрос"), {});
+  }
+  if (secondaryBtn) secondaryBtn.textContent = nfT("product.requestPriceShort", "Запросить цену");
 
   const updateTotal = () => {
     if (!qtyInput) return;
     const qty = Math.max(1, Number(qtyInput.value) || 1);
     qtyInput.value = qty;
     if (product.price != null && totalEl) {
-      totalEl.textContent = `Итого за ${qty} шт.: ${nfFormatPrice(product.price * qty)}`;
+      totalEl.textContent = nfT("product.total", "Итого: {value}", { value: nfFormatPrice(product.price * qty) });
     }
   };
 
   if (product.price != null) {
-    if (priceEl) priceEl.textContent = `Цена за единицу: ${nfFormatPrice(product.price)}`;
+    if (priceEl) priceEl.textContent = nfT("product.unitPrice", "Цена за единицу: {value}", { value: nfFormatPrice(product.price) });
     updateTotal();
-    if (primaryBtn) primaryBtn.textContent = "Добавить в запрос";
   } else {
-    if (priceEl) priceEl.textContent = "Цена рассчитывается индивидуально";
+    if (priceEl) priceEl.textContent = nfT("common.priceOnRequest", "Цена по запросу");
     if (totalEl) totalEl.textContent = "";
-    if (primaryBtn) primaryBtn.textContent = "Запросить цену по этой модели";
   }
 
   if (qtyInput) {
@@ -6173,25 +10693,13 @@ function nfInitProductPage() {
   if (primaryBtn) {
     primaryBtn.onclick = () => {
       const qty = Number(qtyInput?.value) || 1;
-      if (product.price != null) {
-        nfAddToCart(product.id, qty);
-        nfShowToast("Товар добавлен в запрос.");
-      } else {
-        nfShowToast("Запрос на цену по этой модели будет оформлен через форму.");
-        nfOpenQuickQuote();
-        const quickForm = nfEl("quickQuoteForm");
-        const itemsField =
-          quickForm?.elements?.items || quickForm?.querySelector?.('[name="items"]');
-        if (quickForm && itemsField && !itemsField.value) {
-          itemsField.value = `${product.name} (${product.article || product.model || ""})`;
-        }
-      }
+      nfAddToCart(product.id, qty, { sourceButton: primaryBtn });
     };
   }
 
-  const secondaryBtn = nfEl("productPageSecondaryBtn");
-  if (secondaryBtn) {
-    secondaryBtn.onclick = () => {
+  const bindQuoteClick = (btn) => {
+    if (!btn) return;
+    btn.onclick = () => {
       nfOpenQuickQuote();
       const quickForm = nfEl("quickQuoteForm");
       const itemsField =
@@ -6200,191 +10708,123 @@ function nfInitProductPage() {
         itemsField.value = `${product.name} (${product.article || product.model || ""})`;
       }
     };
+  };
+  bindQuoteClick(secondaryBtn);
+
+  const mobilePrimary = nfEl("productPageMobilePrimaryBtn");
+  const mobileSecondary = nfEl("productPageMobileSecondaryBtn");
+  if (mobilePrimary) {
+    nfInitAddToRequestControl(mobilePrimary, product.id, nfT("common.addToRequest", "В запрос"), {});
+    mobilePrimary.onclick = () => {
+      const qty = Number(qtyInput?.value) || 1;
+      nfAddToCart(product.id, qty, { sourceButton: mobilePrimary });
+    };
+  }
+  if (mobileSecondary) {
+    mobileSecondary.textContent = nfT("product.requestPriceShort", "Запросить цену");
+    bindQuoteClick(mobileSecondary);
   }
 
-  const specsTab = nfEl("productPageTab-specs");
-  const installTab = nfEl("productPageTab-install");
-  const docsTab = nfEl("productPageTab-docs");
+  nfPdpSyncSubnav(pageRoot);
+  const spyStop = nfPdpMountScrollSpy(pageRoot);
+  const revealStop = nfPdpMountRevealScroll(pageRoot);
+  const anchorStop = nfPdpMountSmoothAnchors(pageRoot);
+  pageRoot._nfPdpCleanup = () => {
+    if (typeof spyStop === "function") spyStop();
+    if (typeof revealStop === "function") revealStop();
+    if (typeof anchorStop === "function") anchorStop();
+  };
 
-  if (specsTab) {
-    specsTab.innerHTML = "";
-    const wrap = nfCreateEl("div", "nf-tab-description");
-    const title = nfCreateEl("div", "nf-tab-section-title", "Описание");
-    const p1 = nfCreateEl(
-      "p",
-      "",
-      product.description ||
-        "Профессиональное медицинское оборудование для оснащения операционных, реанимации и диагностических подразделений."
-    );
-    wrap.appendChild(title);
-    wrap.appendChild(p1);
-
-    if (product.specs?.length) {
-      const subtitle = nfCreateEl("div", "nf-tab-section-title", "Основные характеристики");
-      wrap.appendChild(subtitle);
-      const ul = nfCreateEl("ul", "");
-      product.specs.forEach((s) => ul.appendChild(nfCreateEl("li", "", s)));
-      wrap.appendChild(ul);
-    }
-
-    specsTab.appendChild(wrap);
-  }
-
-  if (installTab) {
-    installTab.innerHTML = "";
-    const steps =
-      Array.isArray(product.serviceSteps) && product.serviceSteps.length
-        ? product.serviceSteps
-        : [
-            "Анализ задач и требований заказчика",
-            "Подготовка технического решения и КП",
-            "Согласование конфигурации и сроков поставки",
-            "Поставка и логистика",
-            "Инсталляция и подключение к сетям",
-            "Калибровка и настройка",
-            "Интеграция с ИТ-системами",
-            "Обучение персонала",
-            "Тестовая эксплуатация",
-            "Плановое сервисное сопровождение",
-          ];
-
-    const roomDefaults = [
-      "Температура: +18°C до +25°C",
-      "Влажность: 30–75% без конденсата",
-      "Площадь: от 15 м²",
-      "Высота потолков: от 2,5 м",
-    ];
-    const engineerDefaults = [
-      "Электропитание: 220В / 50Гц",
-      "Заземление",
-      "Интернет‑подключение (по необходимости)",
-      "Вентиляция помещения",
-    ];
-
-    const roomList =
-      Array.isArray(product.roomRequirements) && product.roomRequirements.length
-        ? product.roomRequirements
-        : roomDefaults;
-    const engineerList =
-      Array.isArray(product.engineerRequirements) && product.engineerRequirements.length
-        ? product.engineerRequirements
-        : engineerDefaults;
-
-    const note = nfCreateEl("div", "nf-install-note");
-    const rows = nfCreateEl("div", "nf-install-note-rows");
-
-    const roomCol = nfCreateEl("div", "", "");
-    roomCol.appendChild(nfCreateEl("h4", "", "Помещение и условия"));
-    const roomUl = nfCreateEl("ul", "", "");
-    roomList.forEach((item) => roomUl.appendChild(nfCreateEl("li", "", item)));
-    roomCol.appendChild(roomUl);
-
-    const engineerCol = nfCreateEl("div", "", "");
-    engineerCol.appendChild(nfCreateEl("h4", "", "Инженерные коммуникации"));
-    const engineerUl = nfCreateEl("ul", "", "");
-    engineerList.forEach((item) => engineerUl.appendChild(nfCreateEl("li", "", item)));
-    engineerCol.appendChild(engineerUl);
-
-    rows.appendChild(roomCol);
-    rows.appendChild(engineerCol);
-    note.appendChild(rows);
-
-    const titleSteps = nfCreateEl("div", "nf-tab-section-title", "Процесс установки");
-    const ol = nfCreateEl("ol", "nf-install-steps");
-    steps.forEach((s) => ol.appendChild(nfCreateEl("li", "", s)));
-
-    installTab.appendChild(note);
-    installTab.appendChild(titleSteps);
-    installTab.appendChild(ol);
-  }
-
-  if (docsTab) {
-    docsTab.innerHTML = "";
-    if (Array.isArray(product.docs) && product.docs.length) {
-      const list = nfCreateEl("ul", "nf-product-docs-list");
-      product.docs
-        .slice()
-        .sort((a, b) => (a.order || 0) - (b.order || 0))
-        .forEach((doc, index) => {
-          const li = nfCreateEl("li", "nf-product-docs-item");
-          const main = nfCreateEl("div", "nf-product-docs-item-main");
-          const title = nfCreateEl(
-            "div",
-            "nf-product-docs-item-title",
-            doc.title || `Документ ${index + 1}`
-          );
-          const type =
-            doc.type === "certificate"
-              ? "Сертификат"
-              : doc.type === "manual"
-              ? "Инструкция"
-              : "Документ";
-          const meta = nfCreateEl(
-            "div",
-            "nf-product-docs-item-meta",
-            type
-          );
-          main.appendChild(title);
-          main.appendChild(meta);
-
-          const link = document.createElement("a");
-          link.href = doc.url;
-          link.target = "_blank";
-          link.rel = "noopener noreferrer";
-          link.className = "nf-product-docs-link";
-          link.textContent = "Открыть PDF";
-
-          li.appendChild(main);
-          li.appendChild(link);
-          list.appendChild(li);
-        });
-      docsTab.appendChild(list);
-    } else {
-      const p = nfCreateEl(
-        "p",
-        "",
-        "Документация по оборудованию доступна по запросу — приложим паспорта и инструкции в составе коммерческого предложения."
-      );
-      docsTab.appendChild(p);
-    }
-  }
-
-  const tabsRoot = pageRoot.querySelector(".nf-product-page-tabs");
-  if (tabsRoot) {
-    const btns = tabsRoot.querySelectorAll(".nf-tab-btn");
-    const tabs = tabsRoot.querySelectorAll(".nf-tab");
-
-    btns.forEach((btn) => {
-      btn.addEventListener("click", () => {
-        const targetId = btn.dataset.tab;
-        btns.forEach((b) => b.classList.toggle("nf-tab-btn-active", b === btn));
-        tabs.forEach((t) => t.classList.toggle("nf-tab-active", t.id === targetId));
-      });
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      pageRoot.classList.add("nf-pdp--ready");
     });
-  }
+  });
 }
 
 function nfInitPartnersPage() {
   nfUpdateSeo({
-    title: "Партнёры НаноФарм — производители медицинского оборудования",
-    description:
-      "Международные и локальные партнёры НаноФарм: производители медицинского оборудования для различных направлений медицины.",
+    title: nfT("partners.seoTitle", "Партнёры НаноФарм — производители медицинского оборудования"),
+    description: nfT("partners.seoDescription", "Международные и локальные партнёры НаноФарм: производители медицинского оборудования для различных направлений медицины."),
     ogType: "website",
   });
   nfRenderPartners();
+  const segs = nfPathSegments();
+  if (segs[0] === "partners" && segs[1]) {
+    nfOpenPartnerModalBySlug(segs[1], { skipUrlSync: true });
+  } else {
+    const params = new URLSearchParams(window.location.search);
+    const openPartner = params.get("open");
+    if (openPartner) {
+      nfOpenPartnerModalBySlug(openPartner, { skipUrlSync: true });
+    }
+  }
+  document.querySelectorAll(".nf-view-header").forEach((el) => {
+    el.classList.add("nf-vp-reveal");
+    el.style.setProperty("--nf-vp-stagger", "0ms");
+  });
 }
 
 function nfInitNewsPage() {
-  const dateFilter = nfEl("newsDateFilter");
   const searchInput = nfEl("newsSearchInput");
-
-  if (dateFilter) {
-    dateFilter.onchange = nfRenderNews;
-    nfEnhanceSelectDropdown(dateFilter);
+  const sortDropdown = nfEl("newsSortDropdown");
+  const sortBtn = nfEl("newsSortButton");
+  const sortMenu = nfEl("newsSortMenu");
+  const sortLabel = nfEl("newsSortButtonLabel");
+  if (!NF_STATE.newsView) {
+    NF_STATE.newsView = { search: "", sort: "recent", category: "all" };
   }
-  if (searchInput) searchInput.addEventListener("input", nfDebounce(nfRenderNews, 220));
+
+  if (searchInput) {
+    searchInput.value = NF_STATE.newsView.search || "";
+    searchInput.addEventListener(
+      "input",
+      nfDebounce((e) => {
+        NF_STATE.newsView.search = e.target.value || "";
+        nfRenderNews();
+      }, 180)
+    );
+  }
+
+  if (sortBtn && sortMenu) {
+    const setSort = (nextSort) => {
+      NF_STATE.newsView.sort = nextSort;
+      if (sortLabel) sortLabel.textContent = nfNewsSortLabel(nextSort);
+      sortMenu.querySelectorAll(".news-sort-option").forEach((opt) => {
+        opt.classList.toggle("is-active", opt.dataset.sort === nextSort);
+      });
+    };
+    setSort(NF_STATE.newsView.sort || "recent");
+
+    sortBtn.onclick = () => {
+      const expanded = sortBtn.getAttribute("aria-expanded") === "true";
+      sortBtn.setAttribute("aria-expanded", expanded ? "false" : "true");
+      sortMenu.hidden = expanded;
+    };
+    sortMenu.querySelectorAll(".news-sort-option").forEach((btn) => {
+      btn.onclick = () => {
+        setSort(btn.dataset.sort || "recent");
+        sortMenu.hidden = true;
+        sortBtn.setAttribute("aria-expanded", "false");
+        nfRenderNews();
+      };
+    });
+    document.addEventListener("click", (e) => {
+      if (!sortDropdown?.contains(e.target)) {
+        sortMenu.hidden = true;
+        sortBtn.setAttribute("aria-expanded", "false");
+      }
+    });
+  }
 
   nfRenderNews();
+
+  document
+    .querySelectorAll(".news-page-hero, .news-page-toolbar, .news-category-chips, .news-featured, .news-list-section")
+    .forEach((el, i) => {
+    el.classList.add("nf-vp-reveal");
+    el.style.setProperty("--nf-vp-stagger", `${i * 60}ms`);
+  });
 }
 
 function nfInitLegalPage() {
@@ -6418,19 +10858,48 @@ function nfInitLegalPage() {
   const initial = NF_STATE.legalTab || "privacy";
   activate(initial);
 
+  const leg = document.querySelector(".nf-legal");
+  if (leg) {
+    leg.querySelectorAll(".nf-view-header, .nf-legal-layout").forEach((el, i) => {
+      el.classList.add("nf-vp-reveal");
+      el.style.setProperty("--nf-vp-stagger", `${i * 55}ms`);
+    });
+  }
+
   nfUpdateSeo({
-    title: "Правовая информация — НаноФарм",
-    description:
-      "Политика конфиденциальности, пользовательское соглашение и реквизиты компании НаноФарм.",
+    title: nfT("seo.legal.title", "Правовая информация — НаноФарм"),
+    description: nfT(
+      "seo.legal.description",
+      "Политика конфиденциальности, пользовательское соглашение и реквизиты компании НаноФарм."
+    ),
     ogType: "website",
+  });
+}
+
+function nfInitAboutPage() {
+  nfUpdateSeo({
+    title: nfT("seo.about.title", "О компании НаноФарм — поставка медицинского оборудования"),
+    description: nfT(
+      "seo.about.description",
+      "НаноФарм: комплексная поставка и сервис медицинского оборудования для клиник и диагностических центров Казахстана."
+    ),
+    ogType: "website",
+  });
+  const page = document.querySelector(".nf-about-page");
+  if (!page) return;
+  page.querySelectorAll(".nf-about-hero, .nf-about-section").forEach((el, i) => {
+    el.classList.add("nf-vp-reveal");
+    el.style.setProperty("--nf-vp-stagger", `${Math.min(i, 12) * 50}ms`);
   });
 }
 
 function nfInitContactsPage() {
   nfUpdateSeo({
-    title: "Контакты НаноФарм",
-    description:
-      "Контактные данные НаноФарм: адрес, телефон, email и форма обратной связи для запросов по поставке медицинского оборудования.",
+    title: nfT("seo.contacts.title", "Контакты НаноФарм"),
+    description: nfT(
+      "seo.contacts.description",
+      "Контактные данные НаноФарм: адрес, телефон, email и форма обратной связи для запросов по поставке медицинского оборудования."
+    ),
     ogType: "website",
   });
   const form = nfEl("contactForm");
@@ -6460,7 +10929,7 @@ function nfInitContactsPage() {
         } catch (_err) {}
       }
       if (successEl) successEl.hidden = false;
-      nfShowToast("Заявка отправлена.");
+      nfShowToast(nfT("toast.requestSubmitted", "Заявка отправлена."));
     };
 
     if (form.type) {
@@ -6497,6 +10966,16 @@ function nfInitContactsPage() {
   }
 
   nfInitContactsMap();
+
+  const cp = document.querySelector(".nf-contacts-page");
+  if (cp) {
+    cp
+      .querySelectorAll(".nf-contacts-hero, .nf-contacts-hub, .nf-contacts-guides, .nf-contacts-form-section")
+      .forEach((el, i) => {
+        el.classList.add("nf-vp-reveal");
+        el.style.setProperty("--nf-vp-stagger", `${i * 70}ms`);
+      });
+  }
 }
 
 function nfInitContactsMap() {
@@ -6550,230 +11029,31 @@ function nfInitAdminPage() {
 }
 
 /* ====== ГЛОБАЛЬНЫЕ ИНИЦИАЛИЗАЦИИ ====== */
-function nfInitMobileHeaderScroll() {
-  const header = document.querySelector(".nf-header");
+function nfInitPremiumHeaderScrolled() {
+  const header = document.querySelector(".nf-header--ds");
   if (!header) return;
 
-  let lastY = window.scrollY || 0;
-  let ticking = false;
-
-  const handle = () => {
-    ticking = false;
+  const update = () => {
     const y = window.scrollY || 0;
-
-    const isMobile = window.innerWidth <= 768;
-    if (!isMobile) {
-      header.classList.remove("nf-header--hidden");
-      lastY = y;
-      return;
-    }
-
-    const delta = y - lastY;
-    const threshold = 12;
-
-    if (y <= 0 || delta < -threshold) {
-      // Скроллим вверх или вернулись к началу — показываем шапку
-      header.classList.remove("nf-header--hidden");
-    } else if (delta > threshold) {
-      // Скроллим вниз — прячем шапку
-      header.classList.add("nf-header--hidden");
-    }
-
-    lastY = y;
+    header.classList.toggle("nf-header--scrolled", y > 10);
   };
 
-  window.addEventListener(
-    "scroll",
-    () => {
-      if (ticking) return;
-      ticking = true;
-      window.requestAnimationFrame(handle);
-    },
-    { passive: true }
-  );
-
-  window.addEventListener("resize", () => {
-    if (window.innerWidth > 768) {
-      header.classList.remove("nf-header--hidden");
-    }
-  });
+  update();
+  window.addEventListener("scroll", update, { passive: true });
 }
 
 function nfInitPartnerModalSheetDrag() {
-  const modal = nfEl("partnerModal");
-  if (!modal) return;
-
-  const grabber = modal.querySelector(".nf-modal-grabber") || modal;
-  const content = modal.querySelector(".nf-modal-inner");
-  let startY = null;
-  let currentY = null;
-  let dragging = false;
-
-  const isMobile = () => window.innerWidth <= 768;
-
-  const onStart = (clientY) => {
-    if (!isMobile()) return;
-    // only allow drag when content is scrolled to top (native sheet behavior)
-    if (content && content.scrollTop > 0) return;
-    dragging = true;
-    startY = clientY;
-    currentY = clientY;
-    modal.style.transition = "transform 0s";
-  };
-
-  const onMove = (clientY) => {
-    if (!dragging || startY == null) return;
-    currentY = clientY;
-    const dy = Math.max(0, clientY - startY);
-    modal.style.transform = `translate(-50%, ${dy}px)`;
-  };
-
-  const onEnd = () => {
-    if (!dragging || startY == null || currentY == null) {
-      dragging = false;
-      return;
-    }
-    const dy = currentY - startY;
-    dragging = false;
-    startY = null;
-    currentY = null;
-
-    modal.style.transition = "";
-
-    if (dy > 80) {
-      nfClosePartnerModal();
-    } else {
-      modal.style.transform = "translate(-50%, 0)";
-    }
-  };
-
-  grabber.addEventListener(
-    "touchstart",
-    (e) => {
-      const y = e.touches[0]?.clientY;
-      if (typeof y === "number") onStart(y);
-    },
-    { passive: true }
-  );
-
-  grabber.addEventListener(
-    "touchmove",
-    (e) => {
-      const y = e.touches[0]?.clientY;
-      if (typeof y === "number") onMove(y);
-    },
-    { passive: true }
-  );
-
-  grabber.addEventListener("touchend", () => {
-    onEnd();
-  });
-
-  grabber.addEventListener("mousedown", (e) => {
-    onStart(e.clientY);
-    const onMouseMove = (ev) => onMove(ev.clientY);
-    const onMouseUp = () => {
-      window.removeEventListener("mousemove", onMouseMove);
-      window.removeEventListener("mouseup", onMouseUp);
-      onEnd();
-    };
-    window.addEventListener("mousemove", onMouseMove);
-    window.addEventListener("mouseup", onMouseUp);
-  });
+  /* motion-free: sheet drag disabled */
 }
 
 function nfInitNewsModalSheetDrag() {
-  const modal = nfEl("newsModal");
-  if (!modal) return;
-
-  const grabber = modal.querySelector(".nf-modal-grabber") || modal;
-  const content = modal.querySelector(".nf-modal-inner");
-  let startY = null;
-  let currentY = null;
-  let dragging = false;
-
-  const isMobile = () => window.innerWidth <= 768;
-
-  const onStart = (clientY) => {
-    if (!isMobile()) return;
-    if (content && content.scrollTop > 0) return;
-    dragging = true;
-    startY = clientY;
-    currentY = clientY;
-    modal.style.transition = "transform 0s";
-  };
-
-  const onMove = (clientY) => {
-    if (!dragging || startY == null) return;
-    currentY = clientY;
-    const dy = Math.max(0, clientY - startY);
-    modal.style.transform = `translate(-50%, ${dy}px)`;
-  };
-
-  const onEnd = () => {
-    if (!dragging || startY == null || currentY == null) {
-      dragging = false;
-      return;
-    }
-    const dy = currentY - startY;
-    dragging = false;
-    startY = null;
-    currentY = null;
-
-    modal.style.transition = "";
-
-    if (dy > 80) {
-      nfCloseNewsModal();
-    } else {
-      modal.style.transform = "translate(-50%, 0)";
-    }
-  };
-
-  grabber.addEventListener(
-    "touchstart",
-    (e) => {
-      const y = e.touches[0]?.clientY;
-      if (typeof y === "number") onStart(y);
-    },
-    { passive: true }
-  );
-
-  grabber.addEventListener(
-    "touchmove",
-    (e) => {
-      const y = e.touches[0]?.clientY;
-      if (typeof y === "number") onMove(y);
-    },
-    { passive: true }
-  );
-
-  grabber.addEventListener("touchend", () => {
-    onEnd();
-  });
-
-  grabber.addEventListener("mousedown", (e) => {
-    onStart(e.clientY);
-    const onMouseMove = (ev) => onMove(ev.clientY);
-    const onMouseUp = () => {
-      window.removeEventListener("mousemove", onMouseMove);
-      window.removeEventListener("mouseup", onMouseUp);
-      onEnd();
-    };
-    window.addEventListener("mousemove", onMouseMove);
-    window.addEventListener("mouseup", onMouseUp);
-  });
+  /* motion-free: sheet drag disabled */
 }
 
 function nfOpenQuickQuote() {
   const modal = nfEl("quickQuoteModal");
   const backdrop = nfEl("quickQuoteBackdrop");
   if (!modal || !backdrop) return;
-  backdrop.style.display = "block";
-  backdrop.style.visibility = "visible";
-  backdrop.style.opacity = "1";
-  modal.style.display = "block";
-  modal.style.visibility = "visible";
-  modal.style.opacity = "1";
   modal.classList.add("nf-modal-visible");
   backdrop.classList.add("nf-backdrop-visible");
   modal.setAttribute("aria-hidden", "false");
@@ -6787,12 +11067,6 @@ function nfCloseQuickQuote() {
   if (!modal || !backdrop) return;
   modal.classList.remove("nf-modal-visible");
   backdrop.classList.remove("nf-backdrop-visible");
-  backdrop.style.display = "";
-  backdrop.style.visibility = "";
-  backdrop.style.opacity = "";
-  modal.style.display = "";
-  modal.style.visibility = "";
-  modal.style.opacity = "";
   modal.setAttribute("aria-hidden", "true");
   backdrop.setAttribute("aria-hidden", "true");
   nfUpdateOverlayBody();
@@ -6800,35 +11074,99 @@ function nfCloseQuickQuote() {
 
 /* ====== BOOT ====== */
 document.addEventListener("DOMContentLoaded", () => {
+  nfInitLangSwitcherBinding();
+  try {
+    const saved = localStorage.getItem("nf_lang");
+    if (saved === "ru" || saved === "en" || saved === "kz") {
+      NF_STATE.lang = saved;
+      document.querySelectorAll(".nf-lang-btn").forEach((btn) => {
+        const active = btn.dataset.lang === saved;
+        btn.textContent = String(btn.dataset.lang || "").toUpperCase();
+        btn.classList.toggle("nf-lang-btn-active", active);
+        btn.setAttribute("aria-checked", active ? "true" : "false");
+      });
+    }
+  } catch (_e) {}
+  try {
+    const l = NF_STATE.lang || "ru";
+    document.documentElement.setAttribute("lang", l === "en" ? "en" : l === "kz" ? "kz" : "ru");
+  } catch (_e) {}
+
+  nfEnsureModalOutsideLayout("newsModal", "newsModalBackdrop");
+  const addedBindings = nfRegisterAutoI18nBindings(document);
+  if (addedBindings > 0 && String(NF_STATE.lang || "ru") !== "ru") {
+    nfRefreshDynamicTranslations(2).catch(() => {});
+  }
+
   // Footer year
   const yearEl = nfEl("footerYear");
   if (yearEl) yearEl.textContent = String(new Date().getFullYear());
 
-  // NAV: data-page и data-route (делегирование для динамически загруженного контента)
+  // NAV: внутренние /path и #hash, плюс data-page / data-route (в т.ч. в подгружаемых фрагментах)
   document.addEventListener("click", (e) => {
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+
+    const link = e.target.closest("a[href]");
+    if (link && link instanceof HTMLAnchorElement && link.target !== "_blank" && !link.hasAttribute("download")) {
+      const hrefAttr = link.getAttribute("href");
+      if (hrefAttr && hrefAttr.startsWith("/") && !hrefAttr.startsWith("//")) {
+        try {
+          const u = new URL(hrefAttr, location.origin);
+          if (u.origin === location.origin) {
+            e.preventDefault();
+            const navEl = link.closest("[data-page], [data-route]");
+            if (navEl) {
+              if (navEl.dataset.legalTab) NF_STATE.legalTab = navEl.dataset.legalTab;
+              if (navEl.dataset.clientsTab) NF_STATE.clientsTab = navEl.dataset.clientsTab;
+              if (navEl.classList?.contains("nf-nav-link")) {
+                nfUpdateNavIndicator(navEl, true);
+              }
+            }
+            nfToggleMobileNav(false);
+            nfGoPath(u.pathname + u.search);
+            return;
+          }
+        } catch (_e) {}
+      }
+      if (hrefAttr && hrefAttr.startsWith("#") && hrefAttr.length > 1 && !hrefAttr.startsWith("#/")) {
+        const h = hrefAttr.slice(1).trim();
+        if (h && NF_ROUTES[h]) {
+          e.preventDefault();
+          const navEl = link.closest("[data-page], [data-route]");
+          if (navEl) {
+            if (navEl.dataset.legalTab) NF_STATE.legalTab = navEl.dataset.legalTab;
+            if (navEl.dataset.clientsTab) NF_STATE.clientsTab = navEl.dataset.clientsTab;
+            if (navEl.classList?.contains("nf-nav-link")) {
+              nfUpdateNavIndicator(navEl, true);
+            }
+          }
+          nfToggleMobileNav(false);
+          nfGoPath(h === "home" ? "/" : `/${h}`);
+          return;
+        }
+      }
+    }
+
     const el = e.target.closest("[data-page], [data-route]");
     if (!el) return;
     e.preventDefault();
     const page = el.dataset.page || el.dataset.route;
     if (!page) return;
 
-    // Доп. состояние для юридических вкладок
     if (page === "legal" && el.dataset.legalTab) {
       NF_STATE.legalTab = el.dataset.legalTab;
     }
 
-    // Доп. состояние для вкладок «Клиентам» на странице контактов
     if (page === "contacts" && el.dataset.clientsTab) {
       NF_STATE.clientsTab = el.dataset.clientsTab;
     }
 
+    if (el.classList?.contains("nf-nav-link")) {
+      nfUpdateNavIndicator(el, true);
+    }
     nfToggleMobileNav(false);
-    nfNavigate(page);
-  });
-
-  // LANG
-  document.querySelectorAll(".nf-lang-btn").forEach((btn) => {
-    btn.addEventListener("click", () => nfSetLang(btn.dataset.lang));
+    const path = page === "home" ? "/" : `/${page}`;
+    nfGoPath(path);
   });
 
   // CART PANEL
@@ -6836,6 +11174,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const cartClose = nfEl("cartCloseBtn");
   const cartBackdrop = nfEl("cartBackdrop");
   const cartRequestBtn = nfEl("cartRequestBtn");
+  const cartClearBtn = nfEl("cartClearBtn");
 
   if (cartToggle) cartToggle.onclick = nfOpenCartPanel;
   if (cartClose) cartClose.onclick = nfCloseCartPanel;
@@ -6866,8 +11205,18 @@ document.addEventListener("DOMContentLoaded", () => {
           });
         } catch (_err) {}
       }
-      nfShowToast("Запрос на оборудование отправлен.");
+      nfShowToast(nfT("toast.equipmentRequestSent", "Запрос на оборудование отправлен."));
       nfCloseCartPanel();
+    };
+  }
+
+  if (cartClearBtn) {
+    cartClearBtn.onclick = () => {
+      if (!NF_STATE.cart.length) return;
+      NF_STATE.cart = [];
+      nfRenderCart();
+      nfUpdateCartBadge();
+      nfShowToast(nfT("toast.requestListCleared", "Список запросов очищен."));
     };
   }
 
@@ -6900,6 +11249,12 @@ document.addEventListener("DOMContentLoaded", () => {
   const quickClose = nfEl("quickQuoteClose");
   const quickBackdrop = nfEl("quickQuoteBackdrop");
   if (quickBtn) quickBtn.onclick = nfOpenQuickQuote;
+  document.querySelectorAll(".nf-js-quick-quote").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      nfToggleMobileNav(false);
+      nfOpenQuickQuote();
+    });
+  });
   if (quickClose) quickClose.onclick = nfCloseQuickQuote;
   if (quickBackdrop) quickBackdrop.onclick = nfCloseQuickQuote;
 
@@ -6929,7 +11284,7 @@ document.addEventListener("DOMContentLoaded", () => {
         } catch (_err) {}
       }
       if (quickSuccess) quickSuccess.hidden = false;
-      nfShowToast("Запрос отправлен.");
+      nfShowToast(nfT("toast.requestSent", "Запрос отправлен."));
     };
   }
 
@@ -6939,98 +11294,117 @@ document.addEventListener("DOMContentLoaded", () => {
     const box = nfEl("searchSuggestions");
     if (!input || !box) return;
 
-    const q = input.value.trim().toLowerCase();
+    const q = nfNormalizeSearchText(input.value);
     if (!q) {
       box.classList.remove("nf-search-suggestions-visible");
       box.innerHTML = "";
       return;
     }
+    const goCatalogWith = (paramsMap) => {
+      const params = new URLSearchParams();
+      Object.entries(paramsMap || {}).forEach(([key, value]) => {
+        if (value == null) return;
+        const normalized = String(value).trim();
+        if (!normalized) return;
+        params.set(key, normalized);
+      });
+      nfGoPath(`/catalog${params.toString() ? `?${params.toString()}` : ""}`);
+      box.classList.remove("nf-search-suggestions-visible");
+    };
 
     const products = NF_DATA.products
       .filter((p) => {
-        const partnerName = nfGetPartnerName(p.partnerId).toLowerCase();
-        return (
-          p.name.toLowerCase().includes(q) ||
-          p.article.toLowerCase().includes(q) ||
-          p.model.toLowerCase().includes(q) ||
-          partnerName.includes(q)
-        );
+        const haystack = nfEntitySearchHaystack(p, [
+          p.name,
+          p.article,
+          p.model,
+          p.shortDesc,
+          p.description,
+          nfGetPartnerName(p.partnerId),
+        ]);
+        return haystack.includes(q);
       })
       .slice(0, 6);
 
     const categories = NF_DATA.categories.filter(
-      (c) => c.name.toLowerCase().includes(q) || c.description.toLowerCase().includes(q)
+      (c) =>
+        nfEntitySearchHaystack(c, [c.name, c.description]).includes(q)
     );
 
     const partners = NF_DATA.partners.filter(
-      (p) => p.name.toLowerCase().includes(q) || p.equipment.toLowerCase().includes(q)
+      (p) =>
+        nfEntitySearchHaystack(p, [p.name, p.country, p.equipment, p.description]).includes(q)
     );
 
     box.innerHTML = "";
 
     if (!products.length && !categories.length && !partners.length) {
-      box.innerHTML = `<div class="nf-search-group-label">Ничего не найдено</div>`;
+      box.innerHTML = `<div class="nf-search-group-label">${nfEscapeHtml(nfT("common.searchNothingFound", "Ничего не найдено"))}</div>`;
       box.classList.add("nf-search-suggestions-visible");
       return;
     }
 
     if (products.length) {
-      box.appendChild(nfCreateEl("div", "nf-search-group-label", "Товары"));
+      box.appendChild(nfCreateEl("div", "nf-search-group-label", nfT("search.group.products", "Товары")));
       products.forEach((p) => {
         const item = nfCreateEl("div", "nf-search-item");
         const thumb = nfCreateEl("div", "nf-search-thumb");
         const main = nfCreateEl("div", "nf-search-item-main");
         main.append(
-          nfCreateEl("div", "nf-search-item-title", p.name),
-          nfCreateEl("div", "nf-search-item-meta", `${p.article} · ${nfGetPartnerName(p.partnerId)}`)
+          nfCreateElText("div", "nf-search-item-title", p.name),
+          nfCreateElText(
+            "div",
+            "nf-search-item-meta",
+            `${p.article} · ${nfGetPartnerName(p.partnerId)}`
+          )
         );
 
-        const cta = nfCreateEl("div", "nf-search-item-cta nf-btn-checkable", "В запрос");
+        const cta = nfCreateEl("div", "nf-search-item-cta nf-btn-checkable", "");
+        cta.setAttribute("role", "button");
+        cta.tabIndex = 0;
+        nfInitAddToRequestControl(cta, p.id, nfT("common.addToRequest", "В запрос"), { compact: true });
         cta.addEventListener("click", (e) => {
           e.stopPropagation();
-          nfAddToCart(p.id, 1);
-          nfAnimateAddToCartButton(cta);
+          nfAddToCart(p.id, 1, { sourceButton: cta });
         });
 
         item.append(thumb, main, cta);
-        item.addEventListener("click", () => nfOpenProductPage(p.id));
+        item.addEventListener("click", () => {
+          goCatalogWith({ search: p.name });
+        });
         box.appendChild(item);
       });
     }
 
     if (categories.length) {
-      box.appendChild(nfCreateEl("div", "nf-search-group-label", "Категории"));
+      box.appendChild(nfCreateEl("div", "nf-search-group-label", nfT("search.group.categories", "Категории")));
       categories.forEach((c) => {
         const item = nfCreateEl("div", "nf-search-item");
         const main = nfCreateEl("div", "nf-search-item-main");
         main.append(
-          nfCreateEl("div", "nf-search-item-title", c.name),
-          nfCreateEl("div", "nf-search-item-meta", c.description)
+          nfCreateElText("div", "nf-search-item-title", c.name),
+          nfCreateElText("div", "nf-search-item-meta", c.description)
         );
         item.append(main);
         item.addEventListener("click", () => {
-          NF_STATE.filters.categoryIds = new Set([c.id]);
-          nfNavigate("catalog");
-          box.classList.remove("nf-search-suggestions-visible");
+          goCatalogWith({ cat: c.id });
         });
         box.appendChild(item);
       });
     }
 
     if (partners.length) {
-      box.appendChild(nfCreateEl("div", "nf-search-group-label", "Партнёры"));
+      box.appendChild(nfCreateEl("div", "nf-search-group-label", nfT("search.group.partners", "Партнёры")));
       partners.forEach((p) => {
         const item = nfCreateEl("div", "nf-search-item");
         const main = nfCreateEl("div", "nf-search-item-main");
         main.append(
-          nfCreateEl("div", "nf-search-item-title", p.name),
-          nfCreateEl("div", "nf-search-item-meta", `${p.country} · ${p.equipment}`)
+          nfCreateElText("div", "nf-search-item-title", p.name),
+          nfCreateElText("div", "nf-search-item-meta", `${p.country} · ${p.equipment}`)
         );
         item.append(main);
         item.addEventListener("click", () => {
-          NF_STATE.selectedPartnerId = p.id;
-          nfNavigate("partners");
-          box.classList.remove("nf-search-suggestions-visible");
+          goCatalogWith({ brand: p.id });
         });
         box.appendChild(item);
       });
@@ -7040,7 +11414,18 @@ document.addEventListener("DOMContentLoaded", () => {
   }, 220);
 
   const globalSearchInput = nfEl("globalSearchInput");
-  if (globalSearchInput) globalSearchInput.addEventListener("input", nfUpdateSearchSuggestions);
+  if (globalSearchInput) {
+    globalSearchInput.addEventListener("input", nfUpdateSearchSuggestions);
+    globalSearchInput.addEventListener("keydown", (e) => {
+      if (e.key !== "Enter") return;
+      e.preventDefault();
+      const q = String(globalSearchInput.value || "").trim();
+      const params = new URLSearchParams();
+      if (q) params.set("search", q);
+      nfGoPath(`/catalog${params.toString() ? `?${params.toString()}` : ""}`);
+    });
+    nfSyncGlobalSearchHint();
+  }
 
   document.addEventListener("click", (e) => {
     if (!e.target.closest(".nf-search")) {
@@ -7052,14 +11437,35 @@ document.addEventListener("DOMContentLoaded", () => {
   // Partner modal close
   const partnerClose = nfEl("partnerModalClose");
   const partnerBackdrop = nfEl("partnerModalBackdrop");
+  const partnerModal = nfEl("partnerModal");
+  const partnerModalInner = partnerModal?.querySelector(".nf-modal-inner");
   if (partnerClose) partnerClose.onclick = nfClosePartnerModal;
   if (partnerBackdrop) partnerBackdrop.onclick = nfClosePartnerModal;
+  if (partnerModal) {
+    partnerModal.addEventListener("click", (e) => {
+      if (e.target === partnerModal) nfClosePartnerModal();
+    });
+  }
+  if (partnerModalInner) {
+    partnerModalInner.addEventListener("click", (e) => e.stopPropagation());
+  }
 
   // News modal close
   const newsClose = nfEl("newsModalClose");
   const newsBackdrop = nfEl("newsModalBackdrop");
+  const newsModal = nfEl("newsModal");
+  const newsModalCard = newsModal?.querySelector(".nf-modal-inner.nf-modal-news");
   if (newsClose) newsClose.onclick = nfCloseNewsModal;
   if (newsBackdrop) newsBackdrop.onclick = nfCloseNewsModal;
+  if (newsModal) {
+    newsModal.addEventListener("click", (e) => {
+      if (e.target === newsModal) nfCloseNewsModal();
+    });
+  }
+  if (newsModalCard) {
+    newsModalCard.addEventListener("click", (e) => e.stopPropagation());
+  }
+  nfInitNewsModalMediaControls();
 
   // ESC closes modals and mobile menu
   document.addEventListener("keydown", (e) => {
@@ -7072,13 +11478,30 @@ document.addEventListener("DOMContentLoaded", () => {
     nfCloseCartPanel();
   });
 
-  // START APP
-  const initial = location.hash.replace("#", "") || "home";
-  nfLoadPage(initial);
-  nfUpdateCartBadge();
-  nfLoadCatalogFromApi();
+  // START APP: прямой заход по /catalog/..., /news/..., старые закладки #catalog → /catalog
+  function nfBootInitialPage() {
+    const parts = nfPathSegments();
+    if (parts.length) {
+      return nfResolvePageFromLocation().page;
+    }
+    const hashInitial = location.hash.replace("#", "").trim();
+    if (hashInitial && NF_ROUTES[hashInitial]) {
+      const path = hashInitial === "home" ? "/" : `/${hashInitial}`;
+      try {
+        history.replaceState({}, "", path + location.search);
+      } catch (_e) {}
+      return nfResolvePageFromLocation().page;
+    }
+    return "home";
+  }
 
-  // Mobile header hide/show on scroll
-  nfInitMobileHeaderScroll();
-  nfInitPartnerModalSheetDrag();
+  void (async () => {
+    await nfLoadTranslationsForLang(NF_STATE.lang || "ru");
+    nfApplyTranslations();
+    nfLoadPage(nfBootInitialPage());
+    nfUpdateCartBadge();
+    nfLoadCatalogFromApi();
+    nfInitPremiumHeaderScrolled();
+    nfInitPartnerModalSheetDrag();
+  })();
 });

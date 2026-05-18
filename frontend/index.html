@@ -7,13 +7,23 @@
     name="viewport"
     content="width=device-width, initial-scale=1, viewport-fit=cover"
   />
+  <!-- Корень документа для всех относительных URL (CSS/JS/img и src из JSON) при deep link /catalog/... -->
+  <base href="/" />
 
   <title>НаноФарм — Медицинское оборудование для клиник и лабораторий</title>
   <meta name="description" content="НаноФарм — поставка медицинского оборудования для клиник, лабораторий и диагностических центров." />
-  <meta name="theme-color" content="#f4f7f8" />
+  <meta name="theme-color" content="#f4f7f6" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      important: "#nf-premium-hero-root",
+      corePlugins: { preflight: false },
+    };
+  </script>
 
   <!-- Основные стили. Параметр версии помогает обойти кэш браузера. -->
-  <link rel="stylesheet" href="styles.css?v=5" />
+  <link rel="stylesheet" href="/styles.css?v=69" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
 
   <script>
@@ -28,12 +38,14 @@
 
 <body>
   <div id="app-root" class="nf-app nf-theme-light">
-    <!-- ====== ШАПКА ====== -->
-    <header class="nf-header">
+    <!-- Шапка -->
+    <header class="nf-header nf-header--ds">
       <div class="nf-header-inner">
-        <button type="button" class="nf-logo" data-page="home" aria-label="НаноФарм — на главную">
-          <img src="img/logo.png" alt="НаноФарм" class="nf-logo-img-header" />
-        </button>
+        <div class="nf-header-logo-section">
+          <button type="button" class="nf-logo" data-page="home" aria-label="НаноФарм — на главную">
+            <img src="/img/logo.png" alt="НаноФарм" class="nf-logo-img-header" />
+          </button>
+        </div>
 
         <div class="nf-header-search-wrapper">
           <div class="nf-search">
@@ -51,10 +63,6 @@
               autocomplete="off"
               aria-label="Поиск"
             />
-
-            <button type="button" class="nf-search-advanced" data-page="catalog" data-i18n="search.advanced">
-              Расширенный поиск
-            </button>
 
             <div
               id="searchSuggestions"
@@ -100,13 +108,13 @@
       </nav>
     </header>
 
-    <!-- ====== МОБИЛЬНОЕ МЕНЮ (бургер) ====== -->
+    <!-- Мобильное меню -->
     <div id="nfMobileMenu" class="nf-mobile-menu" aria-hidden="true" role="dialog" aria-label="Меню навигации">
       <div class="nf-mobile-menu__backdrop" aria-hidden="true"></div>
       <div class="nf-mobile-menu__panel">
         <div class="nf-mobile-menu__header">
           <button type="button" class="nf-mobile-menu__logo nf-logo" data-page="home" aria-label="НаноФарм — на главную">
-            <img src="img/logo.png" alt="НаноФарм" class="nf-logo-img-header" />
+            <img src="/img/logo.png" alt="НаноФарм" class="nf-logo-img-header" />
           </button>
           <button type="button" id="nfMobileMenuClose" class="nf-mobile-menu__close" aria-label="Закрыть меню">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
@@ -120,17 +128,25 @@
           <button type="button" class="nf-mobile-menu__link" data-page="about" data-i18n="nav.about">О компании</button>
           <button type="button" class="nf-mobile-menu__link" data-page="contacts" data-i18n="nav.contacts">Контакты</button>
         </nav>
+        <div class="nf-mobile-menu__extras">
+          <button type="button" class="nf-mobile-menu__quick-quote nf-js-quick-quote" data-i18n="header.quickQuote">
+            Быстрый запрос цены
+          </button>
+        </div>
       </div>
     </div>
 
-    <!-- ====== КОНТЕНТ ====== -->
+    <!-- Контент -->
     <main id="page-root" class="nf-main" aria-live="polite"></main>
 
-    <!-- ====== ПАНЕЛЬ ЗАПРОСОВ ====== -->
+    <!-- Панель запросов -->
     <aside id="cartPanel" class="nf-cart-panel" aria-label="Список запросов" aria-hidden="true">
       <div class="nf-cart-header">
-        <h2>Список запросов</h2>
-        <button type="button" id="cartCloseBtn" class="nf-icon-btn" aria-label="Закрыть">
+        <div class="nf-cart-header-text">
+          <h2 data-i18n="cart.panel.title">Список запросов</h2>
+          <p class="nf-cart-header-subtitle" data-i18n="cart.panel.subtitle">Все добавленные позиции для единого запроса.</p>
+        </div>
+        <button type="button" id="cartCloseBtn" class="nf-icon-btn nf-cart-close-btn" aria-label="Закрыть">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg>
         </button>
       </div>
@@ -139,18 +155,22 @@
 
       <div class="nf-cart-footer">
         <div id="cartTotals" class="nf-cart-totals"></div>
-        <button type="button" id="cartRequestBtn" class="nf-btn nf-btn-primary" disabled>
-          Запросить цену на всё
-        </button>
+        <div class="nf-cart-actions">
+          <button type="button" id="cartClearBtn" class="nf-btn nf-btn-secondary nf-cart-clear-btn" disabled>
+            <span data-i18n="cart.panel.clear">Очистить</span>
+          </button>
+          <button type="button" id="cartRequestBtn" class="nf-btn nf-btn-primary nf-cart-submit-btn" disabled>
+            <span data-i18n="cart.panel.requestAll">Запросить цену на всё</span>
+          </button>
+        </div>
       </div>
     </aside>
     <div id="cartBackdrop" class="nf-backdrop" aria-hidden="true"></div>
 
-    <!-- ====== УНИВЕРСАЛЬНЫЙ BACKDROP (alias) ====== -->
-    <!-- Многие версии app.js ждут #modalOverlay -->
+    <!-- Модальные окна -->
     <div id="modalOverlay" class="nf-backdrop" aria-hidden="true"></div>
 
-    <!-- ====== МОДАЛКА ТОВАРА ====== -->
+    <!-- Модальные окна -->
     <div id="productModalBackdrop" class="nf-backdrop" aria-hidden="true"></div>
 
     <div
@@ -168,8 +188,10 @@
 
         <div class="nf-modal-product-left">
           <div class="nf-modal-product-main-image-wrapper">
-            <img id="productModalImage" src="" alt="" class="nf-modal-product-image" />
-            <div class="nf-modal-zoom-hint">Наведите для увеличения</div>
+            <div class="nf-modal-product-imgwrap">
+              <img id="productModalImage" src="" alt="" class="nf-modal-product-image" />
+            </div>
+            <div class="nf-modal-zoom-hint" data-i18n="product.modal.zoomHint">Наведите для увеличения</div>
           </div>
           <div id="productModalThumbnails" class="nf-modal-thumbs"></div>
         </div>
@@ -186,7 +208,7 @@
 
           <div class="nf-modal-qty-price">
             <div class="nf-qty-control">
-              <span>Количество</span>
+              <span data-i18n="product.qtyLabel">Количество</span>
               <div class="nf-qty-input">
                 <button type="button" data-qty-change="-1" aria-label="Уменьшить">−</button>
                 <input id="productModalQty" type="number" min="1" value="1" aria-label="Количество" />
@@ -204,31 +226,32 @@
             <button type="button" id="productModalPrimaryBtn" class="nf-btn nf-btn-primary"></button>
           </div>
 
-          <div class="nf-tabs">
-            <div class="nf-tabs-header">
-              <button type="button" class="nf-tab-btn nf-tab-btn-active" data-tab="specs">Технические характеристики</button>
-              <button type="button" class="nf-tab-btn" data-tab="install">Установка и обслуживание</button>
-              <button type="button" class="nf-tab-btn" data-tab="docs">Документация</button>
+          <div class="nf-modal-product-detail">
+            <div id="productModalDescription" class="nf-modal-product-description"></div>
+            <div id="productModalSpecsWrap" class="nf-modal-product-specs-wrap" hidden>
+              <div class="nf-tab-section-title" data-i18n="product.specsTitle">Основные характеристики</div>
+              <ul id="productModalSpecs" class="nf-pdp-list"></ul>
             </div>
-
-            <div class="nf-tabs-body">
-              <div id="tab-specs" class="nf-tab nf-tab-active"></div>
-              <div id="tab-install" class="nf-tab"></div>
-              <div id="tab-docs" class="nf-tab">
-                Документация будет доступна после оформления заказа.
-              </div>
+            <div class="nf-modal-product-panel">
+              <div class="nf-tab-section-title" data-i18n="product.installTitle">Установка</div>
+              <div id="productModalInstall"></div>
             </div>
+            <div class="nf-modal-product-panel">
+              <div class="nf-tab-section-title" data-i18n="product.maintenanceTitle">Обслуживание</div>
+              <div id="productModalMaintenance"></div>
+            </div>
+            <p id="productModalDocNote" class="nf-product-page-doc-note nf-product-page-doc-note--modal"></p>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- ====== МОДАЛ ПАРТНЕР ====== -->
+    <!-- Модальные окна -->
     <div id="partnerModalBackdrop" class="nf-backdrop" aria-hidden="true"></div>
     <div id="partnerModal" class="nf-modal" role="dialog" aria-modal="true" aria-labelledby="partnerModalTitle" aria-hidden="true">
       <div class="nf-modal-inner nf-modal-partner">
         <div class="nf-modal-grabber" aria-hidden="true"></div>
-        <button id="partnerModalClose" class="nf-icon-btn nf-modal-close" aria-label="Закрыть">
+        <button id="partnerModalClose" class="nf-icon-btn nf-modal-close nf-modal-ds-close" aria-label="Закрыть">
           <svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
         </button>
 
@@ -248,29 +271,29 @@
 
             <div class="nf-partner-modal-stats">
               <div class="nf-stat">
-                <div class="nf-stat-k">Страна</div>
+                <div class="nf-stat-k" data-i18n="partners.stat.country">Страна</div>
                 <div id="partnerModalCountry" class="nf-stat-v"></div>
               </div>
               <div class="nf-stat">
-                <div class="nf-stat-k">Оборудование</div>
+                <div class="nf-stat-k" data-i18n="partners.stat.equipment">Оборудование</div>
                 <div id="partnerModalEquip" class="nf-stat-v"></div>
               </div>
               <div class="nf-stat">
-                <div class="nf-stat-k">Товаров</div>
+                <div class="nf-stat-k" data-i18n="partners.stat.products">Товаров</div>
                 <div id="partnerModalCount" class="nf-stat-v"></div>
               </div>
             </div>
 
             <div class="nf-partner-modal-actions">
-              <button id="partnerModalAddAll" class="nf-btn nf-btn-primary">В запрос</button>
-              <button id="partnerModalToCatalog" class="nf-btn nf-btn-secondary">Открыть</button>
+              <button id="partnerModalAddAll" class="nf-btn nf-btn-primary" data-i18n="common.addToRequest">В запрос</button>
+              <button id="partnerModalToCatalog" class="nf-btn nf-btn-secondary" data-i18n="common.open">Открыть</button>
             </div>
           </div>
 
           <div class="nf-partner-modal-right">
             <div class="nf-partner-modal-right-head">
-              <h3>Товары партнёра</h3>
-              <input id="partnerModalSearch" class="nf-input" type="search" placeholder="Поиск по товарам партнёра…" />
+              <h3 data-i18n="partners.productsTitle">Товары партнёра</h3>
+              <input id="partnerModalSearch" class="nf-input" type="search" placeholder="Поиск по товарам партнёра…" data-i18n="partners.searchPlaceholder" data-i18n-attr="placeholder" />
             </div>
             <div id="partnerModalProducts" class="nf-partner-modal-products"></div>
           </div>
@@ -278,7 +301,7 @@
       </div>
     </div>
 
-    <!-- ====== МОДАЛ НОВОСТИ ====== -->
+    <!-- Модальные окна -->
     <div id="newsModalBackdrop" class="nf-backdrop" aria-hidden="true"></div>
     <div
       id="newsModal"
@@ -293,7 +316,7 @@
         <button
           type="button"
           id="newsModalClose"
-          class="nf-icon-btn nf-modal-close"
+          class="nf-icon-btn nf-modal-close nf-modal-ds-close"
           aria-label="Закрыть"
         >
           <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -302,19 +325,42 @@
         </button>
 
         <article class="nf-news-modal-article">
-          <div class="nf-news-modal-header">
-            <div id="newsModalMeta" class="nf-news-modal-meta"></div>
-            <h2 id="newsModalTitle" class="nf-news-modal-title"></h2>
+          <div class="nf-news-modal-layout">
+            <section class="nf-news-modal-content">
+              <div class="nf-news-modal-header">
+                <div id="newsModalMeta" class="nf-news-modal-meta"></div>
+                <h2 id="newsModalTitle" class="nf-news-modal-title"></h2>
+              </div>
+              <div id="newsModalBody" class="nf-news-modal-body" aria-label="Текст новости"></div>
+            </section>
+
+            <aside class="nf-news-modal-media-panel">
+              <figure id="newsModalFigure" class="nf-news-modal-media" hidden>
+                <img id="newsModalImage" class="nf-news-modal-img" src="" alt="" />
+              </figure>
+
+              <div id="newsModalMediaFallback" class="nf-news-modal-media-fallback" hidden>
+                <div class="nf-news-modal-fallback-inner">
+                  <p class="nf-news-modal-fallback-kicker">Визуал к публикации</p>
+                  <p class="nf-news-modal-fallback-caption">
+                    Отдельное изображение к этому материалу редакция ещё не прикрепила. Это штатное состояние, не сбой загрузки.
+                  </p>
+                </div>
+              </div>
+
+              <div id="newsModalGallery" class="nf-news-modal-gallery" hidden>
+                <button type="button" id="newsModalGalleryPrev" class="nf-news-modal-gallery-nav" aria-label="Предыдущее изображение">‹</button>
+                <div id="newsModalGalleryTrack" class="nf-news-modal-gallery-track"></div>
+                <button type="button" id="newsModalGalleryNext" class="nf-news-modal-gallery-nav" aria-label="Следующее изображение">›</button>
+              </div>
+            </aside>
           </div>
-          <div id="newsModalBody" class="nf-news-modal-body" aria-label="Текст новости"></div>
         </article>
       </div>
     </div>
 
-    <!-- ====== БЫСТРЫЙ ЗАПРОС ====== -->
+    <!-- Модальные окна -->
     <div id="quickQuoteBackdrop" class="nf-backdrop" aria-hidden="true"></div>
-    <!-- Backdrop для мобильного bottom-sheet фильтров каталога -->
-    <div id="filtersBackdrop" class="nf-backdrop" aria-hidden="true"></div>
 
     <div
       id="quickQuoteModal"
@@ -324,200 +370,239 @@
       aria-labelledby="quickQuoteTitle"
       aria-hidden="true"
     >
-      <div class="nf-modal-inner nf-modal-form">
-        <button type="button" id="quickQuoteClose" class="nf-icon-btn nf-modal-close" aria-label="Закрыть">
+      <div class="nf-modal-inner nf-modal-form nf-modal-ds">
+        <button type="button" id="quickQuoteClose" class="nf-icon-btn nf-modal-close nf-modal-ds-close" aria-label="Закрыть">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg>
         </button>
 
-        <h2 id="quickQuoteTitle" data-i18n="quick.title">Быстрый запрос цены</h2>
-        <p data-i18n="quick.text">Укажите контактные данные и список интересующих моделей, и мы подготовим предложение.</p>
+        <header class="nf-modal-ds-head">
+          <p class="nf-modal-shell-kicker">Коммерческий отдел</p>
+          <h2 id="quickQuoteTitle" data-i18n="quick.title">Быстрый запрос цены</h2>
+          <p class="nf-modal-ds-lead" data-i18n="quick.text">
+            Укажите контакты и интересующие модели — подготовим предложение.
+          </p>
+        </header>
 
-        <form id="quickQuoteForm" class="nf-form" novalidate>
-          <div class="nf-form-row">
-            <label>
-              <span data-i18n="form.name">Имя</span>
-              <input name="name" type="text" class="nf-input" required />
-              <span class="nf-field-error"></span>
-            </label>
-          </div>
+        <form id="quickQuoteForm" class="nf-form nf-form-modal-ds" novalidate>
+          <fieldset class="nf-form-fieldset nf-form-fieldset--tight">
+            <legend class="nf-form-legend">Контакт</legend>
+            <div class="nf-form-grid nf-form-grid--2">
+              <label class="nf-form-field">
+                <span data-i18n="form.name">Имя</span>
+                <input name="name" type="text" class="nf-input" required autocomplete="name" />
+                <span class="nf-field-error"></span>
+              </label>
+              <label class="nf-form-field">
+                <span data-i18n="form.company">Компания</span>
+                <input name="company" type="text" class="nf-input" required autocomplete="organization" />
+                <span class="nf-field-error"></span>
+              </label>
+            </div>
+          </fieldset>
 
-          <div class="nf-form-row">
-            <label>
-              <span data-i18n="form.company">Компания</span>
-              <input name="company" type="text" class="nf-input" required />
-              <span class="nf-field-error"></span>
-            </label>
-          </div>
+          <fieldset class="nf-form-fieldset nf-form-fieldset--tight">
+            <legend class="nf-form-legend">Связь</legend>
+            <div class="nf-form-grid nf-form-grid--2">
+              <label class="nf-form-field">
+                <span data-i18n="form.phone">Телефон</span>
+                <input
+                  name="phone"
+                  type="tel"
+                  class="nf-input"
+                  required
+                  autocomplete="tel"
+                  placeholder="+7 (___) ___-__-__"
+                  data-i18n="form.phonePlaceholder"
+                  data-i18n-attr="placeholder"
+                />
+                <span class="nf-field-error"></span>
+              </label>
+              <label class="nf-form-field">
+                Email
+                <input name="email" type="email" class="nf-input" required autocomplete="email" placeholder="name@company.com" />
+                <span class="nf-field-error"></span>
+              </label>
+            </div>
+          </fieldset>
 
-          <div class="nf-form-row nf-form-row-cols">
-            <label>
-              <span data-i18n="form.phone">Телефон</span>
-              <input
-                name="phone"
-                type="tel"
-                class="nf-input"
-                required
-                placeholder="+7 (___) ___-__-__"
-                data-i18n="form.phonePlaceholder"
-                data-i18n-attr="placeholder"
-              />
-              <span class="nf-field-error"></span>
-            </label>
-
-            <label>
-              Email
-              <input name="email" type="email" class="nf-input" required placeholder="name@company.com" />
-              <span class="nf-field-error"></span>
-            </label>
-          </div>
-
-          <div class="nf-form-row">
-            <label>
-              <span data-i18n="form.items">Интересующие позиции (модели/артикулы)</span>
+          <fieldset class="nf-form-fieldset nf-form-fieldset--tight">
+            <legend class="nf-form-legend">Интересующие позиции</legend>
+            <label class="nf-form-field nf-form-field--full">
+              <span data-i18n="form.items">Модели и артикулы</span>
               <textarea
                 name="items"
                 class="nf-textarea"
                 rows="4"
-                placeholder="Например: Анализатор X1000, Микроскоп M-200, Штрихкоды моделей…"
+                placeholder="Например: анализатор X1000, микроскоп M-200, внутренние коды…"
                 required
               ></textarea>
               <span class="nf-field-error"></span>
             </label>
-          </div>
+          </fieldset>
 
-          <button type="submit" class="nf-btn nf-btn-primary" data-i18n="form.submit">Отправить запрос</button>
-
-          <div id="quickQuoteSuccess" class="nf-form-success" hidden data-i18n="form.success">
-            Запрос отправлен. Мы свяжемся с вами в ближайшее время.
+          <div class="nf-modal-ds-actions">
+            <button type="submit" class="nf-btn nf-btn-primary nf-modal-ds-submit" data-i18n="form.submit">Отправить запрос</button>
+            <div id="quickQuoteSuccess" class="nf-form-success" hidden data-i18n="form.success">
+              Запрос отправлен. Мы свяжемся с вами в ближайшее время.
+            </div>
           </div>
         </form>
       </div>
     </div>
 
-    <!-- ====== ТОСТЫ ====== -->
+    <!-- Уведомления -->
     <div id="toastContainer" class="nf-toast-container" aria-live="polite" aria-atomic="true"></div>
 
-    <!-- ====== ПОДВАЛ ====== -->
-    <footer class="nf-footer">
-      <div class="nf-footer-main">
-        <div class="nf-footer-col nf-footer-brand">
-          <div class="nf-logo nf-footer-logo">
-            <img src="img/logo-footer.png" alt="НаноФарм" class="nf-logo-mark-img" />
-            <div class="nf-logo-text">
-              <span class="nf-logo-title">НаноФарм</span>
-              <span class="nf-logo-subtitle">Medical Technology</span>
+    <!-- Подвал -->
+    <footer class="nf-footer nf-footer--premium">
+      <div class="nf-footer-premium-glow" aria-hidden="true"></div>
+
+      <div class="nf-footer-top">
+        <div class="nf-footer-shell nf-footer-top-inner">
+          <div class="nf-footer-brand-block">
+            <div class="nf-logo nf-footer-logo">
+              <img
+                src="/img/logo-white.svg"
+                alt=""
+                width="40"
+                height="40"
+                class="nf-logo-mark-img nf-logo-mark-img--footer-dark"
+                decoding="async"
+              />
+              <div class="nf-logo-text">
+                <span class="nf-logo-title">НаноФарм</span>
+                <span class="nf-logo-subtitle">Medical Technology</span>
+              </div>
             </div>
+            <p class="nf-footer-tagline">
+              <span data-i18n="footer.about">
+                Комплексные решения по поставке медицинского оборудования для клиник, лабораторий
+                и диагностических центров. Проектирование, монтаж, обучение и сервисное сопровождение.
+              </span>
+            </p>
+            <a class="nf-footer-email" href="mailto:info@nanopharm.kz">info@nanopharm.kz</a>
           </div>
-
-          <p>
-            <span data-i18n="footer.about">
-              Комплексные решения по поставке медицинского оборудования для клиник, лабораторий
-              и диагностических центров. Проектирование, монтаж, обучение и сервисное сопровождение.
-            </span>
-          </p>
-
-          <p><a href="mailto:info@nanopharm.kz">info@nanopharm.kz</a></p>
-        </div>
-
-        <div class="nf-footer-col">
-          <h3 data-i18n="footer.nav">Навигация</h3>
-          <button type="button" class="nf-footer-link" data-page="catalog" data-i18n="nav.catalog">Каталог</button>
-          <button type="button" class="nf-footer-link" data-page="partners" data-i18n="nav.partners">Партнёры</button>
-          <button type="button" class="nf-footer-link" data-page="news" data-i18n="nav.news">Новости</button>
-          <button type="button" class="nf-footer-link" data-page="about" data-i18n="nav.about">О компании</button>
-          <button type="button" class="nf-footer-link" data-page="contacts" data-i18n="nav.contacts">Контакты</button>
-        </div>
-
-        <div class="nf-footer-col">
-          <h3 data-i18n="footer.clients">Клиентам</h3>
-          <button
-            type="button"
-            class="nf-footer-link"
-            data-page="contacts"
-            data-clients-tab="order"
-            data-i18n="footer.howToOrder"
-          >
-            Как заказать
-          </button>
-          <button
-            type="button"
-            class="nf-footer-link"
-            data-page="contacts"
-            data-clients-tab="support"
-            data-i18n="footer.support"
-          >
-            Сервис и поддержка
-          </button>
-          <button
-            type="button"
-            class="nf-footer-link"
-            data-page="contacts"
-            data-clients-tab="warranty"
-            data-i18n="footer.warranty"
-          >
-            Гарантийные условия
-          </button>
-          <button
-            type="button"
-            class="nf-footer-link"
-            data-page="contacts"
-            data-clients-tab="faq"
-            data-i18n="footer.faq"
-          >
-            Ответы на вопросы
-          </button>
-        </div>
-
-        <div class="nf-footer-col">
-          <h3 data-i18n="footer.legal">Юридическая информация</h3>
-          <button
-            type="button"
-            class="nf-footer-link"
-            data-page="legal"
-            data-legal-tab="privacy"
-            data-i18n="footer.privacy"
-          >
-            Политика конфиденциальности
-          </button>
-          <button
-            type="button"
-            class="nf-footer-link"
-            data-page="legal"
-            data-legal-tab="tos"
-            data-i18n="footer.tos"
-          >
-            Пользовательское соглашение
-          </button>
-          <button
-            type="button"
-            class="nf-footer-link"
-            data-page="legal"
-            data-legal-tab="requisites"
-            data-i18n="footer.requisites"
-          >
-            Реквизиты компании
-          </button>
+          <div class="nf-footer-cta-panel">
+            <p class="nf-footer-cta-kicker" data-i18n="footer.ctaKicker">Готовы обсудить проект</p>
+            <p class="nf-footer-cta-lead" data-i18n="footer.ctaLead">
+              Свяжитесь с отделом продаж — подберём оборудование под вашу задачу.
+            </p>
+            <button type="button" class="nf-btn nf-btn-primary nf-footer-cta-btn" data-page="contacts" data-i18n="footer.ctaButton">
+              Связаться
+            </button>
+          </div>
         </div>
       </div>
 
-      <div class="nf-footer-bottom">
-        <div class="nf-footer-gradient"></div>
-        <div class="nf-footer-bottom-inner">
+      <div class="nf-footer-columns-wrap">
+        <div class="nf-footer-shell nf-footer-columns">
+          <div class="nf-footer-col">
+            <h3 class="nf-footer-col-heading" data-i18n="footer.nav">Навигация</h3>
+            <button type="button" class="nf-footer-link" data-page="catalog" data-i18n="nav.catalog">Каталог</button>
+            <button type="button" class="nf-footer-link" data-page="partners" data-i18n="nav.partners">Партнёры</button>
+            <button type="button" class="nf-footer-link" data-page="news" data-i18n="nav.news">Новости</button>
+            <button type="button" class="nf-footer-link" data-page="about" data-i18n="nav.about">О компании</button>
+            <button type="button" class="nf-footer-link" data-page="contacts" data-i18n="nav.contacts">Контакты</button>
+          </div>
+
+          <div class="nf-footer-col">
+            <h3 class="nf-footer-col-heading" data-i18n="footer.clients">Клиентам</h3>
+            <button
+              type="button"
+              class="nf-footer-link"
+              data-page="contacts"
+              data-clients-tab="order"
+              data-i18n="footer.howToOrder"
+            >
+              Как заказать
+            </button>
+            <button
+              type="button"
+              class="nf-footer-link"
+              data-page="contacts"
+              data-clients-tab="support"
+              data-i18n="footer.support"
+            >
+              Сервис и поддержка
+            </button>
+            <button
+              type="button"
+              class="nf-footer-link"
+              data-page="contacts"
+              data-clients-tab="warranty"
+              data-i18n="footer.warranty"
+            >
+              Гарантийные условия
+            </button>
+            <button
+              type="button"
+              class="nf-footer-link"
+              data-page="contacts"
+              data-clients-tab="faq"
+              data-i18n="footer.faq"
+            >
+              Ответы на вопросы
+            </button>
+          </div>
+
+          <div class="nf-footer-col">
+            <h3 class="nf-footer-col-heading" data-i18n="footer.legal">Юридическая информация</h3>
+            <button
+              type="button"
+              class="nf-footer-link"
+              data-page="legal"
+              data-legal-tab="privacy"
+              data-i18n="footer.privacy"
+            >
+              Политика конфиденциальности
+            </button>
+            <button
+              type="button"
+              class="nf-footer-link"
+              data-page="legal"
+              data-legal-tab="tos"
+              data-i18n="footer.tos"
+            >
+              Пользовательское соглашение
+            </button>
+            <button
+              type="button"
+              class="nf-footer-link"
+              data-page="legal"
+              data-legal-tab="requisites"
+              data-i18n="footer.requisites"
+            >
+              Реквизиты компании
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="nf-footer-bottom nf-footer-bottom--premium">
+        <div class="nf-footer-shell nf-footer-bottom-inner">
           <span data-i18n="footer.copyrightPrefix">© <span id="footerYear"></span> НаноФарм. Все права защищены.</span>
+          <a id="footerCreditLink" target="_blank" rel="noopener" class="footer-credit">
+            Designed by n0weth
+          </a>
         </div>
       </div>
     </footer>
   </div>
 
   <script>
+    const PORTFOLIO_URL = "https://n0weth.dev";
+
     // Always set year (even if app.js fails)
     (function () {
       var y = document.getElementById("footerYear");
       if (y) y.textContent = String(new Date().getFullYear());
+
+      var footerCreditLink = document.getElementById("footerCreditLink");
+      if (footerCreditLink) footerCreditLink.href = PORTFOLIO_URL;
     })();
   </script>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-  <script src="app.js" defer></script>
+  <script src="/app.js" defer></script>
 </body>
 </html>

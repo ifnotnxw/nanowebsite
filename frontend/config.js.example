@@ -1,7 +1,7 @@
 // Скопируйте в config.js и при необходимости измените.
 // Подключите config.js в index.html перед app.js, если нужен свой URL API.
 
-window.__NF_API_BASE = "http://localhost:3000";
+window.__NF_API_BASE = "";
 
 // Чтобы работать без бэкенда (только mock-данные на фронте):
 // window.__NF_API_BASE = "";

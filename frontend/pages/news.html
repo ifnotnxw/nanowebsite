@@ -1,36 +1,51 @@
 <section class="nf-main news-page">
-  <div class="news-page-container">
-    <div class="news-page-hero">
-      <h1 class="news-page-title">Новости и события</h1>
-      <p class="news-page-subtitle">
-        Проекты, партнёрства и сервисные обновления компании НаноФарм — всё, что помогает
-        клиникам и лабораториям быть на шаг впереди.
+  <div class="nf-page-container">
+    <header class="news-page-hero">
+      <div class="news-page-hero-kicker" data-i18n="news.kicker">Newsroom</div>
+      <h1 class="news-page-title" data-i18n="news.title">Новости и события</h1>
+      <p class="news-page-subtitle" data-i18n="news.subtitle">
+        Ключевые проекты, партнёрства и обновления НаноФарм для клиник, лабораторий и диагностических центров.
       </p>
-    </div>
+    </header>
 
-    <div class="nf-news-filters news-page-controls">
-      <select id="newsDateFilter" class="nf-select">
-        <option value="all">За всё время</option>
-        <option value="recent">Сначала новые</option>
-        <option value="old">Сначала старые</option>
-      </select>
-
-      <input
-        id="newsSearchInput"
-        class="nf-input"
-        type="search"
-        placeholder="Поиск по новостям…"
-      />
-    </div>
-
-    <div class="nf-news-layout">
-      <div id="newsList" class="news-list-grid">
-        <!-- Список новостей заполняется nfRenderNews() -->
+    <section class="news-page-toolbar">
+      <div class="news-toolbar-search">
+        <span class="news-toolbar-search-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0016 9.5 6.5 6.5 0 109.5 16a6.47 6.47 0 004.23-1.57l.27.28h.79L20 21.5 21.5 20l-6-6zm-6 0A4.5 4.5 0 119.5 5a4.5 4.5 0 010 9z"/></svg>
+        </span>
+        <input
+          id="newsSearchInput"
+          class="news-search-input"
+          type="search"
+          placeholder="Поиск по заголовку, категории или ключевым словам"
+          data-i18n="news.searchPlaceholder"
+          data-i18n-attr="placeholder"
+        />
       </div>
 
-      <div id="newsDetails" class="nf-news-article">
-        <!-- Подробная новость больше не используется, новости открываются в модальном окне -->
+      <div class="news-toolbar-sort" id="newsSortDropdown">
+        <button id="newsSortButton" class="news-sort-button" type="button" aria-expanded="false" aria-controls="newsSortMenu">
+          <span id="newsSortButtonLabel" data-i18n="news.sort.recent">Сначала новые</span>
+          <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5.6 7.2L10 11.6l4.4-4.4 1.2 1.2-5.6 5.6-5.6-5.6z"/></svg>
+        </button>
+        <div id="newsSortMenu" class="news-sort-menu" role="menu" hidden>
+          <button type="button" class="news-sort-option is-active" data-sort="recent" data-i18n="news.sort.recent">Сначала новые</button>
+          <button type="button" class="news-sort-option" data-sort="old" data-i18n="news.sort.old">Сначала старые</button>
+          <button type="button" class="news-sort-option" data-sort="all" data-i18n="news.sort.all">За всё время</button>
+        </div>
       </div>
-    </div>
+    </section>
+
+    <section id="newsCategoryChips" class="news-category-chips" aria-label="Категории новостей"></section>
+
+    <section id="newsFeatured" class="news-featured" aria-label="Ключевая новость"></section>
+
+    <section class="news-list-section">
+      <div class="news-list-section-head">
+        <h2 data-i18n="news.all">Все новости</h2>
+        <div id="newsResultsMeta" class="news-results-meta"></div>
+      </div>
+      <div id="newsList" class="news-list-grid"></div>
+    </section>
   </div>
 </section>

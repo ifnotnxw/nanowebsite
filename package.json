@@ -8,7 +8,7 @@
     "dev": "npm start",
     "build": "echo \"Nanopharm: static frontend, nothing to build\"",
     "run": "npm install && npm start",
-    "postinstall": "cd backend && npm install",
+    "postinstall": "npm install --prefix backend",
     "install:backend": "cd backend && npm install"
   },
   "engines": {
