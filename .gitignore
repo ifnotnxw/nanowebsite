@@ -4,3 +4,9 @@ backend/node_modules/
 uploads/
 *.db
 *.sqlite
+*.sqlite-shm
+*.sqlite-wal
+*.log
+.claude/
+concept-*.html
+*.bak
