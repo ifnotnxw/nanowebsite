@@ -39033,7 +39033,7 @@ textarea.nf-input,
 .nf-cat-rail__sub {
   display: grid;
   grid-template-rows: 0fr;
-  transition: grid-template-rows 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: grid-template-rows 0.36s cubic-bezier(0.22, 1, 0.36, 1);
   overflow: hidden;
 }
 .nf-cat-rail__sub > * {
@@ -39046,13 +39046,34 @@ textarea.nf-input,
 
 /* Inner wrapper (needed for grid-template-rows trick) */
 .nf-cat-rail__sub-inner {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 1px;
   padding: 3px 0 6px 14px;
-  border-left: 2px solid rgba(var(--nf-accent-rgb), 0.15);
   margin-left: 16px;
   margin-top: 2px;
+}
+/* Connector line — draws downward as the panel opens */
+.nf-cat-rail__sub-inner::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  border-radius: 2px;
+  background: linear-gradient(
+    to bottom,
+    rgba(var(--nf-accent-rgb), 0.30),
+    rgba(var(--nf-accent-rgb), 0.08)
+  );
+  transform: scaleY(0);
+  transform-origin: top center;
+  transition: transform 0.42s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.nf-cat-rail__sub.is-open .nf-cat-rail__sub-inner::before {
+  transform: scaleY(1);
 }
 
 /* Subcategory button */
@@ -39077,6 +39098,30 @@ textarea.nf-input,
     color 0.18s ease,
     transform 100ms ease;
 }
+/* Staggered cascade — each subitem slides in from the left, one after another */
+.nf-cat-rail__sub.is-open .nf-cat-rail__subitem {
+  animation: nfSubItemIn 0.44s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+}
+.nf-cat-rail__sub.is-open .nf-cat-rail__subitem:nth-child(1) { animation-delay: 0.05s; }
+.nf-cat-rail__sub.is-open .nf-cat-rail__subitem:nth-child(2) { animation-delay: 0.10s; }
+.nf-cat-rail__sub.is-open .nf-cat-rail__subitem:nth-child(3) { animation-delay: 0.15s; }
+.nf-cat-rail__sub.is-open .nf-cat-rail__subitem:nth-child(4) { animation-delay: 0.20s; }
+.nf-cat-rail__sub.is-open .nf-cat-rail__subitem:nth-child(5) { animation-delay: 0.25s; }
+.nf-cat-rail__sub.is-open .nf-cat-rail__subitem:nth-child(6) { animation-delay: 0.30s; }
+.nf-cat-rail__sub.is-open .nf-cat-rail__subitem:nth-child(7) { animation-delay: 0.35s; }
+.nf-cat-rail__sub.is-open .nf-cat-rail__subitem:nth-child(8) { animation-delay: 0.40s; }
+
+@keyframes nfSubItemIn {
+  from {
+    opacity: 0;
+    transform: translateX(-14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
 .nf-cat-rail__subitem:hover {
   background: rgba(var(--nf-accent-rgb), 0.06);
   color: rgba(var(--nf-graphite-rgb), 0.75);
@@ -39089,6 +39134,17 @@ textarea.nf-input,
 }
 .nf-cat-rail__subitem:not(.is-active):active {
   transform: scale(0.97);
+}
+
+/* Respect reduced-motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .nf-cat-rail__sub,
+  .nf-cat-rail__sub-inner::before,
+  .nf-cat-rail__sub.is-open .nf-cat-rail__subitem {
+    transition-duration: 0.01ms;
+    animation-duration: 0.01ms;
+    animation-delay: 0s;
+  }
 }
 
 /* Responsive: smaller font in tablet compact */
