@@ -350,12 +350,13 @@ function normalizeEntityPayload(entityType, raw) {
   };
 }
 
-async function seedEntityType(db, entityType, items) {
-  const row = await db.get(
-    "SELECT COUNT(*) as total FROM content_entities WHERE entity_type = ?",
-    entityType
-  );
-  if (row && row.total > 0) return;
+// Sync content from the seed JSON into the DB on every startup.
+// Upsert by id: existing rows are updated and new ones inserted, but
+// nothing is ever deleted — so runtime data in other tables (requests,
+// translations, search index) stays untouched. This lets a plain folder
+// upload + restart reflect edits to categories.json / products.json
+// without having to drop the database by hand.
+async function syncEntityType(db, entityType, items) {
   const now = nowIso();
   for (const rawItem of items) {
     const item = normalizeEntityPayload(entityType, rawItem);
@@ -364,7 +365,24 @@ async function seedEntityType(db, entityType, items) {
       (id, entity_type, slug, status, sort_order, featured, title, excerpt,
        seo_title, seo_description, seo_keywords, seo_canonical, seo_robots, seo_og_image,
        payload_json, created_at, updated_at, updated_by)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+       ON CONFLICT(id) DO UPDATE SET
+         entity_type     = excluded.entity_type,
+         slug            = excluded.slug,
+         status          = excluded.status,
+         sort_order      = excluded.sort_order,
+         featured        = excluded.featured,
+         title           = excluded.title,
+         excerpt         = excluded.excerpt,
+         seo_title       = excluded.seo_title,
+         seo_description = excluded.seo_description,
+         seo_keywords    = excluded.seo_keywords,
+         seo_canonical   = excluded.seo_canonical,
+         seo_robots      = excluded.seo_robots,
+         seo_og_image    = excluded.seo_og_image,
+         payload_json    = excluded.payload_json,
+         updated_at      = excluded.updated_at,
+         updated_by      = excluded.updated_by`,
       item.id,
       entityType,
       item.slug,
@@ -430,10 +448,10 @@ async function seedDatabase(db) {
   const rawPartners = readSeedJson("partners");
   const partners = rawPartners.length ? rawPartners : buildPartnersFallbackFromProducts(products);
 
-  await seedEntityType(db, "categories", categories);
-  await seedEntityType(db, "partners", partners);
-  await seedEntityType(db, "products", products);
-  await seedEntityType(db, "news", news);
+  await syncEntityType(db, "categories", categories);
+  await syncEntityType(db, "partners", partners);
+  await syncEntityType(db, "products", products);
+  await syncEntityType(db, "news", news);
   await seedMetrics(db);
 }
 
