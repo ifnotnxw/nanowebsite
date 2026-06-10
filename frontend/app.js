@@ -33,7 +33,7 @@ const NF_DATA = {
     { id: "serdechno-sosudistaya-hirurgiya", name: "Сердечно-сосудистая хирургия", description: "Оборудование для кардио- и сосудистой хирургии", count: 3 },
   ],
   partners: [
-    { id: "ardo-medical", name: "Ardo Medical AG", country: "Швейцария", equipment: "Неонатология, медицинские насосы", years: 8, description: "Швейцарский производитель медицинских решений для неонатологии, акушерства и ухода за пациентами.", countProducts: 1, logo: "img/partners/ardo-medical.jpeg" },
+    { id: "ardo-medical", name: "Ardo Medical AG", country: "Швейцария", equipment: "Неонатология, медицинские насосы", years: 8, description: "Швейцарский производитель медицинских решений для неонатологии, акушерства и ухода за пациентами.", countProducts: 1, logo: "img/partners/ardo-medical.webp" },
     { id: "fujifilm", name: "Fujifilm Corporation", country: "Япония", equipment: "Системы визуализации, эндоскопия", years: 10, description: "Международный лидер в области медицинской визуализации и эндоскопических систем.", countProducts: 1, logo: "img/partners/fujifilm.jpeg" },
     { id: "ganshorn", name: "Ganshorn Medizin Electronic GmbH", country: "Германия", equipment: "Функциональная диагностика дыхания", years: 7, description: "Немецкий производитель комплексных систем для функциональной диагностики лёгких и дыхательных путей.", countProducts: 1, logo: "img/partners/ganshorn.jpeg" },
     { id: "inceler-medikal", name: "Inceler Medikal Ltd. Sti.", country: "Турция", equipment: "Хирургия, эндоскопия", years: 6, description: "Производитель решений для хирургии и эндоскопии с фокусом на надёжность и эргономику.", countProducts: 1, logo: "img/partners/inceler-medikal.png" },
@@ -433,6 +433,7 @@ const NF_STATE = {
     search: "",
     categoryIds: new Set(),
     partnerIds: new Set(),
+    subcategoryId: "",
     model: "",
     sort: "popular",
     viewMode: "grid",
@@ -444,6 +445,8 @@ const NF_STATE = {
   categoryDetailId: null,
   newsArticleId: null,
   productDetailProductId: null,
+  /** true when catalog was entered via a homepage category tile click — back button returns to home */
+  catalogFromHome: false,
   /** Slug из URL /catalog/:slug, пока каталог с API не подтянут или товар ещё не сопоставлен */
   pendingProductPermalink: null,
   newsView: {
@@ -2152,6 +2155,10 @@ function nfDisconnectHomeObservers() {
     window._nfPopularResizeCleanup = null;
   }
   nfDisconnectPremiumHeroMotion();
+  if (typeof NF_LOGO_PARTICLES_CLEANUP === "function") {
+    try { NF_LOGO_PARTICLES_CLEANUP(); } catch (_e) {}
+    NF_LOGO_PARTICLES_CLEANUP = null;
+  }
 }
 
 function nfDisconnectPremiumHeroMotion() {
@@ -2586,7 +2593,7 @@ const NF_UI_EXTRA_RU = {
   "search.group.partners": "Партнёры",
   "home.hero.aria": "Главный экран",
   "home.hero.brandLineLead": "Поставки, данные и сервис — в одном контуре",
-  "home.hero.brandLineSub": "Для клиник и лабораторий, где критичны стерильность среды, предсказуемость и долгий горизонт партнёрства",
+  "home.hero.brandLineSub": "Для клиник и лабораторий, где важны стерильность среды, предсказуемость поставок и партнёрство на годы",
   "home.hero.brandLead": "Закрываем полный цикл: подбор и поставка оборудования, сопровождение данных и сервисная поддержка. Один ответственный контур вместо разрозненных подрядчиков — спокойный ритм работы без срывов между закупкой, вводом в эксплуатацию и обслуживанием.",
   "home.hero.brandNote": "Ориентируемся на воспроизводимость процессов и прозрачность поставок — для команд, которым важна надёжность среды и партнёрство на годы, а не разовая сделка.",
   "common.open": "Открыть",
@@ -2628,6 +2635,8 @@ const NF_UI_EXTRA_RU = {
   "cart.panel.requestAll": "Запросить цену на всё",
   "toast.addedToRequest": "Товар добавлен в запрос",
   "toast.addedManyToRequest": "Добавлено в запрос: {count} {items}",
+  "toast.removedFromRequest": "Товар удалён из запроса",
+  "toast.removeCancelled": "Удаление отменено",
   "toast.undo": "Отменить",
   "toast.addCancelled": "Добавление отменено",
   "toast.requestSent": "Запрос отправлен.",
@@ -3225,11 +3234,23 @@ function nfBuildGlobalSearchHintConfig() {
 function nfSyncGlobalSearchHint() {
   const input = nfEl("globalSearchInput");
   if (!input) return;
-  const cfg = nfBuildGlobalSearchHintConfig();
-  const cleanup = nfCreateAnimatedSearchHint(input, cfg);
-  if (typeof cleanup === "function") {
-    input.__nfGlobalSearchHintCleanup = cleanup;
+  // Снять предыдущую анимированную подсказку, иначе таймеры/слушатели копятся
+  // (это и давало растущий лаг при каждой смене языка).
+  if (typeof input.__nfGlobalSearchHintCleanup === "function") {
+    try { input.__nfGlobalSearchHintCleanup(); } catch (_e) {}
+    input.__nfGlobalSearchHintCleanup = null;
   }
+  // Создание подсказки тяжёлое (≈50мс + reflow) — откладываем на след. кадр,
+  // чтобы применение перевода не блокировало поток при клике по языку.
+  if (input.__nfHintRaf) cancelAnimationFrame(input.__nfHintRaf);
+  input.__nfHintRaf = requestAnimationFrame(() => {
+    input.__nfHintRaf = 0;
+    const cfg = nfBuildGlobalSearchHintConfig();
+    const cleanup = nfCreateAnimatedSearchHint(input, cfg);
+    if (typeof cleanup === "function") {
+      input.__nfGlobalSearchHintCleanup = cleanup;
+    }
+  });
 }
 
 function nfScheduleLocaleDiagnostics() {
@@ -3267,6 +3288,20 @@ function nfScheduleLocaleDiagnostics() {
   }, 320);
 }
 
+let NF_LOCALE_RERENDER_RAF = 0;
+/** Отложенный (после кадра) и схлопнутый ре-рендер данных при смене языка.
+ *  Статический текст ([data-i18n]) меняется мгновенно отдельно; тяжёлую
+ *  пересборку каруселей/сеток откладываем, чтобы клик по языку не фризил. */
+function nfScheduleLocaleRerender() {
+  if (NF_LOCALE_RERENDER_RAF) return;
+  NF_LOCALE_RERENDER_RAF = requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      NF_LOCALE_RERENDER_RAF = 0;
+      nfOnCatalogLoaded();
+    });
+  });
+}
+
 function nfSetLang(lang) {
   const requestedLang = NF_SUPPORTED_LANGS.has(String(lang || "").trim()) ? String(lang).trim() : "ru";
   NF_STATE.lang = requestedLang;
@@ -3281,17 +3316,17 @@ function nfSetLang(lang) {
     btn.classList.toggle("nf-lang-btn-active", active);
     btn.setAttribute("aria-checked", active ? "true" : "false");
   });
-  // Instant UI switch: apply what we already have first.
+  // Instant UI switch: статический текст + фейд применяем сразу, без тяжёлого ре-рендера.
   nfAnimateLocaleTextSwap();
   nfApplyTranslations();
-  nfOnCatalogLoaded();
+  nfScheduleLocaleRerender();
 
   // Remote translations/catalog are refreshed in background.
   nfLoadTranslationsForLang(requestedLang).then(() => {
     if (langChangeSeq !== NF_LANG_CHANGE_SEQ) return;
     if (NF_STATE.lang !== requestedLang) return;
     nfApplyTranslations();
-    nfOnCatalogLoaded();
+    nfScheduleLocaleRerender();
   }).catch(() => {});
   nfLoadCatalogFromApi({ lang: requestedLang });
 }
@@ -3367,151 +3402,94 @@ if (typeof window !== "undefined") {
 /* ====== ГЛАВНАЯ — «Популярное»: карусель ====== */
 
 function nfPopularCard(p, isClone = false) {
-  const card = nfCreateEl(
-    "article",
-    "nf-product-card nf-product-card--popular nf-popular-showcase nf-popular-card product-card card fade-up"
-  );
+  // Keep .nf-popular-card for carousel logic, add .nf-pop-card for new design
+  const card = nfCreateEl("article", "nf-popular-card nf-pop-card");
   card.dataset.productId = p.id;
   if (isClone) {
     card.dataset.clone = "1";
     card.setAttribute("aria-hidden", "true");
     card.setAttribute("tabindex", "-1");
-    card.removeAttribute("role");
   } else {
     card.setAttribute("role", "button");
     card.setAttribute("tabindex", "0");
-    card.setAttribute("aria-label", `${p.name}. ${nfT("common.goTo", "Перейти")} в каталог`);
+    card.setAttribute("aria-label", `${p.name} — нажмите для подробной информации`);
   }
 
-  const thumb = nfCreateEl("div", "nf-product-thumb nf-product-thumb--popular nf-popular-showcase__stage product-image");
-  thumb.classList.add("nf-product-thumb-loading");
-  const thumbInner = nfCreateEl("div", "nf-product-thumb-inner nf-popular-showcase__thumb-inner");
-  const img = document.createElement("img");
-  img.alt = p.name;
+  // ── Media ──────────────────────────────────────────
+  const media = nfCreateEl("div", "nf-pop-card__media");
 
+  // Category chip (top-left overlay)
+  const cat = NF_DATA.categories.find((c) => c.id === p.categoryId);
+  if (cat) {
+    const catChip = nfCreateEl("span", "nf-pop-card__cat");
+    catChip.textContent = cat.name;
+    media.appendChild(catChip);
+  }
+
+  // Image
   const images = nfGetProductImages(p);
   const placeholderSrc = nfProductPlaceholderSvg();
   const primarySrc = images.length ? images[0] : "";
-
+  const img = document.createElement("img");
+  img.className = "nf-pop-card__img";
+  img.alt = p.name;
   img.src = primarySrc || placeholderSrc;
-  nfConfigureImageElement(img, {
-    loading: "lazy",
-    decoding: "async",
-    fetchPriority: "low",
-    width: 600,
-    height: 450,
-  });
-  img.onerror = () => {
-    if (img.src !== placeholderSrc) {
-      img.src = placeholderSrc;
-    }
-  };
+  nfConfigureImageElement(img, { loading: "lazy", decoding: "async", fetchPriority: "low" });
+  img.onerror = () => { if (img.src !== placeholderSrc) img.src = placeholderSrc; };
+  media.appendChild(img);
 
-  img.addEventListener("load", () => {
-    thumb.classList.remove("nf-product-thumb-loading");
-  });
-  img.addEventListener("error", () => {
-    thumb.classList.remove("nf-product-thumb-loading");
-  });
+  // Hover overlay — "Смотреть подробнее"
+  const overlay = nfCreateEl("div", "nf-pop-card__overlay");
+  overlay.innerHTML = `<span class="nf-pop-card__overlay-text">Смотреть подробнее
+    <svg viewBox="0 0 16 16" fill="none" width="13" height="13" aria-hidden="true">
+      <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </span>`;
+  media.appendChild(overlay);
 
-  thumbInner.appendChild(img);
-  thumb.appendChild(thumbInner);
+  // ── Body ───────────────────────────────────────────
+  const body = nfCreateEl("div", "nf-pop-card__body");
 
-  const mediaWrap = nfCreateEl("div", "nf-popular-showcase__media");
-  mediaWrap.appendChild(thumb);
+  // Row 1: availability + price
+  const topRow = nfCreateEl("div", "nf-pop-card__top-row");
 
-  const body = nfCreateEl("div", "nf-product-body nf-product-body--popular nf-popular-showcase__body");
+  // Availability
+  const statusVal = p.status || "in_stock";
+  const isInStock = statusVal === "in_stock";
+  const statusEl = nfCreateEl("span", `nf-pop-card__status ${isInStock ? "nf-pop-card__status--in" : "nf-pop-card__status--order"}`);
+  statusEl.innerHTML = `<span class="nf-pop-card__status-dot"></span>${isInStock ? "В наличии" : "Под заказ"}`;
+  topRow.appendChild(statusEl);
 
-  const titleBlock = nfCreateEl("div", "nf-popular-title-block nf-popular-showcase__title-block");
+  // Price
+  const hasPrice = p.price != null && Number(p.price) > 0;
+  const priceEl = nfCreateEl("span", `nf-pop-card__price ${hasPrice ? "" : "nf-pop-card__price--rq"}`);
+  priceEl.textContent = hasPrice ? nfFormatPrice(p.price) : "По запросу";
+  topRow.appendChild(priceEl);
+  body.appendChild(topRow);
 
-  if (p.popular) {
-    const badgeWrap = nfCreateEl("div", "nf-popular-badge-wrap");
-    const badge = nfCreateEl("span", "nf-popular-badge nf-popular-badge--showcase", nfT("common.popularBadge", "Популярный"));
-    badgeWrap.appendChild(badge);
-    titleBlock.appendChild(badgeWrap);
+  // Name
+  const nameEl = document.createElement("h3");
+  nameEl.className = "nf-pop-card__name";
+  nameEl.textContent = p.name;
+  body.appendChild(nameEl);
+
+  // Teaser: short description (max ~70 chars, faded)
+  if (p.shortDesc) {
+    const teaser = nfCreateEl("p", "nf-pop-card__teaser");
+    const txt = p.shortDesc.length > 72 ? p.shortDesc.slice(0, 72).trimEnd() + "…" : p.shortDesc;
+    teaser.textContent = txt;
+    body.appendChild(teaser);
   }
 
-  const titleEl = document.createElement("h3");
-  titleEl.className = "nf-product-title nf-product-title--popular";
-  titleEl.textContent = p.name;
-  titleBlock.appendChild(titleEl);
+  // "Подробнее" button
+  const hint = nfCreateEl("div", "nf-pop-card__hint");
+  hint.innerHTML = `<span>Подробнее</span>
+    <svg class="nf-pop-card__hint-arrow" viewBox="0 0 16 16" fill="none" width="12" height="12" aria-hidden="true">
+      <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>`;
+  body.appendChild(hint);
 
-  const metaTop = nfCreateEl("div", "nf-product-meta-row nf-product-meta-row--topline nf-popular-showcase__meta");
-  const partnerName = nfGetPartnerName(p.partnerId);
-  if (partnerName) {
-    metaTop.appendChild(nfCreateElText("div", "nf-product-meta nf-product-meta--brand", partnerName));
-  }
-  const cat = NF_DATA.categories.find((c) => c.id === p.categoryId);
-  if (cat) {
-    metaTop.appendChild(
-      nfCreateElText("div", "nf-product-meta nf-product-meta--muted nf-product-meta--category", cat.name)
-    );
-  }
-  if (metaTop.childNodes.length) {
-    titleBlock.appendChild(metaTop);
-  }
-
-  body.appendChild(titleBlock);
-
-  const footer = nfCreateEl(
-    "div",
-    "nf-product-footer nf-product-footer--popular nf-popular-showcase__footer"
-  );
-
-  const commerce = nfCreateEl("div", "nf-popular-showcase__commerce");
-  const priceRow = nfCreateEl("div", "nf-popular-showcase__price-row");
-  const hasNumericPrice = p.price != null && Number(p.price) > 0;
-  if (hasNumericPrice) {
-    priceRow.appendChild(
-      nfCreateElText("div", "nf-price nf-price--popular nf-popular-showcase__price-num", nfFormatPrice(p.price))
-    );
-    priceRow.appendChild(
-      nfCreateEl("span", "nf-popular-showcase__price-context", nfT("common.estimatedQuote", "ориентировочно, уточняется в КП"))
-    );
-  } else {
-    priceRow.appendChild(
-      nfCreateEl("div", "nf-popular-showcase__b2b-label", nfT("common.priceOnRequest", "Цена по запросу"))
-    );
-    priceRow.appendChild(
-      nfCreateEl("span", "nf-popular-showcase__b2b-hint", nfT("common.commercialOffer", "коммерческое предложение"))
-    );
-  }
-  commerce.appendChild(priceRow);
-  footer.appendChild(commerce);
-
-  const actions = nfCreateEl(
-    "div",
-    "nf-product-actions nf-popular-actions nf-popular-actions--showcase"
-  );
-
-  const addBtn = nfCreateEl(
-    "button",
-    "nf-btn nf-btn-primary nf-popular-add nf-popular-showcase__cta nf-btn-checkable",
-    ""
-  );
-  addBtn.type = "button";
-  nfInitAddToRequestControl(addBtn, p.id, nfT("common.addToRequest", "В запрос"), {});
-  addBtn.addEventListener("click", (e) => {
-    e.stopPropagation();
-    nfAddToCart(p.id, 1, { sourceButton: addBtn });
-  });
-
-  const moreBtn = nfCreateEl(
-    "button",
-    "nf-btn nf-btn-ghost nf-btn-sm nf-popular-more nf-popular-showcase__detail btn-secondary",
-    nfT("common.details", "Подробнее")
-  );
-  moreBtn.type = "button";
-  moreBtn.addEventListener("click", (e) => {
-    e.stopPropagation();
-    nfNavigateToCatalogProduct(p.id);
-  });
-
-  actions.appendChild(addBtn);
-  actions.appendChild(moreBtn);
-  footer.appendChild(actions);
-
-  card.append(mediaWrap, body, footer);
+  card.append(media, body);
   return card;
 }
 
@@ -3542,6 +3520,20 @@ function nfRenderPopularCarousel() {
   track.dataset.nfPopularDrive = "raf";
   /* Не вешаем viewport--scroll: там overflow-x:auto и pan-x — ломают JS-карусель */
 
+  /* ── Delegated click: covers both originals AND marquee clones ──
+     Buttons inside use e.stopPropagation() so they handle themselves. */
+  if (track._nfCardClickHandler) {
+    track.removeEventListener("click", track._nfCardClickHandler);
+  }
+  track._nfCardClickHandler = (e) => {
+    if (e.target.closest(".nf-btn")) return;
+    const card = e.target.closest(".nf-popular-card");
+    if (!card) return;
+    const id = card.dataset.productId;
+    if (id) nfNavigateToCatalogProduct(id);
+  };
+  track.addEventListener("click", track._nfCardClickHandler);
+
   if (!popular.length) return;
 
   popular.forEach((p, idx) => {
@@ -3567,6 +3559,8 @@ function nfRenderPopularCarousel() {
   let viewportHoverPaused = false;
   let tween = null;
   let resumeAfterInteractionTs = 0;
+  /* Guard: prevents zombie RAF loops from previous carousel instances */
+  let cleanedUp = false;
 
   /* Autoplay: быстрее, без суеты */
   const speedPxPerSec = nfPrefersReducedMotion() ? 14 : 30;
@@ -3613,6 +3607,8 @@ function nfRenderPopularCarousel() {
   };
 
   const tick = (ts) => {
+    /* Stop zombie tickers that outlive their carousel instance */
+    if (cleanedUp) return;
     if (!lastTs) lastTs = ts;
     const dt = Math.min(48, ts - lastTs);
     lastTs = ts;
@@ -3666,6 +3662,20 @@ function nfRenderPopularCarousel() {
 
   const onWrapPointerLeave = () => {
     viewportHoverPaused = false;
+    /* Also clear the focus-driven pause: a pointer user leaving the carousel
+       is done interacting — don't keep the ticker frozen because a card or
+       button still holds DOM focus from the last click. */
+    paused = false;
+  };
+
+  /* Fallback: if pointerleave is missed (e.g. during SPA navigation and return),
+     a document-level pointermove resets the pause flag once the cursor leaves. */
+  const onDocPointerMove = (e) => {
+    if (!viewportHoverPaused || cleanedUp) return;
+    const wrap = carouselWrap || viewport;
+    if (wrap && !wrap.contains(e.target)) {
+      viewportHoverPaused = false;
+    }
   };
 
   const onFocusIn = (e) => {
@@ -3693,6 +3703,7 @@ function nfRenderPopularCarousel() {
   }
   viewport.addEventListener("focusin", onFocusIn);
   viewport.addEventListener("focusout", onFocusOut);
+  document.addEventListener("pointermove", onDocPointerMove, { passive: true });
 
   let navResizeObserver = null;
   if (typeof ResizeObserver !== "undefined") {
@@ -3715,11 +3726,27 @@ function nfRenderPopularCarousel() {
     render();
   });
 
+  /* Deferred recalcs: guard against late layout (content-visibility, fonts, etc.) */
+  [80, 260, 700].forEach((ms) => {
+    setTimeout(() => {
+      if (cleanedUp) return;
+      computeCycleWidth();
+      if (raf == null) raf = requestAnimationFrame(tick);
+    }, ms);
+  });
+
   window._nfPopularCleanup = () => {
+    cleanedUp = true;
+    viewportHoverPaused = false;
+    paused = false;
     if (raf != null) cancelAnimationFrame(raf);
     raf = null;
     track.style.webkitTransform = "";
     delete track.dataset.nfPopularDrive;
+    if (track._nfCardClickHandler) {
+      track.removeEventListener("click", track._nfCardClickHandler);
+      track._nfCardClickHandler = null;
+    }
     if (prevBtn) prevBtn.removeEventListener("click", onPrevClick);
     if (nextBtn) nextBtn.removeEventListener("click", onNextClick);
     if (carouselWrap) {
@@ -3728,6 +3755,7 @@ function nfRenderPopularCarousel() {
     }
     viewport.removeEventListener("focusin", onFocusIn);
     viewport.removeEventListener("focusout", onFocusOut);
+    document.removeEventListener("pointermove", onDocPointerMove);
     if (navResizeObserver) {
       try {
         navResizeObserver.disconnect();
@@ -3975,73 +4003,386 @@ function nfSetupCategoryEcosystem(gridEl) {
 function nfRenderHomeCategories() {
   const container = nfEl("homeCategories");
   if (!container) return;
-  nfTearDownCategoryEcosystem(container);
   container.innerHTML = "";
+  container.className = "pfg-tile-grid";
 
-  NF_DATA.categories.forEach((c, i) => {
-    const card = nfCreateEl(
-      "article",
-      "nf-category-card nf-category-card--eco nf-vp-reveal card fade-up"
-    );
-    card.dataset.nfCatIndex = String(i);
-    card.style.setProperty("--nf-vp-stagger", `${Math.min(i, 14) * 40}ms`);
+  const allProducts = NF_DATA.products || [];
+
+  const FLAGSHIP = [
+    "нейрохирургия",
+    "сердечно-сосудистая хирургия",
+    "анестезиология и реанимация",
+  ];
+
+  const rootCatsHome = (NF_DATA.categories || []).filter((c) => !c.parentId);
+  let selected = FLAGSHIP.map((name) =>
+    rootCatsHome.find((c) => c.name.toLowerCase().trim() === name)
+  ).filter(Boolean);
+
+  if (selected.length < 3) {
+    selected = rootCatsHome
+      .map((c) => ({
+        c,
+        count: allProducts.filter((p) => p.categoryId === c.id && !p.isHidden).length,
+      }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 3)
+      .map(({ c }) => c);
+  }
+
+  const DESCS = [
+    nfT("home.dir.neuro.desc",  "Высокоточные системы для нейрохирургии: навигационные платформы, операционные микроскопы, мониторинг ВЧД."),
+    nfT("home.dir.cardio.desc", "Оборудование для кардиохирургии: аппараты ИК, кардиомониторинг и имплантируемые кардиологические системы."),
+    nfT("home.dir.icu.desc",    "Комплексное оснащение ОРИТ: аппараты ИВЛ, анестезиологические станции, мультипараметрный мониторинг."),
+  ];
+
+  selected.forEach((c, slot) => {
+    const count  = allProducts.filter((p) => p.categoryId === c.id && !p.isHidden).length;
+    const thread = NF_CAT_THREADS[c.id] || NF_CAT_THREADS["_fallback"];
+    const accent = NF_CAT_ACCENTS[c.id] || "#4da6b8";
+    const desc   = DESCS[slot] || c.description || "";
+
+    const card = nfCreateEl("article", "pfg-card pfg-card--tile");
+    card.setAttribute("role", "button");
+    card.setAttribute("tabindex", "0");
+    card.setAttribute("aria-label", c.name);
+    card.style.setProperty("--cat-accent", accent);
+    card.style.setProperty("--nf-vp-stagger", `${slot * 80}ms`);
+
     card.innerHTML = `
-      <span class="nf-category-card__rail" aria-hidden="true"></span>
-      <div class="nf-category-card__body">
-        <h3 class="nf-category-title">${nfEscapeHtml(c.name)}</h3>
-        <p class="nf-category-desc">${nfEscapeHtml(c.description)}</p>
-      </div>
-      <div class="nf-category-footer">
-        <span class="nf-category-count">${nfEscapeHtml(nfItemsCountLabel(c.count || 0))}</span>
-        <span class="nf-category-cta">${nfEscapeHtml(nfT("common.goTo", "Перейти"))}</span>
+      <div class="pfg-card__bloom" aria-hidden="true"></div>
+      <div class="pfg-card__thread" aria-hidden="true">${thread}</div>
+      <div class="pfg-card__body">
+        <h3 class="pfg-card__name">${nfEscapeHtml(c.name)}</h3>
+        <p class="pfg-card__desc">${nfEscapeHtml(desc)}</p>
+        <div class="pfg-card__footer">
+          <span class="pfg-card__count">${nfEscapeHtml(nfItemsCountLabel(count))}</span>
+          <span class="pfg-card__cta" aria-hidden="true">
+            ${nfEscapeHtml(nfT("common.goTo", "Перейти"))}
+            <svg viewBox="0 0 16 16" fill="none" width="12" height="12">
+              <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8"
+                    stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+        </div>
       </div>
     `;
 
-    card.addEventListener("click", () => {
+    const navigate = () => {
       NF_STATE.categoryDetailId = c.id;
       nfGoPath(`/categories/${nfCategoryPermalinkSlug(c)}`);
+    };
+    card.addEventListener("click", navigate);
+    card.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); navigate(); }
     });
 
     container.appendChild(card);
   });
 
-  nfSetupCategoryEcosystem(container);
+  nfInitCardTilt();
+}
+
+function nfSetupBranchScene(gridEl) {
+  const scene = gridEl && gridEl.closest("[data-nf-branch-scene]");
+  const svgEl = scene && scene.querySelector("[data-nf-branch-svg]");
+  if (!scene || !svgEl) return;
+
+  const NS = "http://www.w3.org/2000/svg";
+  let rafId = 0;
+
+  const draw = () => {
+    const cards = Array.from(gridEl.querySelectorAll(".nf-leaf-card"));
+    if (!cards.length) return;
+
+    svgEl.innerHTML = "";
+    const sw = scene.offsetWidth;
+    const sh = scene.offsetHeight;
+    if (!sw || !sh) return;
+
+    svgEl.setAttribute("viewBox", `0 0 ${sw} ${sh}`);
+    svgEl.setAttribute("width", String(sw));
+    svgEl.setAttribute("height", String(sh));
+
+    const sceneRect = scene.getBoundingClientRect();
+
+    // Card connection points: centre of card
+    const pts = cards.map((card) => {
+      const r = card.getBoundingClientRect();
+      return {
+        x: r.left - sceneRect.left + r.width / 2,
+        y: r.top  - sceneRect.top  + r.height / 2,
+        accent: getComputedStyle(card).getPropertyValue("--card-accent").trim() || "#4da0a9",
+      };
+    });
+
+    // Root: bottom-centre of scene
+    const rootX = sw / 2;
+    const rootY = sh - 24;
+    // Fork: where trunk splits into branches (~60% down)
+    const forkY = sh * 0.60;
+
+    // ── Trunk ────────────────────────────────────────────────────
+    const trunk = document.createElementNS(NS, "path");
+    trunk.setAttribute("class", "nf-branch-trunk");
+    trunk.setAttribute("d",
+      `M ${rootX.toFixed(1)} ${rootY.toFixed(1)} ` +
+      `C ${rootX.toFixed(1)} ${((rootY + forkY) / 2).toFixed(1)}, ` +
+      `${rootX.toFixed(1)} ${(forkY + 10).toFixed(1)}, ` +
+      `${rootX.toFixed(1)} ${forkY.toFixed(1)}`
+    );
+    svgEl.appendChild(trunk);
+
+    // Root dot
+    const rootDot = document.createElementNS(NS, "circle");
+    rootDot.setAttribute("class", "nf-branch-root-dot");
+    rootDot.setAttribute("cx", rootX.toFixed(1));
+    rootDot.setAttribute("cy", rootY.toFixed(1));
+    rootDot.setAttribute("r", "5");
+    svgEl.appendChild(rootDot);
+
+    // ── Branches ─────────────────────────────────────────────────
+    pts.forEach((pt, idx) => {
+      // Organic bezier: fork → card centre
+      const mx = (rootX + pt.x) / 2;
+      const my = (forkY  + pt.y) / 2;
+      const d =
+        `M ${rootX.toFixed(1)} ${forkY.toFixed(1)} ` +
+        `C ${rootX.toFixed(1)} ${my.toFixed(1)}, ` +
+        `${mx.toFixed(1)} ${pt.y.toFixed(1)}, ` +
+        `${pt.x.toFixed(1)} ${pt.y.toFixed(1)}`;
+
+      // Glow (wide, low-opacity halo)
+      const glow = document.createElementNS(NS, "path");
+      glow.setAttribute("class", "nf-branch-glow");
+      glow.setAttribute("d", d);
+      glow.dataset.branch = String(idx);
+      glow.style.stroke = pt.accent;
+      svgEl.appendChild(glow);
+
+      // Main line
+      const line = document.createElementNS(NS, "path");
+      line.setAttribute("class", "nf-branch-line");
+      line.setAttribute("d", d);
+      line.dataset.branch = String(idx);
+      line.style.stroke = pt.accent;
+      // Measure for trace animation
+      let len = 400;
+      try { len = Math.ceil(line.getTotalLength()); } catch (_) {}
+      line.style.strokeDasharray = String(len);
+      line.style.strokeDashoffset = "0";
+      svgEl.appendChild(line);
+
+      // End dot at card centre
+      const endDot = document.createElementNS(NS, "circle");
+      endDot.setAttribute("class", "nf-branch-end-dot");
+      endDot.setAttribute("cx", pt.x.toFixed(1));
+      endDot.setAttribute("cy", pt.y.toFixed(1));
+      endDot.setAttribute("r", "4");
+      endDot.dataset.branch = String(idx);
+      endDot.style.fill = pt.accent;
+      svgEl.appendChild(endDot);
+    });
+  };
+
+  const scheduleDraw = () => {
+    cancelAnimationFrame(rafId);
+    rafId = requestAnimationFrame(draw);
+  };
+
+  const ro = new ResizeObserver(scheduleDraw);
+  ro.observe(scene);
+  scheduleDraw();
+
+  // ── Hover: glow + retrace ─────────────────────────────────────
+  gridEl.querySelectorAll(".nf-leaf-card").forEach((card) => {
+    card.addEventListener("mouseenter", () => {
+      const slot = card.dataset.leafSlot;
+      // Retrace: snap to end, then animate to 0
+      svgEl.querySelectorAll(`.nf-branch-line[data-branch="${slot}"]`).forEach((line) => {
+        const len = parseFloat(line.style.strokeDasharray) || 500;
+        line.style.transition = "none";
+        line.style.strokeDashoffset = String(len);
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            line.style.transition =
+              "stroke-dashoffset 0.65s cubic-bezier(0.4,0,0.2,1), " +
+              "opacity 0.25s ease, stroke-width 0.25s ease";
+            line.style.strokeDashoffset = "0";
+          });
+        });
+      });
+      svgEl.querySelectorAll(`[data-branch="${slot}"]`).forEach((el) =>
+        el.classList.add("is-hot")
+      );
+    });
+
+    card.addEventListener("mouseleave", () => {
+      svgEl.querySelectorAll("[data-branch].is-hot").forEach((el) => {
+        el.classList.remove("is-hot");
+        if (el.classList.contains("nf-branch-line")) {
+          el.style.transition =
+            "opacity 0.3s ease, stroke-width 0.3s ease";
+          el.style.strokeDashoffset = "0";
+        }
+      });
+    });
+  });
+
+  scene.__nfBranchCleanup = () => {
+    ro.disconnect();
+    cancelAnimationFrame(rafId);
+  };
 }
 
 function nfRenderHomePartners() {
-  const grid = nfEl("homePartnersGrid");
-  if (!grid) return;
-  grid.innerHTML = "";
+  const root = nfEl("homePartnersGrid");
+  if (!root) return;
 
-  NF_DATA.partners.forEach((p, i) => {
-    const btn = nfCreateEl("button", "nf-partner nf-partner-btn nf-home-partner-tile nf-vp-reveal fade-up");
-    btn.style.setProperty("--nf-vp-stagger", `${Math.min(i, 18) * 28}ms`);
-    btn.type = "button";
-    btn.dataset.partnerId = p.id;
+  // Clear previous timer if re-rendered
+  if (root.__nfPartnerTimer) { clearInterval(root.__nfPartnerTimer); root.__nfPartnerTimer = null; }
+  root.innerHTML = "";
 
-    const brand = nfEscapeHtml(nfPartnerShortName(p));
-    btn.innerHTML = `
-      <img class="nf-partner-logo-img" alt="${brand}" loading="lazy" />
-      <div class="nf-partner-meta">
-        <span class="nf-partner-name">${brand}</span>
-        <span class="nf-partner-country">${nfEscapeHtml(p.country || nfT("partners.countryFallback", "—"))}</span>
-      </div>
-      <span class="nf-partner-action" aria-hidden="true">
-        <span class="nf-partner-action__label">${nfEscapeHtml(nfT("common.viewProducts", "Смотреть продукцию"))}</span>
-        <span class="nf-partner-action__arrow">→</span>
-      </span>
+  const partners = NF_DATA.partners || [];
+  if (!partners.length) return;
+
+  // ── Featured showcase (all partners) ──────────────────────────
+  const featured = [...partners];
+
+  const showcase = nfCreateEl("div", "nf-ps nf-vp-reveal fade-up");
+
+  // Tabs
+  const tabsEl = nfCreateEl("div", "nf-ps__tabs");
+  tabsEl.setAttribute("role", "tablist");
+  tabsEl.setAttribute("aria-label", "Ключевые партнёры");
+
+  // Panels wrapper
+  const panelsEl = nfCreateEl("div", "nf-ps__panels");
+
+  let activeIdx = 0;
+  let timer = null;
+
+  const stopTimer = () => { clearInterval(timer); timer = null; };
+  const startTimer = () => {
+    if (featured.length < 2) return;
+    timer = setInterval(() => {
+      activateTab((activeIdx + 1) % featured.length);
+    }, 5500);
+    root.__nfPartnerTimer = timer;
+  };
+
+  const activateTab = (idx) => {
+    activeIdx = idx;
+    tabsEl.querySelectorAll(".nf-ps__tab").forEach((t, i) => {
+      t.classList.toggle("is-active", i === idx);
+      t.setAttribute("aria-selected", String(i === idx));
+    });
+    panelsEl.querySelectorAll(".nf-ps__panel").forEach((panel, i) => {
+      const active = i === idx;
+      panel.classList.toggle("is-active", active);
+      if ("inert" in panel) panel.inert = !active;
+    });
+  };
+
+  // Build tabs + panels
+  featured.forEach((p, i) => {
+    // Tab button
+    const tab = nfCreateEl("button", "nf-ps__tab" + (i === 0 ? " is-active" : ""));
+    tab.type = "button";
+    tab.setAttribute("role", "tab");
+    tab.setAttribute("aria-selected", i === 0 ? "true" : "false");
+    tab.setAttribute("aria-controls", `nf-ps-panel-${i}`);
+    tab.id = `nf-ps-tab-${i}`;
+    tab.textContent = nfPartnerShortName(p);
+    tab.addEventListener("click", () => { stopTimer(); activateTab(i); });
+    tabsEl.appendChild(tab);
+
+    // Panel
+    const panel = nfCreateEl("div", "nf-ps__panel" + (i === 0 ? " is-active" : ""));
+    panel.id = `nf-ps-panel-${i}`;
+    panel.setAttribute("role", "tabpanel");
+    panel.setAttribute("aria-labelledby", `nf-ps-tab-${i}`);
+    if (i !== 0 && "inert" in panel) panel.inert = true;
+
+    const tags = [];
+    if (p.country) tags.push(`<span class="nf-ps__tag">${nfEscapeHtml(p.country)}</span>`);
+    if (p.equipment) tags.push(`<span class="nf-ps__tag">${nfEscapeHtml(p.equipment)}</span>`);
+
+    panel.innerHTML = `
+      <img class="nf-ps__logo" alt="${nfEscapeHtml(nfPartnerShortName(p))}" loading="lazy" />
+      <div class="nf-ps__tags">${tags.join("")}</div>
+      <h3 class="nf-ps__name">${nfEscapeHtml(p.name)}</h3>
+      <p class="nf-ps__desc">${nfEscapeHtml(p.description || "")}</p>
+      <button type="button" class="nf-ps__cta">
+        <span>${nfEscapeHtml(nfT("common.viewProducts", "Смотреть продукцию"))}</span>
+        <svg viewBox="0 0 16 16" fill="none" width="14" height="14" aria-hidden="true">
+          <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8"
+                stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
     `;
 
-    const img = btn.querySelector(".nf-partner-logo-img");
-    if (img) nfSetPartnerLogo(img, p.id);
+    const logoImg = panel.querySelector(".nf-ps__logo");
+    if (logoImg) nfSetPartnerLogo(logoImg, p.id);
 
-    btn.addEventListener("click", () => {
+    panel.querySelector(".nf-ps__cta").addEventListener("click", () => {
       const slug = nfPartnerSlug(p);
-      if (!slug) return;
-      nfGoPath(nfPartnerOpenUrlBySlug(slug));
+      if (slug) nfGoPath(nfPartnerOpenUrlBySlug(slug));
     });
-    grid.appendChild(btn);
+
+    panelsEl.appendChild(panel);
   });
+
+  showcase.addEventListener("mouseenter", stopTimer);
+  showcase.addEventListener("mouseleave", startTimer);
+
+  showcase.appendChild(tabsEl);
+  showcase.appendChild(panelsEl);
+  root.appendChild(showcase);
+
+  // ── Infinite logo ribbon ──────────────────────────────────────
+  const ribbon = nfCreateEl("div", "nf-ribbon");
+  ribbon.setAttribute("aria-label", "Все технологические партнёры");
+
+  // Split all partners into two rows by even/odd index
+  const row1Partners = partners.filter((_, i) => i % 2 === 0);
+  const row2Partners = partners.filter((_, i) => i % 2 === 1);
+
+  const buildRibbonRow = (items, direction) => {
+    const row = nfCreateEl("div", "nf-ribbon__row");
+    const track = nfCreateEl("div", `nf-ribbon__track nf-ribbon__track--${direction}`);
+
+    // Duplicate for seamless loop
+    [...items, ...items].forEach(p => {
+      const btn = nfCreateEl("button", "nf-ribbon__item");
+      btn.type = "button";
+      btn.setAttribute("aria-label", nfPartnerShortName(p));
+      btn.setAttribute("title", nfPartnerShortName(p));
+
+      const img = document.createElement("img");
+      img.className = "nf-ribbon__logo";
+      img.alt = nfPartnerShortName(p);
+      img.loading = "lazy";
+      nfSetPartnerLogo(img, p.id);
+      btn.appendChild(img);
+
+      btn.addEventListener("click", () => {
+        const slug = nfPartnerSlug(p);
+        if (slug) nfGoPath(nfPartnerOpenUrlBySlug(slug));
+      });
+
+      track.appendChild(btn);
+    });
+
+    row.appendChild(track);
+    return row;
+  };
+
+  ribbon.appendChild(buildRibbonRow(row1Partners, "fwd"));
+  ribbon.appendChild(buildRibbonRow(row2Partners, "rev"));
+  root.appendChild(ribbon);
+
+  startTimer();
 }
 
 function nfRenderHomeNews() {
@@ -4049,79 +4390,64 @@ function nfRenderHomeNews() {
   if (!container) return;
   container.innerHTML = "";
 
-  const [main, ...rest] = NF_DATA.news;
+  const [main, ...rest] = [...(NF_DATA.news || [])].sort((a, b) => (b.date || "").localeCompare(a.date || ""));
   if (!main) {
     container.innerHTML = `<div class="nf-empty">${nfEscapeHtml(nfT("common.noNewsYet", "Новостей пока нет."))}</div>`;
     return;
   }
 
-  const featuredWrap = nfCreateEl("section", "news-featured");
-  const mainEl = nfCreateEl("article", "news-featured-card fade-up");
-  mainEl.style.setProperty("--nf-vp-stagger", "0ms");
-  mainEl.innerHTML = `
-    ${
-      main.image
-        ? `<div class="news-featured-media"><img src="${nfEscapeHtml(main.image)}" alt="" loading="lazy" /></div>`
-        : `<div class="news-featured-media news-featured-media--placeholder" aria-hidden="true">
-      <div class="nf-home-news-thumb nf-home-news-thumb--featured">
-        <span class="nf-home-news-thumb__mesh" aria-hidden="true"></span>
-        <span class="nf-home-news-thumb__glow" aria-hidden="true"></span>
-        <div class="nf-home-news-thumb__content">
-          <span class="nf-home-news-thumb__eyebrow">${nfEscapeHtml(nfT("common.news", "Новости"))}</span>
-          <span class="nf-home-news-thumb__wordmark">НаноФарм</span>
-          <span class="nf-home-news-thumb__hint">${nfEscapeHtml(nfT("news.placeholderHint", "Компания"))}</span>
-        </div>
+  // Featured editorial story (left column)
+  const featured = nfCreateEl("article", "nf-hn-featured fade-up");
+  featured.style.setProperty("--nf-vp-stagger", "0ms");
+  const _mainCat = nfNewsCategory(main);
+  featured.innerHTML = `
+    <div class="nf-hn-featured__media">
+      ${main.image
+        ? `<img src="${nfEscapeHtml(main.image)}" alt="" loading="lazy" class="nf-hn-featured__img" />`
+        : `<div class="nf-hn-featured__ph" aria-hidden="true"><div class="nf-hn-featured__ph-label">${_mainCat ? `<span class="nf-hn-featured__ph-cat">${nfEscapeHtml(_mainCat)}</span><span class="nf-hn-featured__ph-sep" aria-hidden="true">·</span>` : ""}<span class="nf-hn-featured__ph-date">${nfEscapeHtml(nfFormatDate(main.date))}</span></div></div>`}
+    </div>
+    <div class="nf-hn-featured__body">
+      ${_mainCat ? `<span class="nf-hn-featured__cat">${nfEscapeHtml(_mainCat)}</span>` : ""}
+      <h3 class="nf-hn-featured__title">${nfEscapeHtml(nfNewsTitle(main))}</h3>
+      <p class="nf-hn-featured__excerpt">${nfEscapeHtml(nfNewsExcerpt(main))}</p>
+      <div class="nf-hn-featured__foot">
+        <span class="nf-hn-featured__date">${nfEscapeHtml(nfFormatDate(main.date))}</span>
+        <span class="nf-hn-featured__cta">${nfEscapeHtml(nfT("common.readMaterial", "Читать материал"))}<span class="nf-hn-featured__arrow" aria-hidden="true">→</span></span>
       </div>
-    </div>`
-    }
-    <div class="news-featured-body">
-      <span class="news-featured-chip">${nfEscapeHtml(nfNewsCategory(main))}</span>
-      <h3 class="news-featured-title">${nfEscapeHtml(nfNewsTitle(main))}</h3>
-      <div class="news-featured-meta">${nfEscapeHtml(nfFormatDate(main.date))}${main.author ? ` · ${nfEscapeHtml(main.author)}` : ""}</div>
-      <p class="news-featured-text">${nfEscapeHtml(nfNewsExcerpt(main))}</p>
-      <div class="news-featured-open"><span class="news-featured-open__label">${nfEscapeHtml(nfT("common.openNews", "Открыть новость"))}</span><span class="news-featured-open__arrow" aria-hidden="true">→</span></div>
     </div>
   `;
-  mainEl.addEventListener("click", () => {
-    NF_STATE.newsArticleId = main.id;
-    nfGoPath(`/news/${nfNewsPermalinkSlug(main)}`);
-  });
-  featuredWrap.appendChild(mainEl);
+  featured.addEventListener("click", () => { NF_STATE.newsArticleId = main.id; nfGoPath(`/news/${nfNewsPermalinkSlug(main)}`); });
 
-  const side = nfCreateEl("div", "news-list-grid");
-  rest.forEach((n, i) => {
-    const card = nfCreateEl("article", "nf-news-card nf-vp-reveal fade-up");
-    card.style.setProperty("--nf-vp-stagger", `${(i + 1) * 50}ms`);
-    card.innerHTML = `
-      ${
-        n.image
-          ? `<div class="news-feed-card-media"><img src="${nfEscapeHtml(n.image)}" alt="" loading="lazy" class="nf-news-card__image-img" /></div>`
-          : `<div class="news-feed-card-media news-feed-card-media--placeholder" aria-hidden="true">
-      <div class="nf-home-news-thumb nf-home-news-thumb--side">
-        <span class="nf-home-news-thumb__mesh" aria-hidden="true"></span>
-        <span class="nf-home-news-thumb__glow" aria-hidden="true"></span>
-        <div class="nf-home-news-thumb__content">
-          <span class="nf-home-news-thumb__eyebrow">${nfEscapeHtml(nfT("common.news", "News"))}</span>
-          <span class="nf-home-news-thumb__wordmark">${nfEscapeHtml(nfT("news.placeholderWordmark", "НФ"))}</span>
-        </div>
+  // Compact headline list (right column)
+  const sidebar = nfCreateEl("nav", "nf-hn-sidebar");
+  sidebar.setAttribute("aria-label", nfT("common.moreNews", "Другие новости"));
+  rest.slice(0, 4).forEach((n, i) => {
+    const _dp = (n.date || "").split("-");
+    const _months = ["янв","фев","мар","апр","май","июн","июл","авг","сен","окт","ноя","дек"];
+    const _day = parseInt(_dp[2] || "", 10) || "";
+    const _mon = _months[(parseInt(_dp[1] || "", 10) || 1) - 1] || "";
+    const _yr = _dp[0] || "";
+    const item = nfCreateEl("article", "nf-hn-item nf-vp-reveal");
+    item.style.setProperty("--nf-vp-stagger", `${(i + 1) * 60}ms`);
+    item.setAttribute("role", "button");
+    item.setAttribute("tabindex", "0");
+    item.innerHTML = `
+      <div class="nf-hn-item__meta">
+        <span class="nf-hn-item__day">${_day}</span>
+        <span class="nf-hn-item__mon">${_mon} ${_yr}</span>
       </div>
-    </div>`
-      }
-      <div class="news-feed-card-body">
-        <span class="nf-news-card-chip">${nfEscapeHtml(nfNewsCategory(n))}</span>
-        <h3 class="nf-news-card-title">${nfEscapeHtml(nfNewsTitle(n))}</h3>
-        <div class="nf-news-card-meta">${nfEscapeHtml(nfFormatDate(n.date))} · ${nfEscapeHtml(nfNewsCategory(n))}</div>
-        <p class="nf-news-card-text">${nfEscapeHtml(nfNewsExcerpt(n))}</p>
-      </div>
+      <h3 class="nf-hn-item__title">${nfEscapeHtml(nfNewsTitle(n))}</h3>
+      <span class="nf-hn-item__arrow" aria-hidden="true">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+      </span>
     `;
-    card.addEventListener("click", () => {
-      NF_STATE.newsArticleId = n.id;
-      nfGoPath(`/news/${nfNewsPermalinkSlug(n)}`);
-    });
-    side.appendChild(card);
+    const _open = () => { NF_STATE.newsArticleId = n.id; nfGoPath(`/news/${nfNewsPermalinkSlug(n)}`); };
+    item.addEventListener("click", _open);
+    item.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); _open(); } });
+    sidebar.appendChild(item);
   });
 
-  container.append(featuredWrap, side);
+  container.append(featured, sidebar);
 }
 
 /* ====== КАТАЛОГ ====== */
@@ -4131,6 +4457,7 @@ function nfCatalogCurrentFilterSnapshot() {
     search: String(f.search || "").trim(),
     categoryIds: new Set(f.categoryIds || []),
     partnerIds: new Set(f.partnerIds || []),
+    subcategoryId: String(f.subcategoryId || ""),
     model: String(f.model || "").trim(),
     sort: String(f.sort || "popular"),
     viewMode: String(f.viewMode || "grid"),
@@ -4277,6 +4604,7 @@ function nfApplyFilters(filters = NF_STATE.filters) {
   }
 
   if (f.categoryIds.size) list = list.filter((p) => f.categoryIds.has(p.categoryId));
+  if (f.subcategoryId)   list = list.filter((p) => (p.subcategoryId || "") === f.subcategoryId);
   if (f.partnerIds.size) list = list.filter((p) => f.partnerIds.has(p.partnerId));
 
   if (f.model) {
@@ -4300,6 +4628,15 @@ function nfApplyFilters(filters = NF_STATE.filters) {
     default:
       list.sort((a, b) => (b.popular === a.popular ? 0 : b.popular ? 1 : -1));
   }
+
+  // Availability sort: in_stock first, on_order middle, out_of_stock last
+  const availOrder = (p) => {
+    const key = nfProductStatusKey(p.status, p.availability);
+    if (key === "in")    return 0;
+    if (key === "order") return 1;
+    return 2; // out
+  };
+  list.sort((a, b) => availOrder(a) - availOrder(b));
 
   return list;
 }
@@ -4359,6 +4696,7 @@ function nfCatalogFiltersSignature() {
   return [
     cats,
     parts,
+    f.subcategoryId || "",
     f.model || "",
     f.sort || "",
     f.viewMode || "",
@@ -4366,107 +4704,100 @@ function nfCatalogFiltersSignature() {
   ].join("|");
 }
 
-/** Одна карточка каталога + класс .nf-vp-reveal для viewport-анимации (только transform/opacity). */
+/** Одна карточка каталога — premium redesign */
 function nfCreateCatalogProductCard(p, staggerOpts) {
-  const card = nfCreateEl(
-    "article",
-    "nf-product-card nf-product-card--catalog nf-vp-reveal"
-  );
-  if (staggerOpts && typeof staggerOpts.staggerMs === "number" && staggerOpts.staggerMs > 0) {
-    card.style.setProperty("--nf-vp-stagger", `${staggerOpts.staggerMs}ms`);
-  }
+  const statusKey   = nfProductStatusKey(p.status, p.availability);
+  const statusLabel = nfProductStatusLabel(p.status, p.availability);
+  const isOut       = statusKey === "out";
+  const isIn        = statusKey === "in";
 
-  const thumb = nfCreateEl("div", "nf-product-thumb nf-product-thumb--popular");
-  const thumbInner = nfCreateEl("div", "nf-product-thumb-inner");
+  const card = nfCreateEl("article", `nf-pc nf-vp-reveal${isOut ? " nf-pc--out" : ""}${isIn ? " nf-pc--in" : ""}`);
+  card.dataset.productId = p.id;
+  if (staggerOpts?.staggerMs > 0) card.style.setProperty("--nf-vp-stagger", `${staggerOpts.staggerMs}ms`);
+
+  // ── Image area ──────────────────────────────────────
+  const imgWrap = nfCreateEl("div", "nf-pc__img-wrap");
   const img = document.createElement("img");
   img.alt = p.name;
-  const galleryImages = nfGetProductImages(p);
-  const primarySrc = galleryImages[0] || p.image || "";
-  if (primarySrc && String(primarySrc).trim()) {
-    img.src = primarySrc;
-    nfConfigureImageElement(img, {
-      loading: "lazy",
-      decoding: "async",
-      fetchPriority: "low",
-    });
-    img.onerror = () => {
-      img.src = nfProductPlaceholderSvg();
-    };
-  } else {
-    img.src = nfProductPlaceholderSvg();
-    nfConfigureImageElement(img, {
-      loading: "lazy",
-      decoding: "async",
-      fetchPriority: "low",
-    });
-  }
-  thumbInner.appendChild(img);
-  thumb.appendChild(thumbInner);
-  thumb.addEventListener("click", () => nfOpenProductPage(p.id));
+  const src = (nfGetProductImages(p)[0] || p.image || "").trim();
+  img.src = src || nfProductPlaceholderSvg();
+  nfConfigureImageElement(img, { loading: "lazy", decoding: "async", fetchPriority: "low" });
+  img.onerror = () => { img.src = nfProductPlaceholderSvg(); };
+  img.className = "nf-pc__img";
+  imgWrap.appendChild(img);
 
-  const body = nfCreateEl("div", "nf-product-body nf-product-body--popular");
-  const titleBlock = nfCreateEl("div", "nf-popular-title-block");
+  // Status badge on image
+  const badge = nfCreateEl("span", `nf-pc__status nf-pc__status--${statusKey}`);
+  badge.textContent = statusLabel;
+  imgWrap.appendChild(badge);
 
-  if (p.popular) {
-    const badgeWrap = nfCreateEl("div", "nf-popular-badge-wrap");
-    const badge = nfCreateEl("span", "nf-popular-badge", nfT("common.popularBadge", "Популярный"));
-    badgeWrap.appendChild(badge);
-    titleBlock.appendChild(badgeWrap);
+  // Popular badge
+  if (p.popular || p.isPopular) {
+    const pop = nfCreateEl("span", "nf-pc__popular", nfT("common.popularBadge", "Популярный"));
+    imgWrap.appendChild(pop);
   }
 
-  const title = document.createElement("h3");
-  title.className = "nf-product-title nf-product-title--popular";
+  // Out-of-stock overlay
+  if (isOut) {
+    const overlay = nfCreateEl("div", "nf-pc__out-overlay");
+    overlay.setAttribute("aria-hidden", "true");
+    imgWrap.appendChild(overlay);
+  }
+
+  imgWrap.addEventListener("click", () => nfOpenProductPage(p.id));
+
+  // ── Body ────────────────────────────────────────────
+  const body = nfCreateEl("div", "nf-pc__body");
+
+  const cat = NF_DATA.categories.find((c) => c.id === p.categoryId);
+  const partnerName = nfGetPartnerName(p.partnerId);
+
+  if (cat || partnerName) {
+    const meta = nfCreateEl("div", "nf-pc__meta");
+    if (partnerName) meta.appendChild(nfCreateElText("span", "nf-pc__brand", partnerName));
+    if (cat && partnerName) {
+      const sep = nfCreateEl("span", "nf-pc__meta-sep"); sep.setAttribute("aria-hidden","true");
+      meta.appendChild(sep);
+    }
+    if (cat) meta.appendChild(nfCreateElText("span", "nf-pc__cat", cat.name));
+    body.appendChild(meta);
+  }
+
+  const title = nfCreateEl("h3", "nf-pc__title");
   title.textContent = p.name;
   title.addEventListener("click", () => nfOpenProductPage(p.id));
-  titleBlock.appendChild(title);
+  body.appendChild(title);
 
-  const metaTop = nfCreateEl("div", "nf-product-meta-row nf-product-meta-row--topline");
-  const partnerName = nfGetPartnerName(p.partnerId);
-  if (partnerName) {
-    metaTop.appendChild(nfCreateElText("div", "nf-product-meta nf-product-meta--brand", partnerName));
-  }
-  const cat = NF_DATA.categories.find((c) => c.id === p.categoryId);
-  if (cat) {
-    metaTop.appendChild(
-      nfCreateElText("div", "nf-product-meta nf-product-meta--muted nf-product-meta--category", cat.name)
-    );
-  }
-  if (metaTop.childNodes.length) {
-    titleBlock.appendChild(metaTop);
+  if (p.shortDesc) {
+    const desc = nfCreateEl("p", "nf-pc__desc");
+    desc.textContent = p.shortDesc;
+    body.appendChild(desc);
   }
 
-  body.appendChild(titleBlock);
+  // ── Footer ───────────────────────────────────────────
+  const footer = nfCreateEl("div", "nf-pc__footer");
 
-  const footer = nfCreateEl("div", "nf-product-footer nf-product-footer--popular");
-  const priceEl = nfCreateElText(
-    "div",
-    p.price ? "nf-price nf-price--popular" : "nf-price-muted",
-    nfFormatPrice(p.price)
-  );
+  const price = nfCreateEl("div", `nf-pc__price${!p.price ? " nf-pc__price--muted" : ""}`);
+  price.textContent = nfFormatPrice(p.price);
+  footer.appendChild(price);
 
-  const actions = nfCreateEl("div", "nf-product-actions nf-popular-actions");
-  const addBtn = nfCreateEl("button", "nf-btn nf-btn-primary nf-btn-sm nf-btn-checkable nf-popular-add", "");
+  const actions = nfCreateEl("div", "nf-pc__actions");
+
+  const addBtn = nfCreateEl("button", "nf-pc__add nf-btn-checkable", "");
   addBtn.type = "button";
   nfInitAddToRequestControl(addBtn, p.id, nfT("common.addToRequest", "В запрос"), {});
-  addBtn.addEventListener("click", () => {
-    nfAddToCart(p.id, 1, { sourceButton: addBtn });
-  });
+  addBtn.addEventListener("click", () => nfToggleCartItem(p.id, 1, { sourceButton: addBtn }));
 
-  const moreBtn = nfCreateEl(
-    "button",
-    "nf-btn nf-btn-ghost nf-btn-sm nf-popular-more",
-    nfT("common.details", "Подробнее")
-  );
+  const moreBtn = nfCreateEl("button", "nf-pc__more");
   moreBtn.type = "button";
+  moreBtn.setAttribute("aria-label", nfT("common.details", "Подробнее"));
+  moreBtn.innerHTML = `<svg viewBox="0 0 16 16" fill="none" width="14" height="14"><path d="M6 3l5 5-5 5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
   moreBtn.addEventListener("click", () => nfOpenProductPage(p.id));
 
   actions.append(addBtn, moreBtn);
+  footer.appendChild(actions);
 
-  const footerMain = nfCreateEl("div", "nf-product-footer-main");
-  footerMain.append(priceEl, actions);
-  footer.appendChild(footerMain);
-
-  card.append(thumb, body, footer);
+  card.append(imgWrap, body, footer);
   return card;
 }
 
@@ -4620,6 +4951,23 @@ function nfRenderCatalog() {
       activeFilters.appendChild(chip);
     });
 
+    if (f.subcategoryId) {
+      const sub = (NF_DATA.categories || []).find((x) => x.id === f.subcategoryId);
+      if (sub) {
+        const chip = nfCreateEl("div", "nf-filter-chip nf-filter-chip--subcat");
+        const lbl = nfCreateEl("span", "nf-filter-chip__text");
+        lbl.textContent = sub.name;
+        const rm = document.createElement("button");
+        rm.type = "button";
+        rm.className = "nf-filter-chip__remove";
+        rm.setAttribute("aria-label", "Убрать подкатегорию");
+        rm.textContent = "×";
+        rm.addEventListener("click", () => nfClearSubcategory());
+        chip.append(lbl, rm);
+        activeFilters.appendChild(chip);
+      }
+    }
+
     if (f.model) {
       const chip = nfCreateEl("div", "nf-filter-chip");
       const label = nfCreateEl("span", "nf-filter-chip__text");
@@ -4688,6 +5036,33 @@ function nfRenderCatalog() {
   }
 
   const total = fullList.length;
+
+  // Empty state
+  if (total === 0) {
+    const subcatName = f.subcategoryId
+      ? (NF_DATA.categories || []).find((c) => c.id === f.subcategoryId)?.name || ""
+      : "";
+    const emptyDiv = nfCreateEl("div", "nf-catalog-empty");
+    emptyDiv.innerHTML = `
+      <div class="nf-catalog-empty__icon" aria-hidden="true">
+        <svg viewBox="0 0 64 64" fill="none" width="52" height="52">
+          <circle cx="32" cy="32" r="28" stroke="currentColor" stroke-width="1.5" stroke-dasharray="4 3"/>
+          <path d="M22 32h20M32 22v20" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" opacity="0.4"/>
+        </svg>
+      </div>
+      <p class="nf-catalog-empty__title">${subcatName ? nfEscapeHtml(subcatName) : "Нет оборудования"}</p>
+      <p class="nf-catalog-empty__text">${subcatName ? "В этой подкатегории пока нет оборудования." : "По выбранным фильтрам ничего не найдено."}</p>
+      ${subcatName ? `<button type="button" class="nf-catalog-empty__btn" id="emptyShowAllBtn">Показать все в направлении</button>` : ""}
+    `;
+    container.appendChild(emptyDiv);
+    if (subcatName) {
+      const btn = document.getElementById("emptyShowAllBtn");
+      if (btn) btn.addEventListener("click", () => nfClearSubcategory());
+    }
+    nfCatalogUpdateCountLabel(0, 0);
+    return;
+  }
+
   const firstCount = Math.min(NF_CATALOG_BATCH_INITIAL, total);
   const firstCards = [];
   for (let i = 0; i < firstCount; i++) {
@@ -4721,6 +5096,27 @@ function nfRenderCatalog() {
 }
 
 /* ====== КОРЗИНА ====== */
+const NF_CART_STORAGE_KEY = "nf_cart_v1";
+
+function nfSaveCartToStorage() {
+  try {
+    localStorage.setItem(NF_CART_STORAGE_KEY, JSON.stringify(NF_STATE.cart));
+  } catch (_e) {}
+}
+
+function nfLoadCartFromStorage() {
+  try {
+    const raw = localStorage.getItem(NF_CART_STORAGE_KEY);
+    if (!raw) return;
+    const parsed = JSON.parse(raw);
+    if (Array.isArray(parsed)) {
+      NF_STATE.cart = parsed.filter(
+        (x) => x && typeof x.productId === "string" && typeof x.qty === "number" && x.qty > 0
+      );
+    }
+  } catch (_e) {}
+}
+
 function nfGetCartItem(productId) {
   return NF_STATE.cart.find((x) => x.productId === productId);
 }
@@ -4753,11 +5149,14 @@ function nfAddToRequestInnerHtml(idleLabel, options = {}) {
   const inCartLabel = options.inCartLabel || nfT("common.inRequest", "В запросе");
   const ico = compact ? "" : `<span class="nf-add-request__ico" aria-hidden="true">${nfAddToRequestCartIconSvg()}</span>`;
   const icoDone = compact ? "" : `<span class="nf-add-request__ico" aria-hidden="true">${nfAddToRequestCartIconSvg()}</span>`;
+  const cancelSvg = `<svg class="nf-add-request__svg nf-add-request__svg--x" viewBox="0 0 16 16" fill="none" width="13" height="13" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>`;
   return `<span class="nf-add-request__root">
     <span class="nf-add-request__seg nf-add-request__idle">${ico}<span class="nf-add-request__txt">${nfEscapeHtml(idleLabel)}</span></span>
     <span class="nf-add-request__seg nf-add-request__check" aria-hidden="true">${nfAddToRequestCheckSvg()}</span>
+    <span class="nf-add-request__seg nf-add-request__undo">${cancelSvg}<span class="nf-add-request__txt">Отмена</span></span>
     <span class="nf-add-request__seg nf-add-request__done">${icoDone}<span class="nf-add-request__txt">${nfEscapeHtml(inCartLabel)}</span></span>
-  </span>`;
+  </span>
+  <span class="nf-add-request__undo-track" aria-hidden="true"><span class="nf-add-request__undo-bar"></span></span>`;
 }
 
 function nfInitAddToRequestControl(el, productId, idleLabel, options = {}) {
@@ -4780,17 +5179,20 @@ function nfCssEscapeSelector(value) {
 
 function nfSyncAddToRequestButton(btn) {
   if (!btn || !btn.dataset || !btn.dataset.nfAddProduct) return;
-  if (btn.classList.contains("nf-add-request--reverting")) return;
+  // Don't override transitional / animated states
+  if (btn.classList.contains("nf-add-request--reverting"))  return;
+  if (btn.classList.contains("nf-add-request--success-run")) return;
+  if (btn.classList.contains("nf-add-request--countdown"))   return;
   const id = btn.dataset.nfAddProduct;
   const has = !!nfGetCartItem(id);
   if (has) {
-    if (btn.classList.contains("nf-add-request--success-run")) return;
     btn.classList.add("nf-add-request--in-cart");
   } else {
     btn.classList.remove(
       "nf-add-request--in-cart",
       "nf-add-request--success-run",
-      "nf-add-request--pressed"
+      "nf-add-request--pressed",
+      "nf-add-request--countdown"
     );
   }
 }
@@ -4799,36 +5201,61 @@ function nfSyncAllAddToRequestButtons() {
   document.querySelectorAll("[data-nf-add-product]").forEach((btn) => nfSyncAddToRequestButton(btn));
 }
 
+const NF_ADD_REQUEST_COUNTDOWN_MS = 3200;
+
 function nfPlayAddToRequestSuccess(btn) {
   if (!btn || !btn.classList.contains("nf-add-request")) return;
-  btn.classList.remove("nf-add-request--reverting");
-  if (btn._nfAddReqSuccessT) {
-    clearTimeout(btn._nfAddReqSuccessT);
-    btn._nfAddReqSuccessT = null;
-  }
-  btn.classList.remove("nf-add-request--pressed");
-  void btn.offsetWidth;
+  // Clear any running timers
+  ["_nfAddReqSuccessT", "_nfUndoTimer"].forEach((k) => {
+    if (btn[k]) { clearTimeout(btn[k]); btn[k] = null; }
+  });
+  btn.classList.remove(
+    "nf-add-request--reverting",
+    "nf-add-request--pressed",
+    "nf-add-request--success-run",
+    "nf-add-request--countdown",
+    "nf-add-request--in-cart"
+  );
+  void btn.offsetWidth; // reflow to restart animations
+
+  // Brief press flash
   btn.classList.add("nf-add-request--pressed");
   requestAnimationFrame(() => {
     btn.classList.remove("nf-add-request--pressed");
-    btn.classList.add("nf-add-request--success-run");
+
+    // Show countdown / undo phase
+    btn.classList.add("nf-add-request--countdown");
+
+    // Restart bar animation
+    const bar = btn.querySelector(".nf-add-request__undo-bar");
+    if (bar) {
+      bar.style.animationName = "none";
+      void bar.offsetWidth;
+      bar.style.animationName = "";
+    }
+
+    // After countdown → confirmed in-cart
+    btn._nfUndoTimer = setTimeout(() => {
+      btn._nfUndoTimer = null;
+      if (!btn.classList.contains("nf-add-request--countdown")) return;
+      btn.classList.remove("nf-add-request--countdown");
+      btn.classList.add("nf-add-request--in-cart");
+    }, NF_ADD_REQUEST_COUNTDOWN_MS);
   });
-  btn._nfAddReqSuccessT = setTimeout(() => {
-    btn._nfAddReqSuccessT = null;
-    btn.classList.remove("nf-add-request--success-run");
-    btn.classList.add("nf-add-request--in-cart");
-  }, 520);
 }
 
 function nfPlayAddToRequestReset(btn) {
   if (!btn || !btn.classList.contains("nf-add-request")) return;
-  if (btn._nfAddReqSuccessT) {
-    clearTimeout(btn._nfAddReqSuccessT);
-    btn._nfAddReqSuccessT = null;
-  }
-  btn.classList.remove("nf-add-request--success-run", "nf-add-request--pressed");
+  ["_nfAddReqSuccessT", "_nfUndoTimer"].forEach((k) => {
+    if (btn[k]) { clearTimeout(btn[k]); btn[k] = null; }
+  });
+  btn.classList.remove(
+    "nf-add-request--success-run",
+    "nf-add-request--pressed",
+    "nf-add-request--countdown",
+    "nf-add-request--in-cart"
+  );
   btn.classList.add("nf-add-request--reverting");
-  btn.classList.remove("nf-add-request--in-cart");
   setTimeout(() => {
     btn.classList.remove("nf-add-request--reverting");
   }, 380);
@@ -4843,6 +5270,7 @@ function nfToastProductAddedToRequest({ productId, qty, sourceButton }) {
     pauseOnHover: true,
     onAction: () => {
       nfUndoCartAdjust(productId, qty);
+      nfSaveCartToStorage();
       nfUpdateCartBadge();
       const sel = `[data-nf-add-product="${nfCssEscapeSelector(productId)}"]`;
       document.querySelectorAll(sel).forEach((b) => nfPlayAddToRequestReset(b));
@@ -4856,10 +5284,42 @@ function nfToastProductAddedToRequest({ productId, qty, sourceButton }) {
     },
   });
   if (sourceButton && sourceButton.classList.contains("nf-add-request")) {
-    nfPlayAddToRequestSuccess(sourceButton);
+    // nfPlayAddToRequestSuccess already called by the non-inline path; avoid double-call
+    if (!sourceButton.classList.contains("nf-add-request--countdown") &&
+        !sourceButton.classList.contains("nf-add-request--in-cart")) {
+      nfPlayAddToRequestSuccess(sourceButton);
+    }
   }
   document.querySelectorAll(`[data-nf-add-product="${nfCssEscapeSelector(productId)}"]`).forEach((b) => {
     if (b !== sourceButton) nfSyncAddToRequestButton(b);
+  });
+}
+
+function nfToastProductRemovedFromRequest({ productId, sourceButton }) {
+  void sourceButton;
+  nfPushToast({
+    message: nfT("toast.removedFromRequest", "Товар удалён из запроса"),
+    variant: "info",
+    duration: 5200,
+    actionLabel: nfT("toast.undo", "Отменить"),
+    pauseOnHover: true,
+    onAction: () => {
+      // Re-add with qty 1
+      if (!nfGetCartItem(productId)) {
+        NF_STATE.cart.push({ productId, qty: 1 });
+        nfSaveCartToStorage();
+        nfUpdateCartBadge();
+        nfRenderCart();
+        const sel = `[data-nf-add-product="${nfCssEscapeSelector(productId)}"]`;
+        document.querySelectorAll(sel).forEach((b) => nfPlayAddToRequestSuccess(b));
+      }
+      nfPushToast({
+        message: nfT("toast.removeCancelled", "Удаление отменено"),
+        variant: "success",
+        duration: 3400,
+      });
+      return true;
+    },
   });
 }
 
@@ -4872,11 +5332,62 @@ function nfAddToCart(productId, qty, options) {
   if (existing) existing.qty += qty;
   else NF_STATE.cart.push({ productId, qty });
 
+  nfSaveCartToStorage();
   nfUpdateCartBadge();
   nfRenderCart();
 
   if (!silent) {
     nfToastProductAddedToRequest({ productId, qty, sourceButton });
+  }
+}
+
+function nfOpenCartAndHighlight(productId) {
+  nfOpenCartPanel();
+  setTimeout(() => {
+    const row = document.querySelector(`[data-cart-product-id="${nfCssEscapeSelector(productId)}"]`);
+    if (!row) return;
+    row.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    row.classList.add("nf-cart-item--highlight");
+    setTimeout(() => row.classList.remove("nf-cart-item--highlight"), 1800);
+  }, 160);
+}
+
+function nfToggleCartItem(productId, qty, options) {
+  const opts = options && typeof options === "object" ? options : {};
+  const sourceButton = opts.sourceButton || null;
+  // True when sourceButton has inline countdown (toast is redundant)
+  const hasInlineUndo = sourceButton && sourceButton.classList.contains("nf-add-request");
+
+  if (nfGetCartItem(productId)) {
+    // Already in request — if button is in "in-cart" state, open cart and highlight instead of removing
+    if (sourceButton && sourceButton.classList.contains("nf-add-request--in-cart")) {
+      nfOpenCartAndHighlight(productId);
+      return;
+    }
+    // Otherwise (e.g. remove from cart panel itself) — remove it
+    NF_STATE.cart = NF_STATE.cart.filter((x) => x.productId !== productId);
+    nfSaveCartToStorage();
+    nfUpdateCartBadge();
+    nfRenderCart();
+    const sel = `[data-nf-add-product="${nfCssEscapeSelector(productId)}"]`;
+    document.querySelectorAll(sel).forEach((b) => nfPlayAddToRequestReset(b));
+    // Skip toast when user explicitly cancelled via inline countdown button
+    if (!hasInlineUndo) nfToastProductRemovedFromRequest({ productId, sourceButton });
+  } else {
+    // Not in request — add it
+    NF_STATE.cart.push({ productId, qty: qty || 1 });
+    nfSaveCartToStorage();
+    nfUpdateCartBadge();
+    nfRenderCart();
+    if (hasInlineUndo) {
+      // Inline countdown handles undo — just animate the button
+      nfPlayAddToRequestSuccess(sourceButton);
+      document.querySelectorAll(`[data-nf-add-product="${nfCssEscapeSelector(productId)}"]`).forEach((b) => {
+        if (b !== sourceButton) nfSyncAddToRequestButton(b);
+      });
+    } else {
+      nfToastProductAddedToRequest({ productId, qty: qty || 1, sourceButton });
+    }
   }
 }
 
@@ -4902,16 +5413,30 @@ function nfRenderCart() {
   const totalsEl = nfEl("cartTotals");
   const btn = nfEl("cartRequestBtn");
   const clearBtn = nfEl("cartClearBtn");
+  const headerCount = nfEl("cartHeaderCount");
   if (!itemsEl || !totalsEl || !btn) return;
 
   itemsEl.innerHTML = "";
 
+  // Update header count badge
+  if (headerCount) {
+    const n = NF_STATE.cart.length;
+    headerCount.textContent = n ? String(n) : "";
+    headerCount.hidden = !n;
+  }
+
   if (!NF_STATE.cart.length) {
-    itemsEl.innerHTML =
-      `<div class="nf-cart-empty">
-        <div class="nf-cart-empty-icon" aria-hidden="true"></div>
+    itemsEl.innerHTML = `
+      <div class="nf-cart-empty">
+        <div class="nf-cart-empty-icon" aria-hidden="true">
+          <svg viewBox="0 0 32 32" fill="none" width="28" height="28">
+            <path d="M6 7h3l2.4 11.6A2 2 0 0 0 13.3 20h10.2a2 2 0 0 0 1.94-1.52L27 10H10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="14" cy="24.5" r="1.7" fill="currentColor"/>
+            <circle cx="22" cy="24.5" r="1.7" fill="currentColor"/>
+          </svg>
+        </div>
         <p class="nf-cart-empty-title">${nfEscapeHtml(nfT("cart.empty.title", "В запросе пока нет позиций"))}</p>
-        <p class="nf-cart-empty-text">${nfEscapeHtml(nfT("cart.empty.text", "Добавьте товары из каталога или карточек партнёров, чтобы отправить единый запрос."))}</p>
+        <p class="nf-cart-empty-text">${nfEscapeHtml(nfT("cart.empty.text", "Добавьте оборудование из каталога, чтобы отправить единый запрос на коммерческое предложение."))}</p>
       </div>`;
     totalsEl.textContent = "";
     btn.disabled = true;
@@ -4930,53 +5455,114 @@ function nfRenderCart() {
     if (!p) return;
 
     const row = nfCreateEl("div", "nf-cart-item");
-    const thumb = nfCreateEl("div", "nf-cart-thumb");
+    row.dataset.cartProductId = item.productId;
 
+    // Thumbnail
+    const thumb = nfCreateEl("div", "nf-cart-thumb");
+    if (p.images && p.images[0]) {
+      const img = document.createElement("img");
+      img.src = p.images[0];
+      img.alt = "";
+      img.className = "nf-cart-thumb-img";
+      img.loading = "lazy";
+      thumb.appendChild(img);
+    }
+
+    // Info block
     const info = nfCreateEl("div", "nf-cart-info");
-    const categoryName =
-      NF_DATA.categories.find((c) => c.id === p.categoryId)?.name || nfT("common.categoryUnknown", "Категория не указана");
-    const priceLabel = p.price != null ? nfFormatPrice(p.price) : nfT("common.priceOnRequest", "Цена по запросу");
+    const categoryName = NF_DATA.categories.find((c) => c.id === p.categoryId)?.name || "";
+    const partnerName = nfGetPartnerName(p.partnerId);
+    const priceLabel = p.price != null ? nfFormatPrice(p.price) : nfT("common.priceOnRequest", "По запросу");
     info.innerHTML = `
       <div class="nf-cart-name">${nfEscapeHtml(p.name)}</div>
-      <div class="nf-cart-meta">${nfEscapeHtml(p.article)} · ${nfEscapeHtml(nfGetPartnerName(p.partnerId))} · ${nfEscapeHtml(categoryName)}</div>
-      <div class="nf-cart-price">${nfEscapeHtml(priceLabel)}</div>
+      <div class="nf-cart-meta">
+        <span class="nf-cart-partner">${nfEscapeHtml(partnerName)}</span>
+        ${categoryName ? `<span class="nf-cart-dot" aria-hidden="true">·</span><span>${nfEscapeHtml(categoryName)}</span>` : ""}
+      </div>
+      ${p.article ? `<div class="nf-cart-article">Арт. ${nfEscapeHtml(p.article)}</div>` : ""}
     `;
 
-    const qtyCol = nfCreateEl("div", "nf-cart-qty");
-    const qtyInput = nfCreateEl("input", "");
-    qtyInput.type = "number";
-    qtyInput.min = "1";
-    qtyInput.value = item.qty;
+    // Right column: qty stepper + price + remove
+    const right = nfCreateEl("div", "nf-cart-right");
 
-    qtyInput.addEventListener("change", () => {
-      const v = Math.max(1, Number(qtyInput.value) || 1);
-      item.qty = v;
-      nfRenderCart();
+    // Price label
+    const priceEl = nfCreateEl("div", "nf-cart-price", priceLabel);
+
+    // Qty stepper
+    const stepper = nfCreateEl("div", "nf-cart-stepper");
+    const btnMinus = nfCreateEl("button", "nf-cart-stepper-btn", "−");
+    btnMinus.type = "button";
+    btnMinus.setAttribute("aria-label", "Уменьшить количество");
+    const qtyDisplay = nfCreateEl("span", "nf-cart-stepper-val", String(item.qty));
+    const btnPlus = nfCreateEl("button", "nf-cart-stepper-btn", "+");
+    btnPlus.type = "button";
+    btnPlus.setAttribute("aria-label", "Увеличить количество");
+
+    btnMinus.onclick = () => {
+      item.qty = Math.max(1, item.qty - 1);
+      qtyDisplay.textContent = String(item.qty);
+      nfSaveCartToStorage();
       nfUpdateCartBadge();
-    });
+      // update total display inline
+      const priceRow = row.querySelector(".nf-cart-price");
+      if (priceRow && p.price != null) {
+        // just re-render for simplicity
+        nfRenderCart();
+      }
+    };
+    btnPlus.onclick = () => {
+      item.qty += 1;
+      qtyDisplay.textContent = String(item.qty);
+      nfSaveCartToStorage();
+      nfUpdateCartBadge();
+      if (p.price != null) nfRenderCart();
+    };
+    stepper.append(btnMinus, qtyDisplay, btnPlus);
 
-    const removeBtn = nfCreateEl("button", "nf-cart-remove", nfT("common.remove", "Удалить"));
+    // Remove button (X icon)
+    const removeBtn = nfCreateEl("button", "nf-cart-remove-btn");
     removeBtn.type = "button";
+    removeBtn.setAttribute("aria-label", `Убрать ${p.name}`);
+    removeBtn.innerHTML = `<svg viewBox="0 0 16 16" fill="none" width="13" height="13" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>`;
     removeBtn.addEventListener("click", () => {
       NF_STATE.cart = NF_STATE.cart.filter((x) => x.productId !== item.productId);
+      nfSaveCartToStorage();
       nfRenderCart();
       nfUpdateCartBadge();
+      // Reset any in-cart button states
+      const sel = `[data-nf-add-product="${nfCssEscapeSelector(item.productId)}"]`;
+      document.querySelectorAll(sel).forEach((b) => nfPlayAddToRequestReset(b));
     });
 
-    qtyCol.append(`${nfT("common.qtyShort", "Кол-во")}:`, qtyInput, removeBtn);
-    row.append(thumb, info, qtyCol);
+    right.append(priceEl, stepper, removeBtn);
+    row.append(thumb, info, right);
     itemsEl.appendChild(row);
 
     totalUnits += item.qty;
     if (p.price != null) totalKnown += p.price * item.qty;
   });
 
+  // Totals
+  const posCount = NF_STATE.cart.length;
+  const hasPrices = NF_STATE.cart.some((i) => {
+    const p = NF_DATA.products.find((x) => x.id === i.productId);
+    return p && p.price != null;
+  });
   totalsEl.innerHTML = `
-    <div class="nf-cart-total-row"><strong>${nfEscapeHtml(nfT("cart.total.positions", "Позиций:"))}</strong> ${nfEscapeHtml(String(NF_STATE.cart.length))} · ${nfEscapeHtml(String(totalUnits))} ${nfEscapeHtml(nfT("common.unitsShort", "шт."))}</div>
-    <div class="nf-cart-total-row"><strong>${nfEscapeHtml(nfT("cart.total.withPrice", "Итого (по позициям с ценой):"))}</strong> ${nfEscapeHtml(nfFormatPrice(totalKnown))}</div>
-    <div class="nf-cart-total-note">
-      ${nfEscapeHtml(nfT("cart.total.note", "Часть оборудования может иметь цену «по запросу» — итоговое КП будет содержать полный расчёт."))}
+    <div class="nf-cart-totals-row">
+      <span class="nf-cart-totals-label">Позиций</span>
+      <span class="nf-cart-totals-val">${posCount}</span>
     </div>
+    <div class="nf-cart-totals-row">
+      <span class="nf-cart-totals-label">Единиц</span>
+      <span class="nf-cart-totals-val">${totalUnits} шт.</span>
+    </div>
+    ${hasPrices ? `
+    <div class="nf-cart-totals-row nf-cart-totals-row--sum">
+      <span class="nf-cart-totals-label">Итого (с ценой)</span>
+      <span class="nf-cart-totals-val nf-cart-totals-sum">${nfFormatPrice(totalKnown)}</span>
+    </div>` : ""}
+    <p class="nf-cart-totals-note">Итоговое КП будет содержать полный расчёт с позициями «по запросу».</p>
   `;
   nfSyncAllAddToRequestButtons();
 }
@@ -5107,11 +5693,20 @@ function nfFillProductSpecsList(specsUl, product) {
   });
 }
 
-function nfProductStatusLabel(status) {
-  const s = String(status || "").toLowerCase();
+function nfProductStatusLabel(status, availability) {
+  const s = String(availability || status || "").toLowerCase();
   if (s === "in_stock" || s === "available" || s === "instock")
     return nfT("product.status.inStock", "В наличии");
+  if (s === "out_of_stock" || s === "unavailable" || s === "absent" || s === "out_of_stock")
+    return nfT("product.status.absent", "Отсутствует");
   return nfT("product.status.onOrder", "Под заказ");
+}
+
+function nfProductStatusKey(status, availability) {
+  const s = String(availability || status || "").toLowerCase();
+  if (s === "in_stock" || s === "available" || s === "instock") return "in";
+  if (s === "out_of_stock" || s === "unavailable" || s === "absent") return "out";
+  return "order";
 }
 
 function nfFillPdpDescriptionBlocks(descHost, product) {
@@ -5138,7 +5733,7 @@ function nfFillPdpQuickSpecs(ulEl, product, category, partnerName) {
   } else {
     if (category?.name) rows.push({ k: nfT("product.quick.category", "Категория"), v: category.name });
     if (partnerName) rows.push({ k: nfT("product.quick.partner", "Партнёр"), v: partnerName });
-    if (product.article) rows.push({ k: nfT("product.quick.article", "Артикул"), v: product.article });
+    // article removed
     if (product.model) rows.push({ k: nfT("product.quick.model", "Модель"), v: product.model });
   }
   rows.forEach(({ k, v }) => {
@@ -5339,7 +5934,7 @@ function nfPdpCollectHeroSpecPairs(product, category, partnerName, limit) {
 
   if (!chosen.length) {
     const fallback = [];
-    if (product.article) fallback.push({ label: nfT("product.quick.article", "Артикул"), value: product.article });
+    // article removed
     if (partnerName) fallback.push({ label: nfT("product.quick.partner", "Партнёр"), value: partnerName });
     if (product.model) fallback.push({ label: nfT("product.quick.model", "Модель"), value: product.model });
     fallback.slice(0, max).forEach((item) => chosen.push({ ...item, raw: `${item.label}: ${item.value}`, slug: nfPdpSpecIconSlug(item.label) }));
@@ -5350,7 +5945,52 @@ function nfPdpCollectHeroSpecPairs(product, category, partnerName, limit) {
 function nfFillPdpHeroSpecGrid(host, product, category, partnerName) {
   if (!host) return;
   host.innerHTML = "";
-  host.hidden = true;
+  host.hidden = false;
+  host.className = "frm-spec-strip";
+
+  // FORM inline spec strip — icon + value + label, separated by dots
+  const warrantyVal = product.warrantyMonths
+    ? `${product.warrantyMonths} мес.`
+    : nfT("service.trust.warranty.default", "24 мес.");
+
+  const items = [
+    { slug: "serviceCare",  value: warrantyVal,                                           label: nfT("hero.trust.warranty",     "Гарантия") },
+    { slug: "installEng",   value: nfT("hero.trust.installation.value", "Включён"),       label: nfT("hero.trust.installation", "Монтаж") },
+    { slug: "default",      value: nfT("hero.trust.delivery.value",     "Казахстан + СНГ"), label: nfT("hero.trust.delivery",   "Поставка") },
+  ];
+
+  if (product.certification) {
+    items.push({ slug: "default", value: String(product.certification), label: nfT("hero.trust.cert", "Сертификат") });
+  }
+
+  items.forEach(({ slug, value, label }, i) => {
+    if (i > 0) {
+      const sep = document.createElement("span");
+      sep.className = "frm-spec-strip__sep";
+      sep.setAttribute("aria-hidden", "true");
+      host.appendChild(sep);
+    }
+    const item = document.createElement("span");
+    item.className = "frm-spec-strip__item";
+
+    const iconEl = document.createElement("span");
+    iconEl.className = "frm-spec-strip__icon";
+    iconEl.setAttribute("aria-hidden", "true");
+    iconEl.innerHTML = nfPdpGetPdpStrokeIcon(slug || "default");
+
+    const valueEl = document.createElement("strong");
+    valueEl.className = "frm-spec-strip__value";
+    valueEl.textContent = value;
+
+    const labelEl = document.createElement("span");
+    labelEl.className = "frm-spec-strip__label";
+    labelEl.textContent = label;
+
+    item.appendChild(iconEl);
+    item.appendChild(valueEl);
+    item.appendChild(labelEl);
+    host.appendChild(item);
+  });
 }
 
 function nfPdpPrimarySpecLabel(slug) {
@@ -5421,7 +6061,11 @@ function nfPdpBuildSpecsLayout(product) {
     }
   };
 
-  [...parsedRoom, ...parsedSpecs].forEach((item) => {
+  // Room conditions + engineering are INSTALLATION REQUIREMENTS — they belong to
+  // the Install section ("Помещение и условия" / "Инженерные коммуникации"), not
+  // the product specs table. Build the specs table from real product specs only
+  // to avoid duplicating the same params in two places.
+  parsedSpecs.forEach((item) => {
     const slug = nfPdpSpecIconSlug(item.label || item.raw || item.value);
     if (engineeringSlugs.has(slug)) return;
     pushPrimary(item);
@@ -5452,7 +6096,8 @@ function nfPdpBuildSpecsLayout(product) {
     engineering.push({ slug, text });
   };
 
-  parsedEngineer.forEach(pushEngineering);
+  // Engineering rows in the specs table come from real product specs only;
+  // install engineering requirements stay in the Install section.
   parsedSpecs.forEach(pushEngineering);
 
   return {
@@ -5462,87 +6107,108 @@ function nfPdpBuildSpecsLayout(product) {
 }
 
 function nfFillPdpSpecsGrid(host, product) {
-  if (!host) return;
+  if (!host) return false;
   host.innerHTML = "";
   const { primary, engineering } = nfPdpBuildSpecsLayout(product);
 
   if (!primary.length && !engineering.length) {
-    const empty = nfCreateElText(
-      "p",
-      "nf-pdp-specs-empty",
+    host.appendChild(nfCreateElText(
+      "p", "nf-pdp-specs-empty",
       nfT("product.info.pending", "Информация уточняется. Предоставим параметры по запросу.")
-    );
-    host.appendChild(empty);
-    return;
+    ));
+    return false;
   }
 
-  const layout = document.createElement("div");
-  layout.className = "nf-pdp-specs-layout";
+  /* ── Chapter mark ── */
+  const mark = document.createElement("p");
+  mark.className = "frm-chapter-mark";
+  mark.setAttribute("aria-hidden", "true");
+  mark.textContent = "02 ·";
+  host.appendChild(mark);
 
+  /* ── Primary — FORM horizontal stat bar ── */
   if (primary.length) {
-    const primarySection = document.createElement("section");
-    primarySection.className = "nf-pdp-specs-panel nf-pdp-specs-panel--primary";
+    const bar = document.createElement("div");
+    bar.className = "frm-stat-bar";
 
-    const primaryHead = document.createElement("header");
-    primaryHead.className = "nf-pdp-specs-panel-head";
-    primaryHead.innerHTML =
-      `<h3 class="nf-pdp-specs-panel-title">${nfEscapeHtml(
-        nfT("product.specs.primaryTitle", "Ключевые параметры")
-      )}</h3>` +
-      `<p class="nf-pdp-specs-panel-subtitle">${nfEscapeHtml(
-        nfT("product.specs.primaryLead", "Базовые условия размещения и эксплуатации")
-      )}</p>`;
+    primary.slice(0, 5).forEach(({ slug, label: lbl, value }, i) => {
+      if (i > 0) {
+        const sep = document.createElement("div");
+        sep.className = "frm-stat-sep";
+        sep.setAttribute("aria-hidden", "true");
+        bar.appendChild(sep);
+      }
+      const item = document.createElement("div");
+      item.className = "frm-stat-item";
 
-    const primaryList = document.createElement("div");
-    primaryList.className = "nf-pdp-specs-primary-list";
-    primary.forEach((item) => {
-      const pill = document.createElement("article");
-      pill.className = "nf-pdp-spec-chip nf-pdp-spec-chip--" + (item.slug || "default");
-      pill.innerHTML =
-        `<span class="nf-pdp-spec-chip-icon" aria-hidden="true">${nfPdpGetPdpStrokeIcon(item.slug)}</span>` +
-        `<span class="nf-pdp-spec-chip-text">` +
-        `<span class="nf-pdp-spec-chip-label">${nfEscapeHtml(item.label || nfT("product.spec.param", "Параметр"))}</span>` +
-        `<span class="nf-pdp-spec-chip-value">${nfEscapeHtml(item.value)}</span>` +
-        `</span>`;
-      primaryList.appendChild(pill);
+      const iconEl = document.createElement("span");
+      iconEl.className = "frm-stat-item__icon";
+      iconEl.setAttribute("aria-hidden", "true");
+      iconEl.innerHTML = nfPdpGetPdpStrokeIcon(slug || "default");
+
+      const valueEl = document.createElement("span");
+      valueEl.className = "frm-stat-item__value";
+      valueEl.textContent = String(value || "");
+
+      const labelEl = document.createElement("span");
+      labelEl.className = "frm-stat-item__label";
+      labelEl.textContent = String(lbl || "");
+
+      item.appendChild(iconEl);
+      item.appendChild(valueEl);
+      item.appendChild(labelEl);
+      bar.appendChild(item);
     });
 
-    primarySection.appendChild(primaryHead);
-    primarySection.appendChild(primaryList);
-    layout.appendChild(primarySection);
+    host.appendChild(bar);
   }
 
-  if (engineering.length) {
-    const engineeringSection = document.createElement("section");
-    engineeringSection.className = "nf-pdp-specs-panel nf-pdp-specs-panel--engineering";
+  /* ── All specs — FORM clean striped table ── */
+  const allRows = [
+    ...primary.map(({ label, value }) => ({ label, value, slug: "" })),
+    ...engineering.map(({ slug, text }) => {
+      const parts = String(text || "").split(":");
+      return parts.length > 1
+        ? { label: parts[0].trim(), value: parts.slice(1).join(":").trim(), slug }
+        : { label: "", value: String(text || ""), slug };
+    }),
+  ];
 
-    const engineeringHead = document.createElement("header");
-    engineeringHead.className = "nf-pdp-specs-panel-head";
-    engineeringHead.innerHTML =
-      `<h3 class="nf-pdp-specs-panel-title">${nfEscapeHtml(
-        nfT("product.specs.engineeringTitle", "Инженерные требования")
-      )}</h3>` +
-      `<p class="nf-pdp-specs-panel-subtitle">${nfEscapeHtml(
-        nfT("product.specs.engineeringLead", "Подключения и инфраструктура для запуска")
-      )}</p>`;
+  if (allRows.length) {
+    const sectionLabel = document.createElement("p");
+    sectionLabel.className = "frm-specs-section-label";
+    sectionLabel.textContent = nfT("product.specs.allTitle", "Все характеристики").toUpperCase();
+    host.appendChild(sectionLabel);
 
-    const engineeringList = document.createElement("ul");
-    engineeringList.className = "nf-pdp-specs-engineering-list";
-    engineering.forEach((item) => {
-      const li = document.createElement("li");
-      li.className = "nf-pdp-spec-engineering-item nf-pdp-spec-engineering-item--" + (item.slug || "default");
-      li.innerHTML =
-        `<span class="nf-pdp-spec-engineering-icon" aria-hidden="true">${nfPdpGetPdpStrokeIcon(item.slug)}</span>` +
-        `<span class="nf-pdp-spec-engineering-text">${nfEscapeHtml(item.text)}</span>`;
-      engineeringList.appendChild(li);
+    const tableWrap = document.createElement("div");
+    tableWrap.className = "frm-spec-table";
+
+    allRows.forEach(({ label, value }) => {
+      const row = document.createElement("div");
+      row.className = "frm-spec-row";
+
+      const labelEl = document.createElement("span");
+      labelEl.className = "frm-spec-row__label";
+      labelEl.textContent = label;
+
+      const dotsEl = document.createElement("span");
+      dotsEl.className = "frm-spec-row__dots";
+      dotsEl.setAttribute("aria-hidden", "true");
+
+      const valueEl = document.createElement("span");
+      valueEl.className = "frm-spec-row__value";
+      valueEl.textContent = value;
+
+      row.appendChild(labelEl);
+      row.appendChild(dotsEl);
+      row.appendChild(valueEl);
+      tableWrap.appendChild(row);
     });
 
-    engineeringSection.appendChild(engineeringHead);
-    engineeringSection.appendChild(engineeringList);
-    layout.appendChild(engineeringSection);
+    host.appendChild(tableWrap);
   }
 
-  host.appendChild(layout);
+  return true;
 }
 
 function nfFillPdpDescriptionRich(descHost, calloutEl, product, category) {
@@ -5589,11 +6255,10 @@ function nfFillPdpDescriptionRich(descHost, calloutEl, product, category) {
 
 function nfFillPdpKitSection(host, product) {
   if (!host) return;
-  const kitSec = document.getElementById("pdp-kit");
   host.innerHTML = "";
   const attrs = product.attributes;
   if (Array.isArray(attrs) && attrs.length) {
-    const ul = nfCreateEl("ul", "nf-pdp-kit-list nf-pdp-kit-list--rich");
+    const ul = nfCreateEl("ul", "nf-pdp-attr-chips");
     attrs.forEach((a) => {
       let text = "";
       if (typeof a === "string") text = a.trim();
@@ -5602,69 +6267,161 @@ function nfFillPdpKitSection(host, product) {
         const val = a.value != null ? String(a.value) : "";
         text = label && val ? `${label}: ${val}` : label || val || "";
       }
-      if (text) ul.appendChild(nfCreateElText("li", "nf-pdp-kit-item", text));
+      if (text) ul.appendChild(nfCreateElText("li", "nf-pdp-attr-chip", text));
     });
     if (ul.childNodes.length) {
       host.appendChild(ul);
-      if (kitSec) kitSec.hidden = false;
+      host.hidden = false;
       return;
     }
   }
-  if (kitSec) kitSec.hidden = true;
+  host.hidden = true;
 }
 
 function nfFillPdpServiceCards(product) {
   const host = nfEl("productPageServiceCards");
   if (!host) return;
   host.innerHTML = "";
+  host.className = "frm-service-grid";
+
   const steps = nfProductServiceSteps(product);
   const { maintenance: maintSteps } = nfSplitInstallMaintenanceSteps(steps);
 
-  const cards = [
-    {
-      stroke: "serviceTrain",
-      mod: "nf-pdp-service-card__icon--train",
-      title: nfT("product.serviceCard.trainingTitle", "Обучение"),
-      body:
-        maintSteps[0] ||
-        nfT(
-          "product.serviceCard.trainingFallback",
-          "Практическое обучение персонала работе с оборудованием и базовым обслуживанию."
-        ),
-    },
-    {
-      stroke: "servicePilot",
-      mod: "nf-pdp-service-card__icon--pilot",
-      title: nfT("product.serviceCard.pilotTitle", "Тестовая эксплуатация"),
-      body:
-        maintSteps[1] ||
-        nfT(
-          "product.serviceCard.pilotFallback",
-          "Контрольный запуск и проверка сценариев использования до полной нагрузки."
-        ),
-    },
-    {
-      stroke: "serviceCare",
-      mod: "nf-pdp-service-card__icon--care",
-      title: nfT("product.serviceCard.careTitle", "Сервисное сопровождение"),
-      body:
-        maintSteps[2] ||
-        nfT(
-          "product.serviceCard.careFallback",
-          "Регулярное обслуживание, калибровка и консультации по договору."
-        ),
-    },
+  const capabilities = maintSteps.length
+    ? maintSteps
+    : [
+        nfT("product.serviceCard.deliveryFallback", "Поставка и логистика"),
+        nfT("product.serviceCard.installFallback",  "Монтаж и инсталляция"),
+        nfT("product.serviceCard.launchFallback",   "Пуско-наладочные работы"),
+        nfT("product.serviceCard.trainingFallback", "Обучение персонала"),
+        nfT("product.serviceCard.warrantyFallback", "Гарантийное обслуживание"),
+        nfT("product.serviceCard.careFallback",     "Постгарантийная поддержка"),
+      ];
+
+  // Derive each card's icon + description from the TITLE content rather than a
+  // fixed positional array. Real maintenance steps arrive in arbitrary order
+  // and count, so positional indexing drifted out of sync — e.g. an "Обучение
+  // персонала" title was paired with the delivery description. Classify by
+  // keyword so the description always matches the title it sits under.
+  const classifyService = (titleRaw) => {
+    const t = String(titleRaw || "").toLowerCase();
+    if (/обуч|тренинг|training/.test(t))
+      return { icon: "serviceTrain", desc: nfT("product.serviceCard.trainingDesc", "Очное и дистанционное обучение") };
+    if (/доставк|логист|поставк|delivery|supply/.test(t))
+      return { icon: "default", desc: nfT("product.serviceCard.deliveryDesc", "Доставка в любую точку Казахстана и СНГ") };
+    if (/монтаж|инсталл|подключ|install|mount/.test(t))
+      return { icon: "installEng", desc: nfT("product.serviceCard.installDesc", "Сертифицированные инженеры на объекте") };
+    if (/пуско|наладк|ввод в экспл|запуск|commission|launch/.test(t))
+      return { icon: "installRoom", desc: nfT("product.serviceCard.launchDesc", "Тестирование и ввод в эксплуатацию") };
+    if (/тест|испытан|пробн|trial|test/.test(t))
+      return { icon: "default", desc: nfT("product.serviceCard.testDesc", "Проверка и тестовая эксплуатация оборудования") };
+    if (/постгаран|внегаран/.test(t))
+      return { icon: "serviceCare", desc: nfT("product.serviceCard.careDesc", "Техподдержка после завершения гарантии") };
+    if (/гарантийн|гарантия/.test(t))
+      return { icon: "serviceCare", desc: nfT("product.serviceCard.warrantyDesc", "Полное покрытие в течение гарантийного срока") };
+    if (/поддержк|сопровожд|обслуж|сервис|care|support|maintenance/.test(t))
+      return { icon: "serviceCare", desc: nfT("product.serviceCard.supportDesc", "Плановое техническое обслуживание и поддержка") };
+    return { icon: "default", desc: "" };
+  };
+
+  capabilities.forEach((text) => {
+    const item = document.createElement("div");
+    item.className = "frm-service-item";
+
+    const meta = classifyService(text);
+
+    const iconEl = document.createElement("span");
+    iconEl.className = "frm-service-item__icon";
+    iconEl.setAttribute("aria-hidden", "true");
+    iconEl.innerHTML = nfPdpGetPdpStrokeIcon(meta.icon);
+
+    const titleEl = document.createElement("strong");
+    titleEl.className = "frm-service-item__title";
+    titleEl.textContent = String(text);
+
+    item.appendChild(iconEl);
+    item.appendChild(titleEl);
+
+    if (meta.desc) {
+      const descEl = document.createElement("p");
+      descEl.className = "frm-service-item__desc";
+      descEl.textContent = meta.desc;
+      item.appendChild(descEl);
+    }
+
+    host.appendChild(item);
+  });
+}
+
+function nfFillPdpServiceTrust(product) {
+  const host = nfEl("productPageServiceTrust");
+  if (!host) return;
+  host.innerHTML = "";
+  host.className = "frm-trust-bar";
+
+  const warrantyVal = product.warrantyMonths
+    ? `${product.warrantyMonths} мес.`
+    : nfT("service.trust.warranty.default", "24 мес.");
+
+  const items = [
+    { value: warrantyVal, label: nfT("service.trust.warranty.label",  "Гарантия") },
+    { value: "Включён",   label: nfT("service.trust.install.label",   "Монтаж") },
+    { value: "Включено",  label: nfT("service.trust.training.label",  "Обучение") },
+    { value: "6 мес.",    label: nfT("service.trust.support.label",   "Поддержка после запуска") },
   ];
 
-  cards.forEach((c) => {
-    const art = document.createElement("article");
-    art.className = "nf-pdp-service-card";
-    const iconInner = nfPdpGetPdpStrokeIcon(c.stroke);
-    art.innerHTML =
-      `<div class="nf-pdp-service-card__icon ${c.mod}" aria-hidden="true">${iconInner}</div>` +
-      `<h3 class="nf-pdp-service-card__title">${nfEscapeHtml(c.title)}</h3>` +
-      `<p class="nf-pdp-service-card__text">${nfEscapeHtml(c.body)}</p>`;
-    host.appendChild(art);
+  items.forEach(({ value, label }, i) => {
+    if (i > 0) {
+      const sep = document.createElement("span");
+      sep.className = "frm-trust-bar__sep";
+      sep.setAttribute("aria-hidden", "true");
+      host.appendChild(sep);
+    }
+    const item = document.createElement("div");
+    item.className = "frm-trust-bar__item";
+
+    const valueEl = document.createElement("strong");
+    valueEl.className = "frm-trust-bar__value";
+    valueEl.textContent = value;
+
+    const labelEl = document.createElement("span");
+    labelEl.className = "frm-trust-bar__label";
+    labelEl.textContent = label;
+
+    item.appendChild(valueEl);
+    item.appendChild(labelEl);
+    host.appendChild(item);
+  });
+}
+
+function nfFillPdpUseCases(host, product, category) {
+  if (!host) return;
+  host.innerHTML = "";
+  const useCases = Array.isArray(product.useCases) ? product.useCases : [];
+  if (!useCases.length) return;
+  useCases.forEach((uc, i) => {
+    const item = document.createElement("div");
+    item.className = "nf-pdp-usecase-item";
+    item.setAttribute("role", "listitem");
+    const num = document.createElement("span");
+    num.className = "nf-pdp-usecase-num";
+    num.setAttribute("aria-hidden", "true");
+    num.textContent = String(i + 1).padStart(2, "0");
+    const content = document.createElement("div");
+    content.className = "nf-pdp-usecase-content";
+    const title = document.createElement("h3");
+    title.className = "nf-pdp-usecase-title";
+    title.textContent = String(uc.title || "");
+    content.appendChild(title);
+    if (uc.description) {
+      const text = document.createElement("p");
+      text.className = "nf-pdp-usecase-text";
+      text.textContent = String(uc.description);
+      content.appendChild(text);
+    }
+    item.appendChild(num);
+    item.appendChild(content);
+    host.appendChild(item);
   });
 }
 
@@ -5700,40 +6457,351 @@ function nfPdpAppendInstallFeatureLine(ul, line) {
 }
 
 function nfFillPdpInstallSection(product) {
-  const roomUl = nfEl("productPageInstallRoom");
-  const engineerUl = nfEl("productPageInstallEngineer");
-  const timelineOl = nfEl("productPageInstallTimeline");
-  if (!roomUl || !engineerUl || !timelineOl) return;
+  const roomUl      = nfEl("productPageInstallRoom");
+  const engineerUl  = nfEl("productPageInstallEngineer");
+  const phasesTrack = nfEl("productPagePhasesTrack");
+  const phaseDetail = nfEl("productPagePhaseDetail");
+  if (!roomUl || !engineerUl) return;
 
   const { roomList, engineerList } = nfProductRequirementLists(product);
-  const { install: installSteps } = nfSplitInstallMaintenanceSteps(nfProductServiceSteps(product));
+  const { install: installSteps }  = nfSplitInstallMaintenanceSteps(nfProductServiceSteps(product));
 
-  roomUl.classList.add("nf-pdp-install-feature-list");
-  engineerUl.classList.add("nf-pdp-install-feature-list");
-  nfPdpInjectInstallEnvHeaderIcon(roomUl, "installRoom");
+  nfPdpInjectInstallEnvHeaderIcon(roomUl,     "installRoom");
   nfPdpInjectInstallEnvHeaderIcon(engineerUl, "installEng");
-
-  roomUl.innerHTML = "";
-  roomList.forEach((item) => nfPdpAppendInstallFeatureLine(roomUl, item));
-
+  roomUl.innerHTML     = "";
   engineerUl.innerHTML = "";
+  roomList.forEach((item)     => nfPdpAppendInstallFeatureLine(roomUl,     item));
   engineerList.forEach((item) => nfPdpAppendInstallFeatureLine(engineerUl, item));
 
-  timelineOl.innerHTML = "";
+  if (!phasesTrack) return;
+  phasesTrack.innerHTML = "";
+  if (phaseDetail) phaseDetail.hidden = true;
+
+  if (!installSteps.length) return;
+
+  /* ── FORM — clean numbered installation steps ── */
+  phasesTrack.className = "frm-install-steps";
+  phasesTrack.removeAttribute("role");
+  phasesTrack.style.removeProperty("--sm-phase-count");
+
   installSteps.forEach((s, i) => {
-    const li = document.createElement("li");
-    li.className = "nf-pdp-timeline__step";
-    li.innerHTML =
-      `<span class="nf-pdp-timeline__dot">${i + 1}</span>` +
-      `<div class="nf-pdp-timeline__content">` +
-      `<p class="nf-pdp-timeline__text">${nfEscapeHtml(String(s))}</p>` +
-      `</div>`;
-    timelineOl.appendChild(li);
+    const step = document.createElement("div");
+    step.className = "frm-install-step";
+
+    /* Large background step number — decorative art */
+    const numBg = document.createElement("span");
+    numBg.className = "frm-install-step__num-bg";
+    numBg.setAttribute("aria-hidden", "true");
+    numBg.textContent = String(i + 1).padStart(2, "0");
+
+    const content = document.createElement("div");
+    content.className = "frm-install-step__content";
+
+    const numLabel = document.createElement("span");
+    numLabel.className = "frm-install-step__num-label";
+    numLabel.textContent = `ШАГ ${String(i + 1).padStart(2, "0")}`;
+
+    const titleEl = document.createElement("p");
+    titleEl.className = "frm-install-step__title";
+    titleEl.textContent = String(s);
+
+    content.appendChild(numLabel);
+    content.appendChild(titleEl);
+    step.appendChild(numBg);
+    step.appendChild(content);
+
+    /* Dashed connector between steps */
+    if (i < installSteps.length - 1) {
+      const connector = document.createElement("div");
+      connector.className = "frm-install-step__connector";
+      connector.setAttribute("aria-hidden", "true");
+      step.appendChild(connector);
+    }
+
+    phasesTrack.appendChild(step);
   });
 }
 
 function nfFillPdpMaintenanceSection(product) {
   nfFillPdpServiceCards(product);
+  nfFillPdpServiceTrust(product);
+}
+
+/* ── APEX portrait related product card ─────────────────────────────── */
+function nfCreateRelatedProductCard(p) {
+  const cat         = NF_DATA.categories.find((c) => c.id === p.categoryId);
+  const partnerName = nfGetPartnerName(p.partnerId);
+  const accent      = (typeof NF_CAT_ACCENTS !== "undefined" && NF_CAT_ACCENTS[p.categoryId]) || "#00b4c8";
+
+  const card = document.createElement("article");
+  card.className = "apex-rel-card";
+  card.setAttribute("role", "button");
+  card.setAttribute("tabindex", "0");
+  card.setAttribute("aria-label", p.name);
+  card.dataset.productId = p.id;
+  card.style.setProperty("--apex-accent", accent);
+
+  /* ── Image area (top) ── */
+  const imgWrap     = document.createElement("div");
+  imgWrap.className = "apex-rel-card__img";
+
+  const img     = document.createElement("img");
+  img.alt       = p.name;
+  const imgs    = nfGetProductImages(p);
+  img.src       = (imgs[0] || "").trim() ? imgs[0] : nfProductPlaceholderSvg();
+  nfConfigureImageElement(img, { loading: "lazy", decoding: "async", fetchPriority: "low" });
+  img.onerror   = () => { img.src = nfProductPlaceholderSvg(); };
+  imgWrap.appendChild(img);
+
+  /* ── Body (below image) ── */
+  const body      = document.createElement("div");
+  body.className  = "apex-rel-card__body";
+
+  /* Eyebrow — category name */
+  if (cat) {
+    const eyebrow       = document.createElement("p");
+    eyebrow.className   = "apex-rel-card__eyebrow";
+    eyebrow.textContent = cat.name;
+    body.appendChild(eyebrow);
+  }
+
+  /* Product name */
+  const name        = document.createElement("h3");
+  name.className    = "apex-rel-card__name";
+  name.textContent  = p.name;
+  body.appendChild(name);
+
+  /* Partner / brand */
+  if (partnerName) {
+    const meta        = document.createElement("p");
+    meta.className    = "apex-rel-card__meta";
+    meta.textContent  = partnerName;
+    body.appendChild(meta);
+  }
+
+  /* Price */
+  if (p.price != null) {
+    const priceEl       = document.createElement("p");
+    priceEl.className   = "apex-rel-card__price";
+    priceEl.textContent = nfFormatPrice(p.price);
+    body.appendChild(priceEl);
+  }
+
+  /* CTA link */
+  const cta     = document.createElement("span");
+  cta.className = "apex-rel-card__cta";
+  cta.setAttribute("aria-hidden", "true");
+  cta.innerHTML =
+    `${nfEscapeHtml(nfT("common.details", "Подробнее"))} ` +
+    `<svg viewBox="0 0 16 16" fill="none" width="11" height="11" aria-hidden="true">` +
+      `<path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>` +
+    `</svg>`;
+  body.appendChild(cta);
+
+  card.appendChild(imgWrap);
+  card.appendChild(body);
+
+  card.addEventListener("click", () => nfOpenProductPage(p.id));
+  card.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" || e.key === " ") nfOpenProductPage(p.id);
+  });
+  return card;
+}
+
+function nfFillPdpRelated(product) {
+  const section = nfEl("pdp-related");
+  if (!section) return;
+
+  const allProducts = NF_DATA.products || [];
+  const allCategories = NF_DATA.categories || [];
+  const allPartners = NF_DATA.partners || [];
+
+  /* ── Tab 1: similar products ── */
+  let candidates = [];
+  if (Array.isArray(product.relatedProductIds) && product.relatedProductIds.length) {
+    candidates = product.relatedProductIds
+      .map((id) => allProducts.find((p) => p.id === String(id)))
+      .filter(Boolean);
+  }
+  if (candidates.length < 3) {
+    const sameCat = allProducts.filter(
+      (p) => p.id !== product.id && p.categoryId === product.categoryId && !candidates.some((c) => c.id === p.id)
+    );
+    candidates = candidates.concat(sameCat).slice(0, 8);
+  }
+  if (candidates.length < 2) {
+    const popular = allProducts.filter(
+      (p) => p.id !== product.id && p.popular && !candidates.some((c) => c.id === p.id)
+    );
+    candidates = candidates.concat(popular).slice(0, 8);
+  }
+
+  /* ── Tab 2: partners ── */
+  const partnerIds = new Set();
+  if (product.partnerId) partnerIds.add(product.partnerId);
+  allProducts
+    .filter((p) => p.categoryId === product.categoryId && p.partnerId)
+    .forEach((p) => partnerIds.add(p.partnerId));
+  const relatedPartners = [...partnerIds]
+    .map((pid) => allPartners.find((p) => p.id === pid))
+    .filter(Boolean)
+    .slice(0, 6);
+
+  /* ── Tab 3: related categories ── */
+  const catIds = new Set();
+  catIds.add(product.categoryId);
+  allProducts
+    .filter((p) => p.partnerId === product.partnerId && p.categoryId)
+    .forEach((p) => catIds.add(p.categoryId));
+  const relatedCategories = [...catIds]
+    .map((cid) => allCategories.find((c) => c.id === cid))
+    .filter(Boolean)
+    .slice(0, 6);
+
+  /* If there's nothing at all, hide section */
+  if (!candidates.length && !relatedPartners.length && !relatedCategories.length) {
+    section.hidden = true;
+    return;
+  }
+
+  section.hidden = false;
+
+  /* ── Build tab bar ── */
+  const tabBar = nfEl("pdpRelatedTabs");
+  if (tabBar) tabBar.innerHTML = "";
+
+  const tabs = [];
+  if (candidates.length) tabs.push({ id: "Products", label: nfT("related.tab.products", "Похожие решения"), panelId: "pdpRelatedPanelProducts" });
+  if (relatedPartners.length) tabs.push({ id: "Partners", label: nfT("related.tab.partners", "Партнёры"), panelId: "pdpRelatedPanelPartners" });
+  if (relatedCategories.length) tabs.push({ id: "Categories", label: nfT("related.tab.categories", "Категории"), panelId: "pdpRelatedPanelCategories" });
+
+  /* Hide all panels first */
+  ["pdpRelatedPanelProducts", "pdpRelatedPanelPartners", "pdpRelatedPanelCategories"].forEach((id) => {
+    const el = nfEl(id);
+    if (el) el.hidden = true;
+  });
+
+  const activateTab = (activeIdx) => {
+    if (!tabBar) return;
+    tabBar.querySelectorAll(".nf-pdp-related-tab").forEach((btn, i) => {
+      const isActive = i === activeIdx;
+      btn.classList.toggle("is-active", isActive);
+      btn.setAttribute("aria-selected", String(isActive));
+    });
+    tabs.forEach((t, i) => {
+      const panel = nfEl(t.panelId);
+      if (panel) panel.hidden = i !== activeIdx;
+    });
+  };
+
+  tabs.forEach((t, i) => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "nf-pdp-related-tab" + (i === 0 ? " is-active" : "");
+    btn.id = `pdpRelatedTab${t.id}`;
+    btn.setAttribute("role", "tab");
+    btn.setAttribute("aria-selected", String(i === 0));
+    btn.setAttribute("aria-controls", t.panelId);
+    btn.textContent = t.label;
+    btn.addEventListener("click", () => activateTab(i));
+    if (tabBar) tabBar.appendChild(btn);
+  });
+
+  /* ── Populate Tab 1: products carousel ── */
+  const track = nfEl("productPageRelatedGrid");
+  const prevBtn = nfEl("pdpRelatedPrev");
+  const nextBtn = nfEl("pdpRelatedNext");
+  if (track && candidates.length) {
+    track.innerHTML = "";
+    candidates.forEach((p) => track.appendChild(nfCreateRelatedProductCard(p)));
+    const viewport = track.closest(".nf-pdp-related-viewport");
+    if (viewport && prevBtn && nextBtn) {
+      const updateNav = () => {
+        const atStart = viewport.scrollLeft <= 8;
+        const atEnd = viewport.scrollLeft + viewport.clientWidth >= viewport.scrollWidth - 8;
+        prevBtn.hidden = atStart;
+        nextBtn.hidden = atEnd || viewport.scrollWidth <= viewport.clientWidth + 8;
+      };
+      prevBtn.onclick = () => viewport.scrollBy({ left: -Math.round(viewport.clientWidth * 0.75), behavior: "smooth" });
+      nextBtn.onclick = () => viewport.scrollBy({ left: Math.round(viewport.clientWidth * 0.75), behavior: "smooth" });
+      viewport.addEventListener("scroll", updateNav, { passive: true });
+      requestAnimationFrame(updateNav);
+    }
+  }
+
+  /* ── Populate Tab 2: partner cards ── */
+  const partnersGrid = nfEl("productPageRelatedPartners");
+  if (partnersGrid && relatedPartners.length) {
+    partnersGrid.innerHTML = "";
+    relatedPartners.forEach((partner) => {
+      const prodCount = allProducts.filter((p) => p.partnerId === partner.id).length;
+      const card = document.createElement("div");
+      card.className = "nf-pdp-related-partner-card";
+      card.setAttribute("role", "button");
+      card.setAttribute("tabindex", "0");
+      if (partner.logo) {
+        const logo = document.createElement("img");
+        logo.className = "nf-pdp-related-partner-card__logo";
+        logo.src = partner.logo;
+        logo.alt = partner.name || "";
+        logo.onerror = () => logo.remove();
+        card.appendChild(logo);
+      }
+      const nameEl = document.createElement("p");
+      nameEl.className = "nf-pdp-related-partner-card__name";
+      nameEl.textContent = partner.name || "";
+      card.appendChild(nameEl);
+      if (prodCount) {
+        const countEl = document.createElement("p");
+        countEl.className = "nf-pdp-related-partner-card__count";
+        countEl.textContent = `${prodCount} ${nfT("related.products", "товаров")}`;
+        card.appendChild(countEl);
+      }
+      const linkEl = document.createElement("span");
+      linkEl.className = "nf-pdp-related-partner-card__link";
+      linkEl.textContent = nfT("common.view", "Смотреть →");
+      card.appendChild(linkEl);
+      const slug = nfPartnerSlug ? nfPartnerSlug(partner) : (partner.slug || partner.id);
+      card.addEventListener("click", () => { if (slug) nfGoPath(nfPartnerOpenUrlBySlug(slug)); });
+      card.addEventListener("keydown", (e) => { if ((e.key === "Enter" || e.key === " ") && slug) nfGoPath(nfPartnerOpenUrlBySlug(slug)); });
+      partnersGrid.appendChild(card);
+    });
+  }
+
+  /* ── Populate Tab 3: category rows ── */
+  const catList = nfEl("productPageRelatedCategories");
+  if (catList && relatedCategories.length) {
+    catList.innerHTML = "";
+    relatedCategories.forEach((cat) => {
+      const prodCount = allProducts.filter((p) => p.categoryId === cat.id).length;
+      const row = document.createElement("div");
+      row.className = "nf-pdp-related-cat-row";
+      row.setAttribute("role", "button");
+      row.setAttribute("tabindex", "0");
+      const nameEl = document.createElement("span");
+      nameEl.className = "nf-pdp-related-cat-row__name";
+      nameEl.textContent = cat.name || "";
+      row.appendChild(nameEl);
+      if (prodCount) {
+        const countEl = document.createElement("span");
+        countEl.className = "nf-pdp-related-cat-row__count";
+        countEl.textContent = `${prodCount}`;
+        row.appendChild(countEl);
+      }
+      const arrow = document.createElement("span");
+      arrow.className = "nf-pdp-related-cat-row__arrow";
+      arrow.setAttribute("aria-hidden", "true");
+      arrow.textContent = "→";
+      row.appendChild(arrow);
+      const catSlug = nfCategoryPermalinkSlug ? nfCategoryPermalinkSlug(cat) : cat.id;
+      row.addEventListener("click", () => nfGoPath(`/categories/${catSlug}`));
+      row.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") nfGoPath(`/categories/${catSlug}`); });
+      catList.appendChild(row);
+    });
+  }
+
+  /* ── Show first available panel ── */
+  activateTab(0);
 }
 
 function nfPdpMountRevealScroll(pageRoot) {
@@ -5785,7 +6853,6 @@ function nfPdpSyncSubnav(pageRoot) {
   const pairs = [
     ["description", "pdp-description"],
     ["specs", "pdp-specs"],
-    ["kit", "pdp-kit"],
     ["install", "pdp-install"],
     ["service", "pdp-service"],
   ];
@@ -6138,7 +7205,7 @@ function nfOpenProductModal(productId) {
 
   nfSafeText("productModalTitle", p.name);
   nfSafeText("productModalShortDesc", p.shortDesc || nfT("product.defaultShortDesc", "Профессиональное медицинское оборудование."));
-  nfSafeText("productModalArticle", nfT("product.article", "Артикул: {value}", { value: p.article || "" }));
+  nfSafeText("productModalArticle", "");
   nfSafeText("productModalPartner", nfT("product.partner", "Партнёр: {value}", { value: nfGetPartnerName(p.partnerId) }));
   nfSafeText("productModalModel", nfT("product.model", "Модель: {value}", { value: p.model || "" }));
 
@@ -6227,7 +7294,8 @@ function nfOpenProductModal(productId) {
   if (primaryBtn) {
     primaryBtn.onclick = () => {
       const qty = Number(qtyInput?.value) || 1;
-      nfAddToCart(p.id, qty, { sourceButton: null });
+      nfToggleCartItem(p.id, qty, { sourceButton: primaryBtn });
+      if (!nfGetCartItem(p.id)) return; // was removed — stay open
       nfCloseProductModal();
     };
   }
@@ -6288,24 +7356,39 @@ function nfRenderPartners() {
   container.innerHTML = "";
 
   NF_DATA.partners.forEach((p, i) => {
-    const card = nfCreateEl("button", "nf-partner nf-partner-btn nf-page-partner-tile nf-vp-reveal");
+    const card = nfCreateEl("button", "nf-pt-card nf-partner-btn nf-vp-reveal");
     card.style.setProperty("--nf-vp-stagger", `${Math.min(i, 20) * 32}ms`);
     card.type = "button";
     card.dataset.partnerId = p.id;
 
     const brand = nfEscapeHtml(nfPartnerShortName(p));
+    const prodCount = (NF_DATA.products || []).filter((x) => x.partnerId === p.id).length;
+    const countLabel = prodCount === 0 ? "" :
+      prodCount === 1 ? "1 продукт" :
+      prodCount <= 4 ? `${prodCount} продукта` :
+      `${prodCount} продуктов`;
+
     card.innerHTML = `
-      <span class="nf-page-partner-logo-slot">
-        <img class="nf-partner-logo-img" alt="${brand}" loading="lazy" />
-      </span>
-      <div class="nf-partner-meta">
-        <span class="nf-partner-name">${brand}</span>
-        <span class="nf-partner-country">${nfEscapeHtml(p.country || "—")}</span>
+      <div class="nf-pt-card__media">
+        <img class="nf-partner-logo-img nf-pt-card__logo" alt="${brand}" loading="lazy" />
+        ${countLabel ? `<span class="nf-pt-card__count">${nfEscapeHtml(countLabel)}</span>` : ""}
       </div>
-      <span class="nf-partner-action" aria-hidden="true">
-        <span class="nf-partner-action__label">${nfEscapeHtml(nfT("partners.card.cta", "Решения бренда"))}</span>
-        <span class="nf-partner-action__arrow">→</span>
-      </span>
+      <div class="nf-pt-card__body">
+        <span class="nf-pt-card__name">${brand}</span>
+        <span class="nf-pt-card__country">
+          <svg viewBox="0 0 12 12" fill="none" width="10" height="10" aria-hidden="true">
+            <circle cx="6" cy="6" r="5" stroke="currentColor" stroke-width="1.2"/>
+            <path d="M6 1v10M1 6h10M2 3.5Q4 5 6 3.5T10 3.5M2 8.5Q4 7 6 8.5T10 8.5" stroke="currentColor" stroke-width="1"/>
+          </svg>
+          ${nfEscapeHtml(p.country || "—")}
+        </span>
+      </div>
+      <div class="nf-pt-card__cta" aria-hidden="true">
+        <span>Подробнее</span>
+        <svg class="nf-pt-card__arrow" viewBox="0 0 16 16" fill="none" width="12" height="12">
+          <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
     `;
 
     const img = card.querySelector(".nf-partner-logo-img");
@@ -6372,6 +7455,17 @@ function nfOpenPartnerModal(partnerId, options = {}) {
   const search = nfEl("partnerModalSearch");
   if (search) {
     search.value = "";
+
+    // Обновляем счётчик в тулбаре при фильтрации
+    const updateToolbarCount = (count) => {
+      const titleEl = modal.querySelector(".nf-pm-toolbar__title");
+      if (titleEl) {
+        titleEl.textContent = count === products.length
+          ? "Товары партнёра"
+          : `Найдено: ${count}`;
+      }
+    };
+
     search.oninput = nfDebounce(() => {
       const q = String(search.value || "").toLowerCase().trim();
       const filtered = !q
@@ -6383,19 +7477,8 @@ function nfOpenPartnerModal(partnerId, options = {}) {
             return name.includes(q) || article.includes(q) || model.includes(q);
           });
       nfRenderPartnerModalProducts(filtered);
+      updateToolbarCount(filtered.length);
     }, 180);
-
-    // Автофокус оставляем только на desktop, чтобы на мобильных не было автоскролла вниз
-    setTimeout(() => {
-      try {
-        const isDesktop = window.matchMedia
-          ? window.matchMedia("(min-width: 1025px)").matches
-          : window.innerWidth > 1024;
-        if (isDesktop) {
-          search.focus();
-        }
-      } catch (_e) {}
-    }, 0);
   }
 
   const toCatalogBtn = nfEl("partnerModalToCatalog");
@@ -6462,42 +7545,65 @@ function nfRenderPartnerModalProducts(list) {
   box.innerHTML = "";
 
   if (!list.length) {
-    box.innerHTML = `<div class="nf-empty nf-partner-modal-empty">${nfEscapeHtml(nfT("partner.noProducts", "Нет товаров у этого партнёра."))}</div>`;
+    box.innerHTML = `
+      <div class="nf-pm-empty">
+        <svg viewBox="0 0 48 48" fill="none" width="40" height="40" aria-hidden="true">
+          <circle cx="24" cy="24" r="20" stroke="currentColor" stroke-width="1.5" opacity="0.25"/>
+          <path d="M16 24h16M24 16v16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity="0.4"/>
+        </svg>
+        <span>Товары не найдены</span>
+      </div>`;
     return;
   }
 
   list.forEach((prod) => {
     const cat = NF_DATA.categories.find((c) => c.id === prod.categoryId)?.name || "";
-    const row = nfCreateEl("div", "nf-partner-prod");
+    const isInStock = (prod.status || "in_stock") === "in_stock";
+    const priceLabel = prod.price ? nfFormatPrice(prod.price) : null;
 
-    row.innerHTML = `
-      <div class="nf-partner-prod-main">
-        <div class="nf-partner-prod-title">${nfEscapeHtml(prod.name)}</div>
-        <div class="nf-partner-prod-meta">${nfEscapeHtml(prod.article)} · ${nfEscapeHtml(cat)} · ${nfEscapeHtml(
-          prod.price ? nfFormatPrice(prod.price) : nfT("common.priceOnRequest", "Цена по запросу")
-        )}</div>
-      </div>
-      <div class="nf-partner-prod-actions"></div>
-    `;
+    const card = nfCreateEl("div", "nf-pm-card");
 
-    const actions = row.querySelector(".nf-partner-prod-actions");
+    // Image
+    const imgWrap = nfCreateEl("div", "nf-pm-card__img");
+    if (prod.images && prod.images[0]) {
+      const img = document.createElement("img");
+      img.src = prod.images[0];
+      img.alt = "";
+      img.loading = "lazy";
+      imgWrap.appendChild(img);
+    }
 
-    const openBtn = nfCreateEl("button", "nf-btn nf-btn-secondary nf-btn-sm", nfT("common.open", "Открыть"));
+    // Status dot in corner
+    imgWrap.insertAdjacentHTML("beforeend", `
+      <span class="nf-pm-card__status ${isInStock ? "nf-pm-card__status--in" : "nf-pm-card__status--order"}">
+        <span class="nf-pm-card__status-dot"></span>${isInStock ? "В наличии" : "Под заказ"}
+      </span>`);
+
+    // Body
+    const body = nfCreateEl("div", "nf-pm-card__body");
+    body.innerHTML = `
+      ${cat ? `<span class="nf-pm-card__cat">${nfEscapeHtml(cat)}</span>` : ""}
+      <div class="nf-pm-card__name">${nfEscapeHtml(prod.name)}</div>
+      <div class="nf-pm-card__price ${priceLabel ? "" : "nf-pm-card__price--rq"}">
+        ${priceLabel ? nfEscapeHtml(priceLabel) : "По запросу"}
+      </div>`;
+
+    // Footer buttons
+    const foot = nfCreateEl("div", "nf-pm-card__foot");
+
+    const openBtn = nfCreateEl("button", "nf-btn nf-btn-ghost nf-btn-sm nf-pm-card__open");
     openBtn.type = "button";
-    openBtn.onclick = () => {
-      nfClosePartnerModal();
-      nfOpenProductPage(prod.id);
-    };
+    openBtn.textContent = "Подробнее";
+    openBtn.onclick = () => { nfClosePartnerModal(); nfOpenProductPage(prod.id); };
 
-    const addBtn = nfCreateEl("button", "nf-btn nf-btn-primary nf-btn-sm nf-btn-checkable", "");
+    const addBtn = nfCreateEl("button", "nf-btn nf-btn-primary nf-btn-sm nf-btn-checkable nf-pm-card__add");
     addBtn.type = "button";
-    nfInitAddToRequestControl(addBtn, prod.id, nfT("common.addToRequest", "В запрос"), {});
-    addBtn.onclick = () => {
-      nfAddToCart(prod.id, 1, { sourceButton: addBtn });
-    };
+    nfInitAddToRequestControl(addBtn, prod.id, "В запрос", {});
+    addBtn.addEventListener("click", () => nfToggleCartItem(prod.id, 1, { sourceButton: addBtn }));
 
-    actions.append(openBtn, addBtn);
-    box.appendChild(row);
+    foot.append(openBtn, addBtn);
+    card.append(imgWrap, body, foot);
+    box.appendChild(card);
   });
 }
 
@@ -6625,26 +7731,33 @@ function nfRenderNews() {
   }
 
   function nfAppendNewsListCard(n, i) {
-    const card = nfCreateEl("article", "nf-news-card news-feed-card news-feed-card--row nf-vp-reveal");
+    const _dp = (n.date || "").split("-");
+    const _months = ["янв","фев","мар","апр","май","июн","июл","авг","сен","окт","ноя","дек"];
+    const _day = parseInt(_dp[2] || "", 10) || "";
+    const _mon = _months[(parseInt(_dp[1] || "", 10) || 1) - 1] || "";
+    const _yr = _dp[0] || "";
+    const card = nfCreateEl("article", "nf-nr-item nf-vp-reveal");
     card.style.setProperty("--nf-vp-stagger", `${Math.min(i + 1, 12) * 45}ms`);
+    card.setAttribute("role", "button");
+    card.setAttribute("tabindex", "0");
     card.innerHTML = `
-      <div class="news-feed-card-media">
-        ${
-          n.image
-            ? `<img src="${nfEscapeHtml(n.image)}" alt="" loading="lazy" />`
-            : `<div class="news-feed-card-media-empty"><span>${nfEscapeHtml(nfT("common.news", "News"))}</span></div>`
-        }
+      <div class="nf-nr-item__date" aria-label="${nfEscapeHtml(nfFormatDate(n.date))}">
+        <span class="nf-nr-item__day">${_day}</span>
+        <span class="nf-nr-item__month">${_mon}</span>
+        <span class="nf-nr-item__year">${_yr}</span>
       </div>
-      <div class="news-feed-card-body">
-        <h3 class="nf-news-card-title">${nfEscapeHtml(nfNewsTitle(n))}</h3>
-        <p class="nf-news-card-text">${nfEscapeHtml(nfNewsExcerpt(n))}</p>
-        <div class="nf-news-card-meta">${nfEscapeHtml(nfFormatDate(n.date))} · ${nfEscapeHtml(nfNewsCategory(n))}${n.author ? ` · ${nfEscapeHtml(n.author)}` : ""}</div>
+      <div class="nf-nr-item__body">
+        <span class="nf-nr-item__cat">${nfEscapeHtml(nfNewsCategory(n))}</span>
+        <h3 class="nf-nr-item__title">${nfEscapeHtml(nfNewsTitle(n))}</h3>
+        <p class="nf-nr-item__excerpt">${nfEscapeHtml(nfNewsExcerpt(n))}</p>
       </div>
+      <span class="nf-nr-item__arrow" aria-hidden="true">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10h12M10 4l6 6-6 6"/></svg>
+      </span>
     `;
-    card.addEventListener("click", () => {
-      NF_STATE.newsArticleId = n.id;
-      nfGoPath(`/news/${nfNewsPermalinkSlug(n)}`);
-    });
+    const _openItem = () => { NF_STATE.newsArticleId = n.id; nfGoPath(`/news/${nfNewsPermalinkSlug(n)}`); };
+    card.addEventListener("click", _openItem);
+    card.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); _openItem(); } });
     listEl.appendChild(card);
   }
 
@@ -6660,7 +7773,7 @@ function nfRenderNews() {
       ${
         featured.image
           ? `<img src="${nfEscapeHtml(featured.image)}" alt="" loading="lazy" />`
-          : `<div class="news-featured-media-empty"><span>${nfEscapeHtml(nfT("news.placeholderMediaLabel", "НаноФарм Новости"))}</span></div>`
+          : `<div class="news-featured-media-empty"><div class="nf-news-ph"><span class="nf-news-ph__brand">NanoFarm</span><span class="nf-news-ph__label">Newsroom</span></div></div>`
       }
     </div>
     <div class="news-featured-body">
@@ -6714,10 +7827,8 @@ function nfOpenNewsModal(newsId) {
   if (titleEl) titleEl.textContent = newsTitle;
   if (metaEl) {
     const date = nfFormatDate(item.date);
-    const parts = [date];
-    if (item.author) parts.push(item.author);
-    if (item.category) parts.push(item.category);
-    metaEl.textContent = parts.join(" · ");
+    const cat = nfNewsCategory(item);
+    metaEl.innerHTML = `${cat ? `<span class="nf-nm-cat">${nfEscapeHtml(cat)}</span>` : ""}<span class="nf-nm-date">${nfEscapeHtml(date)}</span>${item.author ? `<span class="nf-nm-sep" aria-hidden="true">·</span><span class="nf-nm-author">${nfEscapeHtml(item.author)}</span>` : ""}`;
   }
 
   const figEl = nfEl("newsModalFigure");
@@ -7649,7 +8760,7 @@ function nfAdminOpenForm(kind, id) {
     };
 
     const initialImages = nfGetProductImages(entity);
-    const catOptions = (NF_DATA.categories || [])
+    const catOptions = (NF_DATA.categories || []).filter((c) => !c.parentId)
       .map(
         (c) =>
           `<option value="${nfEscapeHtml(c.id)}" ${c.id === entity.categoryId ? "selected" : ""}>${nfEscapeHtml(c.name)}</option>`
@@ -9501,7 +10612,768 @@ function nfValidateForm(form) {
   return ok;
 }
 
+/* ====== MATRIX DATUM CELL HELPER ====== */
+/**
+ * Creates a single spec datum cell for the MATRIX telemetry column.
+ * Layout: [icon 20px] [LABEL] [dotted connector] [value bold], 52px tall.
+ * @param {string} slug   – spec slug for icon selection
+ * @param {string} label  – label text (uppercased via CSS)
+ * @param {string} value  – value text
+ * @returns {HTMLElement}
+ */
+function _nfBuildDatumCell(slug, label, value) {
+  const cell = document.createElement("div");
+  cell.className = "matrix-datum-cell";
+  cell.setAttribute("data-spec", slug || "");
+
+  const iconEl = document.createElement("span");
+  iconEl.className = "matrix-datum-icon";
+  iconEl.setAttribute("aria-hidden", "true");
+  iconEl.innerHTML = nfPdpGetPdpStrokeIcon(slug || "default");
+
+  const labelEl = document.createElement("span");
+  labelEl.className = "matrix-datum-label";
+  labelEl.textContent = String(label || "");
+
+  const connectorEl = document.createElement("span");
+  connectorEl.className = "matrix-datum-connector";
+  connectorEl.setAttribute("aria-hidden", "true");
+
+  const valueEl = document.createElement("span");
+  valueEl.className = "matrix-datum-value";
+  valueEl.textContent = String(value || "");
+
+  cell.appendChild(iconEl);
+  cell.appendChild(labelEl);
+  cell.appendChild(connectorEl);
+  cell.appendChild(valueEl);
+  return cell;
+}
+
+/* ====== MATRIX PDP HERO BUILDER (CONCEPT 3) ====== */
+/**
+ * MATRIX Command Grid — replaces .nf-pdp-hero__inner as a 3-column layout:
+ *   Col A (3fr) · Control Panel  – breadcrumb, partner, title, desc, spec grid, CTAs
+ *   Col B (5fr) · Canvas         – calibration grid, gallery, product-code status bar
+ *   Col C (4fr) · Telemetry      – datum cells (primary specs) + engineering accordion
+ *
+ * ALL original element IDs are recreated so every downstream nfInitProductPage()
+ * fill-pass continues to work without modification.
+ *
+ * @param {object}      product  — product record from NF_DATA.products
+ * @param {object|null} category — matching category from NF_DATA.categories
+ */
+function nfInitPdpCinematicHero(product, category) {
+  const heroOuter = document.querySelector(".nf-pdp-hero");
+  const heroInner = heroOuter
+    ? (heroOuter.querySelector(".nf-pdp-hero__inner") || heroOuter)
+    : (document.querySelector(".nf-pdp-hero__inner") || document.querySelector(".matrix-grid"));
+  if (!heroInner) return;
+
+  /* FORM — clean white hero */
+  if (heroOuter) {
+    heroOuter.classList.remove("mrd-hero");
+    heroOuter.classList.add("frm-hero");
+  }
+  heroInner.className = "frm-hero-grid";
+  heroInner.innerHTML = "";
+
+  const partner = product.partnerId
+    ? (NF_DATA.partners || []).find((p) => p.id === product.partnerId)
+    : null;
+
+  /* ═══════════════════════════════════════════════════════════════════
+     LEFT COLUMN — Media (warm stage, product image, thumbs)
+     ═══════════════════════════════════════════════════════════════════ */
+  const colMedia = document.createElement("div");
+  colMedia.className = "frm-media-col";
+
+  const mediaStageWrap = document.createElement("div");
+  mediaStageWrap.className = "frm-media-stage";
+
+  /* Gallery — preserve class names required by gallery JS */
+  const galleryRoot = document.createElement("div");
+  galleryRoot.className = "nf-pdp-gallery--product frm-gallery";
+  galleryRoot.id = "pdpGalleryRoot";
+
+  const galStage = document.createElement("div");
+  galStage.className = "nf-pdp-media-stage frm-gal-stage";
+
+  const imgWrapEl = document.createElement("div");
+  imgWrapEl.className = "nf-pdp-media-imgwrap frm-gal-wrap";
+
+  const mainImg = document.createElement("img");
+  mainImg.className = "nf-pdp-main-img frm-main-img";
+  mainImg.id = "productPageImage";
+  mainImg.alt = product.name || "";
+
+  imgWrapEl.appendChild(mainImg);
+  galStage.appendChild(imgWrapEl);
+
+  const navPrev = document.createElement("button");
+  navPrev.type = "button";
+  navPrev.className = "nf-pdp-nav nf-pdp-nav--prev frm-nav frm-nav--prev";
+  navPrev.id = "productPageNavPrev";
+  navPrev.setAttribute("aria-label", "Предыдущее фото");
+  navPrev.innerHTML = `<svg viewBox="0 0 16 16" fill="none" width="16" height="16" aria-hidden="true"><path d="M10 12L6 8L10 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+
+  const navNext = document.createElement("button");
+  navNext.type = "button";
+  navNext.className = "nf-pdp-nav nf-pdp-nav--next frm-nav frm-nav--next";
+  navNext.id = "productPageNavNext";
+  navNext.setAttribute("aria-label", "Следующее фото");
+  navNext.innerHTML = `<svg viewBox="0 0 16 16" fill="none" width="16" height="16" aria-hidden="true"><path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+
+  const expandBtn = document.createElement("button");
+  expandBtn.type = "button";
+  expandBtn.className = "nf-pdp-expand frm-expand";
+  expandBtn.id = "productPageMediaExpand";
+  expandBtn.setAttribute("aria-label", "Открыть галерею");
+  expandBtn.innerHTML = `<svg viewBox="0 0 16 16" fill="none" width="13" height="13" aria-hidden="true"><path d="M2 6V2H6M10 2h4V6M14 10v4h-4M6 14H2v-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+
+  const counterEl = document.createElement("span");
+  counterEl.className = "nf-pdp-counter frm-counter";
+  counterEl.id = "productPageImageCounter";
+
+  galleryRoot.appendChild(galStage);
+  galleryRoot.appendChild(navPrev);
+  galleryRoot.appendChild(navNext);
+  galleryRoot.appendChild(expandBtn);
+  galleryRoot.appendChild(counterEl);
+
+  mediaStageWrap.appendChild(galleryRoot);
+
+  const thumbsEl = document.createElement("div");
+  thumbsEl.className = "nf-pdp-thumbs frm-thumbs";
+  thumbsEl.id = "productPageThumbs";
+  mediaStageWrap.appendChild(thumbsEl);
+
+  colMedia.appendChild(mediaStageWrap);
+
+  /* ═══════════════════════════════════════════════════════════════════
+     RIGHT COLUMN — Info (identity · specs · actions)
+     ═══════════════════════════════════════════════════════════════════ */
+  const colInfo = document.createElement("div");
+  colInfo.className = "frm-info-col";
+
+  /* Breadcrumb */
+  const breadcrumb = document.createElement("nav");
+  breadcrumb.className = "frm-breadcrumb";
+  breadcrumb.setAttribute("aria-label", "Навигация");
+  const bcHome = document.createElement("a");
+  bcHome.className = "frm-breadcrumb__link";
+  bcHome.href = "#";
+  bcHome.textContent = "Каталог";
+  const bcSep = document.createElement("span");
+  bcSep.className = "frm-breadcrumb__sep";
+  bcSep.setAttribute("aria-hidden", "true");
+  bcSep.textContent = "/";
+  const bcCat = document.createElement("span");
+  bcCat.className = "frm-breadcrumb__current";
+  bcCat.id = "productPageBreadcrumbCat";
+  bcCat.textContent = category?.name || "";
+  breadcrumb.appendChild(bcHome);
+  breadcrumb.appendChild(bcSep);
+  breadcrumb.appendChild(bcCat);
+
+  /* Partner badge */
+  const partnerBadge = document.createElement("div");
+  partnerBadge.className = "frm-partner-badge";
+  partnerBadge.id = "productPagePartnerBadge";
+  const partnerLogo = document.createElement("img");
+  partnerLogo.className = "frm-partner-logo";
+  partnerLogo.id = "productPagePartnerLogo";
+  const partnerNameEl = document.createElement("span");
+  partnerNameEl.className = "frm-partner-name";
+  if (partner && partner.logo) {
+    partnerLogo.src = String(partner.logo).trim();
+    partnerLogo.alt = partner.name || "";
+    partnerLogo.onerror = () => { partnerBadge.hidden = true; };
+    partnerNameEl.textContent = partner.name || "";
+    partnerBadge.hidden = false;
+  } else {
+    partnerBadge.hidden = true;
+  }
+  partnerBadge.appendChild(partnerLogo);
+  partnerBadge.appendChild(partnerNameEl);
+
+  /* Category tag */
+  const categoryTag = document.createElement("span");
+  categoryTag.className = "frm-category-tag";
+  categoryTag.id = "productPageHeroKicker";
+  categoryTag.textContent = category?.name ? String(category.name).toUpperCase() : "";
+  categoryTag.hidden = !category?.name;
+
+  /* Title */
+  const title = document.createElement("h1");
+  title.className = "frm-title";
+  title.id = "productPageTitle";
+  title.textContent = product.name || "";
+
+  /* Short description */
+  const shortDesc = document.createElement("p");
+  shortDesc.className = "frm-shortdesc";
+  shortDesc.id = "productPageShortDesc";
+  shortDesc.textContent = product.shortDesc || "";
+
+  /* Badges */
+  const badges = document.createElement("div");
+  badges.className = "frm-badges";
+  badges.id = "productPageHeroBadges";
+
+  /* Brand / SKU */
+  const brand = document.createElement("p");
+  brand.className = "frm-meta";
+  brand.id = "productPageBrand";
+  const sku = document.createElement("p");
+  sku.className = "frm-meta frm-sku";
+  sku.id = "productPageSku";
+
+  /* Divider */
+  const divider = document.createElement("hr");
+  divider.className = "frm-divider";
+  divider.setAttribute("aria-hidden", "true");
+
+  /* Spec strip — filled by nfFillPdpHeroSpecGrid */
+  const specStrip = document.createElement("div");
+  specStrip.className = "frm-spec-strip";
+  specStrip.id = "productPageHeroSpecGrid";
+
+  /* Price */
+  const priceEl = document.createElement("span");
+  priceEl.className = "frm-price";
+  priceEl.id = "productPagePrice";
+
+  /* Hidden compat IDs required by fill-passes */
+  const glowEl = document.createElement("div");
+  glowEl.id = "pdpViewerGlow";
+  glowEl.hidden = true;
+  const productCodeEl = document.createElement("span");
+  productCodeEl.id = "pdpViewerProductCode";
+  productCodeEl.hidden = true;
+
+  /* CTAs — primary adds to cart, secondary opens quick-quote (kept hidden in DOM for compat) */
+  const ctaRow = document.createElement("div");
+  ctaRow.className = "frm-cta-row";
+
+  const primaryBtn = document.createElement("button");
+  primaryBtn.type = "button";
+  primaryBtn.className = "frm-cta-primary nf-btn nf-btn--primary";
+  primaryBtn.id = "productPagePrimaryBtn";
+  primaryBtn.innerHTML =
+    `<svg viewBox="0 0 16 16" fill="none" width="15" height="15" aria-hidden="true" style="flex-shrink:0">` +
+      `<path d="M5.5 3.5h-2l-.75 1.5H4l2.7 5.7-1 1.83A.75.75 0 006.5 14h8.25v-1.5H7.06l.7-1.26L14.25 7H5.41L4.65 5.5H12l-.5-1-1-.5H5.5v-.5zm0 0" fill="currentColor"/>` +
+      `<circle cx="8" cy="15.5" r="1.5" fill="currentColor"/>` +
+      `<circle cx="13" cy="15.5" r="1.5" fill="currentColor"/>` +
+    `</svg>` +
+    `Добавить в запрос`;
+
+  /* Secondary — kept in DOM for fill-pass/bindQuoteClick, shown as text link */
+  const secondaryBtn = document.createElement("button");
+  secondaryBtn.type = "button";
+  secondaryBtn.className = "frm-cta-ghost";
+  secondaryBtn.id = "productPageSecondaryBtn";
+  secondaryBtn.textContent = "Получить КП";
+
+  ctaRow.appendChild(primaryBtn);
+  ctaRow.appendChild(secondaryBtn);
+
+  /* Hide expand button when no real product images (placeholder case) */
+  const hasImages = (
+    (Array.isArray(product.photos) && product.photos.some(Boolean)) ||
+    (Array.isArray(product.images) && product.images.some(Boolean)) ||
+    Boolean(product.image)
+  );
+  if (!hasImages) expandBtn.hidden = true;
+
+  colInfo.appendChild(breadcrumb);
+  colInfo.appendChild(partnerBadge);
+  colInfo.appendChild(categoryTag);
+  colInfo.appendChild(title);
+  colInfo.appendChild(shortDesc);
+  colInfo.appendChild(badges);
+  colInfo.appendChild(brand);
+  colInfo.appendChild(sku);
+  colInfo.appendChild(divider);
+  colInfo.appendChild(specStrip);
+  colInfo.appendChild(priceEl);
+  colInfo.appendChild(glowEl);
+  colInfo.appendChild(productCodeEl);
+  colInfo.appendChild(ctaRow);
+
+  /* ── Assemble ── */
+  heroInner.appendChild(colMedia);
+  heroInner.appendChild(colInfo);
+}
+
+/* ====== PFG CARD TILT ENGINE ====== */
+/**
+ * Lightweight RAF-based 3D tilt + SVG-thread parallax for .pfg-card.
+ * ±5° X / ±7° Y rotation, 7px / 5px thread parallax offset.
+ * Called after every render that produces new cards.
+ */
+function nfInitCardTilt() {
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+  const EASE = "600ms cubic-bezier(0.22,1,0.36,1)";
+
+  document.querySelectorAll(".pfg-card").forEach((card) => {
+    if (card._pfgTiltBound) return;
+    card._pfgTiltBound = true;
+
+    const thread = card.querySelector(".pfg-card__thread");
+    const bloom  = card.querySelector(".pfg-card__bloom");
+    let rafId    = 0;
+    let active   = false;
+
+    /* Derive bloom color from CSS --cat-accent variable (with alpha) */
+    const _getBloomColor = () => {
+      try {
+        const raw = getComputedStyle(card).getPropertyValue("--cat-accent").trim();
+        if (raw.startsWith("#") && raw.length === 7) {
+          const r = parseInt(raw.slice(1, 3), 16);
+          const g = parseInt(raw.slice(3, 5), 16);
+          const b = parseInt(raw.slice(5, 7), 16);
+          return `rgba(${r},${g},${b},0.10)`;
+        }
+        return "rgba(0,180,200,0.09)";
+      } catch (_) {
+        return "rgba(0,180,200,0.09)";
+      }
+    };
+
+    const onMove = (e) => {
+      cancelAnimationFrame(rafId);
+      rafId = requestAnimationFrame(() => {
+        if (!active) return;
+        const r   = card.getBoundingClientRect();
+        const dx  = (e.clientX - r.left  - r.width  / 2) / (r.width  / 2);
+        const dy  = (e.clientY - r.top   - r.height / 2) / (r.height / 2);
+        const pX  = ((e.clientX - r.left)  / r.width)  * 100;
+        const pY  = ((e.clientY - r.top)   / r.height) * 100;
+
+        card.style.transition = "none";
+        card.style.transform  = `perspective(1200px) rotateX(${-dy * 5}deg) rotateY(${dx * 7}deg) translateZ(10px) scale(1.015)`;
+
+        if (thread) {
+          thread.style.transition = "none";
+          thread.style.transform  = `translate(${dx * -8}px, ${dy * -5}px)`;
+        }
+
+        if (bloom) {
+          bloom.style.backgroundImage =
+            `radial-gradient(circle at ${pX}% ${pY}%, ${_getBloomColor()} 0%, transparent 65%)`;
+          bloom.style.opacity = "1";
+        }
+      });
+    };
+
+    const onEnter = () => { active = true; };
+
+    const onLeave = () => {
+      active = false;
+      cancelAnimationFrame(rafId);
+      card.style.transition = EASE;
+      card.style.transform  = "";
+      if (thread) {
+        thread.style.transition = EASE;
+        thread.style.transform  = "";
+      }
+      if (bloom) {
+        bloom.style.transition = "opacity 400ms ease";
+        bloom.style.opacity    = "0";
+      }
+      setTimeout(() => {
+        card.style.transition = "";
+        if (thread) thread.style.transition = "";
+        if (bloom)  bloom.style.transition  = "";
+      }, 650);
+    };
+
+    card.addEventListener("mousemove",  onMove,  { passive: true });
+    card.addEventListener("mouseenter", onEnter, { passive: true });
+    card.addEventListener("mouseleave", onLeave, { passive: true });
+  });
+}
+
 /* ====== ИНИЦИАЛИЗАТОРЫ СТРАНИЦ ====== */
+/** Hero «Mesh-среда» — лёгкий parallax всей сцены за курсором */
+function nfInitHeroMesh() {
+  const mesh = document.getElementById("nfMesh");
+  if (!mesh) return;
+  if (nfPrefersReducedMotion()) return;
+
+  let tx = 0, ty = 0, cx = 0, cy = 0, animId;
+  function onMove(e) {
+    tx = (e.clientX / window.innerWidth - 0.5) * 2;
+    ty = (e.clientY / window.innerHeight - 0.5) * 2;
+  }
+  function loop() {
+    cx += (tx - cx) * 0.05;
+    cy += (ty - cy) * 0.05;
+    mesh.style.transform = `translate3d(${cx * 15}px, ${cy * 11}px, 0)`;
+    animId = requestAnimationFrame(loop);
+  }
+  loop();
+  window.addEventListener("mousemove", onMove, { passive: true });
+
+  // Cleanup при SPA-навигации (подмена #page-root)
+  const pageRoot = document.getElementById("page-root");
+  const obs = new MutationObserver(() => {
+    if (!document.getElementById("nfMesh")) {
+      window.removeEventListener("mousemove", onMove);
+      cancelAnimationFrame(animId);
+      obs.disconnect();
+    }
+  });
+  if (pageRoot) obs.observe(pageRoot, { childList: true });
+}
+
+/**
+ * Hero particle logo — частицы разлетаются и собираются в фирменный знак НаноФарм.
+ *  • На входе: точки рассыпаны по сцене → плавно стягиваются в логотип (стаггер по дистанции).
+ *  • После сборки: лёгкое «дыхание» + расталкивание от курсора.
+ *  • reduced-motion / мобильные: статичная отрисовка знака, без анимации.
+ */
+let NF_LOGO_PARTICLES_CLEANUP = null;
+
+function nfInitLogoParticles() {
+  if (typeof NF_LOGO_PARTICLES_CLEANUP === "function") {
+    try { NF_LOGO_PARTICLES_CLEANUP(); } catch (_e) {}
+    NF_LOGO_PARTICLES_CLEANUP = null;
+  }
+
+  const stage = document.getElementById("nfStage");
+  const canvas = document.getElementById("nfLogoCanvas");
+  if (!stage || !canvas) return;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return;
+
+  const reduced = nfPrefersReducedMotion();
+  let coarse = false;
+  try { coarse = window.matchMedia("(pointer: coarse), (max-width: 640px)").matches; } catch (_e) {}
+
+  // Фирменные цвета берём из CSS-переменных, чтобы оставаться на бренде.
+  const css = getComputedStyle(document.documentElement);
+  const TEAL = (css.getPropertyValue("--nf-color-accent") || "").trim() || "#3f9caa";
+  const GRAPHITE = (css.getPropertyValue("--nf-color-text-primary") || "").trim() || "#26302f";
+
+  let W = 0, H = 0, dpr = 1;
+  let particles = [];
+  let nodes = [];                // узлы сети-созвездия (нано/нейро-сеть вокруг знака)
+  let raf = null;
+  let running = false;
+  let startTs = 0;
+  const FORM_MS = 1700;          // длительность сборки
+  const pointer = { x: -9999, y: -9999, active: false };
+
+  const easeOutCubic = (t) => 1 - Math.pow(1 - t, 3);
+
+  // ── Источник: монограмма (левый квадрат логотипа) ──
+  const logo = new Image();
+  logo.decoding = "async";
+
+  function buildParticles() {
+    const rect = stage.getBoundingClientRect();
+    W = Math.max(rect.width, 1);
+    H = Math.max(rect.height, 1);
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width = Math.round(W * dpr);
+    canvas.height = Math.round(H * dpr);
+    canvas.style.width = W + "px";
+    canvas.style.height = H + "px";
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    // Кроп монограммы из logo.png (rounded-square знак слева)
+    const SX = 110, SY = 30, SW = 1760, SH = 1620;
+    const srcAspect = SW / SH;
+
+    // Целевой размер знака внутри сцены (коробки нет — знак крупнее, эпичнее)
+    const fit = Math.min(W, H) * (coarse ? 0.76 : 0.9);
+    let tw = fit, th = fit / srcAspect;
+    if (th > fit) { th = fit; tw = fit * srcAspect; }
+    const offX = (W - tw) / 2;
+    const offY = (H - th) / 2;
+
+    // Оффскрин-рендер для сэмплирования пикселей
+    const off = document.createElement("canvas");
+    off.width = Math.max(2, Math.round(tw));
+    off.height = Math.max(2, Math.round(th));
+    const octx = off.getContext("2d");
+    octx.drawImage(logo, SX, SY, SW, SH, 0, 0, off.width, off.height);
+
+    let data;
+    try {
+      data = octx.getImageData(0, 0, off.width, off.height).data;
+    } catch (_e) {
+      // CORS / iOS edge — fallback: просто рисуем знак
+      ctx.clearRect(0, 0, W, H);
+      ctx.drawImage(logo, SX, SY, SW, SH, offX, offY, tw, th);
+      return false;
+    }
+
+    const step = coarse ? 5 : 4;
+    const half = coarse ? 1.25 : 1.2;
+    const targets = [];
+    for (let y = 0; y < off.height; y += step) {
+      for (let x = 0; x < off.width; x += step) {
+        const i = (y * off.width + x) * 4;
+        const a = data[i + 3];
+        if (a < 130) continue;
+        const r = data[i], g = data[i + 1], b = data[i + 2];
+        const max = Math.max(r, g, b), min = Math.min(r, g, b);
+        const sat = max === 0 ? 0 : (max - min) / max;
+        const lum = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+        // отбрасываем белый фон и бледно-серую рамку, оставляем бирюзу и графит
+        const isTeal = sat > 0.22 && b > 90 && g > 90;
+        const isDark = lum < 0.42;
+        if (!isTeal && !isDark) continue;
+        targets.push({ x: offX + x, y: offY + y, color: isTeal ? TEAL : GRAPHITE });
+      }
+    }
+
+    // Стягиваем число точек на слабых устройствах
+    let pts = targets;
+    const cap = coarse ? 1500 : 3600;
+    if (pts.length > cap) {
+      const keep = cap / pts.length;
+      pts = pts.filter(() => Math.random() < keep);
+    }
+
+    const cx = W / 2, cy = H / 2;
+    particles = pts.map((t) => {
+      // старт: по кольцу вокруг центра + случайный разброс (эффект «сборки из вихря»)
+      const ang = Math.random() * Math.PI * 2;
+      const rad = (0.4 + Math.random() * 0.7) * Math.max(W, H);
+      return {
+        tx: t.x, ty: t.y,
+        x: cx + Math.cos(ang) * rad,
+        y: cy + Math.sin(ang) * rad,
+        color: t.color,
+        half,
+        delay: Math.random() * 0.32,                 // стаггер входа
+        ph: Math.random() * Math.PI * 2,             // фаза дыхания
+        sp: 0.5 + Math.random() * 0.7,               // скорость дыхания
+        amp: 0.6 + Math.random() * 1.4,              // амплитуда дыхания
+        vx: 0, vy: 0,
+      };
+    });
+
+    // Узлы сети-созвездия: дрейфуют по сцене, соединяются линиями вблизи
+    const nodeCount = coarse ? 0 : 56;
+    nodes = [];
+    for (let n = 0; n < nodeCount; n++) {
+      nodes.push({
+        x: Math.random() * W,
+        y: Math.random() * H,
+        vx: (Math.random() - 0.5) * 0.26,
+        vy: (Math.random() - 0.5) * 0.26,
+        r: 0.8 + Math.random() * 1.4,
+      });
+    }
+    return true;
+  }
+
+  function drawConstellation(gt) {
+    if (!nodes.length) return;
+    const LINK = Math.min(W, H) * 0.26;
+    const LINK2 = LINK * LINK;
+    const fade = Math.min(gt, 1);   // проявляется по мере сборки знака
+
+    // обновление позиций + мягкое притяжение к курсору
+    for (let i = 0; i < nodes.length; i++) {
+      const n = nodes[i];
+      n.x += n.vx;
+      n.y += n.vy;
+      if (n.x < 0 || n.x > W) { n.vx *= -1; n.x = Math.max(0, Math.min(W, n.x)); }
+      if (n.y < 0 || n.y > H) { n.vy *= -1; n.y = Math.max(0, Math.min(H, n.y)); }
+      if (pointer.active) {
+        const dx = pointer.x - n.x, dy = pointer.y - n.y;
+        const d2 = dx * dx + dy * dy;
+        if (d2 < 14000) { n.x += dx * 0.004; n.y += dy * 0.004; }
+      }
+    }
+
+    // связи
+    ctx.lineWidth = 1;
+    for (let a = 0; a < nodes.length; a++) {
+      const na = nodes[a];
+      for (let b = a + 1; b < nodes.length; b++) {
+        const nb = nodes[b];
+        const dx = na.x - nb.x, dy = na.y - nb.y;
+        const d2 = dx * dx + dy * dy;
+        if (d2 < LINK2) {
+          const al = (1 - d2 / LINK2) * 0.17 * fade;
+          ctx.strokeStyle = `rgba(63,156,170,${al.toFixed(3)})`;
+          ctx.beginPath();
+          ctx.moveTo(na.x, na.y);
+          ctx.lineTo(nb.x, nb.y);
+          ctx.stroke();
+        }
+      }
+    }
+
+    // узлы
+    ctx.fillStyle = `rgba(63,156,170,${(0.42 * fade).toFixed(3)})`;
+    for (let i = 0; i < nodes.length; i++) {
+      const n = nodes[i];
+      ctx.beginPath();
+      ctx.arc(n.x, n.y, n.r, 0, 6.2832);
+      ctx.fill();
+    }
+  }
+
+  function drawStatic() {
+    // reduced-motion: моментально собранный знак (точки на местах)
+    ctx.clearRect(0, 0, W, H);
+    drawConstellation(1);
+    for (let i = 0; i < particles.length; i++) {
+      const p = particles[i];
+      ctx.fillStyle = p.color;
+      ctx.fillRect(p.tx - p.half, p.ty - p.half, p.half * 2, p.half * 2);
+    }
+  }
+
+  function drawStatic() {
+    // reduced-motion: моментально собранный знак (точки на местах)
+    ctx.clearRect(0, 0, W, H);
+    for (let i = 0; i < particles.length; i++) {
+      const p = particles[i];
+      ctx.fillStyle = p.color;
+      ctx.fillRect(p.tx - p.half, p.ty - p.half, p.half * 2, p.half * 2);
+    }
+  }
+
+  function tick(ts) {
+    if (!running) return;
+    if (!startTs) startTs = ts;
+    const elapsed = ts - startTs;
+    const gt = Math.min(elapsed / FORM_MS, 1);   // глобальный прогресс сборки
+
+    ctx.clearRect(0, 0, W, H);
+
+    // Живая энергетическая аура за знаком — проявляется по мере сборки, мягко пульсирует
+    const breathe = 0.85 + Math.sin(elapsed * 0.0013) * 0.15;
+    const auraA = Math.min(gt, 1) * 0.13 * breathe;
+    if (auraA > 0.005) {
+      const aR = Math.min(W, H) * (0.34 + (1 - gt) * 0.18);
+      const grd = ctx.createRadialGradient(W / 2, H / 2, 0, W / 2, H / 2, aR);
+      grd.addColorStop(0, `rgba(63,156,170,${auraA.toFixed(3)})`);
+      grd.addColorStop(1, "rgba(63,156,170,0)");
+      ctx.fillStyle = grd;
+      ctx.fillRect(0, 0, W, H);
+    }
+
+    // сеть-созвездие за знаком
+    drawConstellation(gt);
+
+    for (let i = 0; i < particles.length; i++) {
+      const p = particles[i];
+
+      if (gt < 1) {
+        // фаза сборки: интерполяция старт → цель с персональным стаггером
+        const local = Math.max(0, Math.min((gt - p.delay) / (1 - p.delay), 1));
+        const e = easeOutCubic(local);
+        p.x = p.x + (p.tx - p.x) * (0.08 + e * 0.14);
+        p.y = p.y + (p.ty - p.y) * (0.08 + e * 0.14);
+      } else {
+        // фаза жизни: дыхание вокруг цели + расталкивание от курсора
+        const t = elapsed * 0.001;
+        let gx = p.tx + Math.sin(t * p.sp + p.ph) * p.amp;
+        let gy = p.ty + Math.cos(t * p.sp * 0.92 + p.ph) * p.amp;
+
+        if (pointer.active) {
+          const dx = gx - pointer.x;
+          const dy = gy - pointer.y;
+          const d2 = dx * dx + dy * dy;
+          const R = 96;
+          if (d2 < R * R) {
+            const d = Math.sqrt(d2) || 1;
+            const force = (1 - d / R) * 26;
+            gx += (dx / d) * force;
+            gy += (dy / d) * force;
+          }
+        }
+        p.vx += (gx - p.x) * 0.16;
+        p.vy += (gy - p.y) * 0.16;
+        p.vx *= 0.62;
+        p.vy *= 0.62;
+        p.x += p.vx;
+        p.y += p.vy;
+      }
+
+      ctx.fillStyle = p.color;
+      ctx.fillRect(p.x - p.half, p.y - p.half, p.half * 2, p.half * 2);
+    }
+
+    // непрерывный цикл: сборка → лёгкое «дыхание» + реакция на курсор (дёшево)
+    raf = requestAnimationFrame(tick);
+  }
+
+  const onMove = (e) => {
+    const rect = stage.getBoundingClientRect();
+    pointer.x = e.clientX - rect.left;
+    pointer.y = e.clientY - rect.top;
+    pointer.active = true;
+  };
+  const onLeave = () => { pointer.active = false; pointer.x = -9999; pointer.y = -9999; };
+
+  let ro = null;
+  let inited = false;
+  const start = () => {
+    if (inited) return;        // защита от двойного вызова (кэш изображения: complete + onload)
+    inited = true;
+
+    const ok = buildParticles();
+    if (!ok) return; // фолбэк уже нарисован
+
+    if (reduced) { drawStatic(); return; }
+
+    running = true;
+    startTs = 0;
+    raf = requestAnimationFrame(tick);
+
+    if (!coarse) {
+      stage.addEventListener("pointermove", onMove, { passive: true });
+      stage.addEventListener("pointerleave", onLeave);
+    }
+
+    // ресайз — пересобрать раскладку
+    if ("ResizeObserver" in window) {
+      let rt = null;
+      ro = new ResizeObserver(() => {
+        clearTimeout(rt);
+        rt = setTimeout(() => {
+          const ok2 = buildParticles();
+          if (ok2 && reduced) drawStatic();
+          startTs = 0; // переиграть сборку плавно
+        }, 220);
+      });
+      ro.observe(stage);
+    }
+  };
+
+  logo.onload = start;
+  logo.onerror = () => {
+    try { ctx.clearRect(0, 0, W, H); } catch (_e) {}
+  };
+  logo.src = "/img/logo.png";
+  // уже в кэше — onload может не сработать
+  if (logo.complete && logo.naturalWidth) start();
+
+  NF_LOGO_PARTICLES_CLEANUP = () => {
+    running = false;
+    if (raf != null) cancelAnimationFrame(raf);
+    raf = null;
+    stage.removeEventListener("pointermove", onMove);
+    stage.removeEventListener("pointerleave", onLeave);
+    if (ro) { try { ro.disconnect(); } catch (_e) {} ro = null; }
+    try { ctx.clearRect(0, 0, W, H); } catch (_e) {}
+    particles = [];
+    nodes = [];
+  };
+}
+
 function nfInitHomePage() {
   NF_STATE.homeLazy = {
     popular: false,
@@ -9520,6 +11392,8 @@ function nfInitHomePage() {
   nfInitHomeHeroReveal();
   nfInitHomeHeroParallax();
   nfInitPremiumHeroMotion();
+  nfInitHeroMesh();
+  nfInitLogoParticles();
   nfInitHomeLazyHeavySections();
   nfInitHomeFadeUpReveal();
 }
@@ -9659,7 +11533,37 @@ function nfInitHomeHeroParallax() {
 }
 
 /**
- * Premium hero: лёгкий parallax декора + миниатюры логотипа (только transform, rAF).
+ * Набор лёгких line-иконок мед-оборудования для дрейфующих частиц hero.
+ * stroke=currentColor — цвет управляется через CSS (.nf-hero-medicon).
+ */
+const NF_MED_ICONS = [
+  // микроскоп
+  '<path d="M9 18h7M11 18l-1-4m4 4 1-4"/><path d="M10 14 8.5 9.5a2 2 0 0 1 1.2-2.6l1.4-.5 1.4 4"/><path d="m11 6 1.6-.6 1 2.8-1.6.6z"/><path d="M14 8a4 4 0 0 1 2.6 4.8"/>',
+  // стетоскоп
+  '<path d="M6 4v4a4 4 0 0 0 8 0V4"/><path d="M6 4H5m1 0h1m6 0h1m1 0h-1M10 16v1a4 4 0 0 0 4 4 4 4 0 0 0 4-4v-2"/><circle cx="18" cy="13" r="2"/>',
+  // шприц
+  '<path d="m14 4 6 6M17 7l-9.5 9.5M5 19l2.5-2.5M9 11l4 4M11 9l4 4"/><path d="M3 21l2.5-2.5"/>',
+  // колба/мензурка
+  '<path d="M9 3v6L4.5 18a1.6 1.6 0 0 0 1.4 2.4h12.2a1.6 1.6 0 0 0 1.4-2.4L15 9V3"/><path d="M8 3h8M7.5 14h9"/>',
+  // ДНК
+  '<path d="M7 3c0 5 10 5 10 10S7 18 7 23M17 3c0 5-10 5-10 10s10 5 10 10"/><path d="M8.5 6h7M8.5 18h7M10 9h4M10 15h4"/>',
+  // пульс / кардиограмма
+  '<path d="M3 12h4l2-6 4 12 2-6h6"/>',
+  // таблетка
+  '<path d="M10.5 3.5 3.5 10.5a4.95 4.95 0 0 0 7 7l7-7a4.95 4.95 0 0 0-7-7Z"/><path d="m7 7 7 7"/>',
+  // мед-крест
+  '<rect x="5" y="5" width="14" height="14" rx="3"/><path d="M12 9v6M9 12h6"/>',
+  // сердце-пульс
+  '<path d="M12 20s-7-4.5-7-9.5A3.5 3.5 0 0 1 12 7a3.5 3.5 0 0 1 7 3.5c0 5-7 9.5-7 9.5Z"/><path d="M8.5 12h2l1-2 1.5 4 1-2h1.5"/>',
+];
+
+function nfMedIconSvg(i) {
+  const body = NF_MED_ICONS[i % NF_MED_ICONS.length];
+  return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${body}</svg>`;
+}
+
+/**
+ * Premium hero: лёгкий parallax декора + дрейфующие мед-иконки (только transform, rAF).
  * На coarse / узких экранах — без магнита к курсору; при prefers-reduced-motion — статика.
  */
 function nfInitPremiumHeroMotion() {
@@ -9688,24 +11592,22 @@ function nfInitPremiumHeroMotion() {
   const count = reduced || !wide ? 0 : interactive ? 9 : 5;
 
   const particles = [];
-  const logoSrc = "/img/logo-footer.png";
 
+  // Дрейфующие иконки мед-оборудования вместо логотипов
   for (let i = 0; i < count; i++) {
-    const img = document.createElement("img");
-    img.className = "nf-hero-brand-particle";
-    img.src = logoSrc;
-    img.alt = "";
-    img.decoding = "async";
-    img.draggable = false;
-    const w = 22 + Math.floor(Math.random() * 28);
-    img.style.setProperty("--nf-hp-w", `${w}px`);
-    img.style.setProperty("--nf-hp-o", String(0.09 + Math.random() * 0.1));
+    const span = document.createElement("span");
+    span.className = "nf-hero-brand-particle nf-hero-medicon";
+    span.setAttribute("aria-hidden", "true");
+    span.innerHTML = nfMedIconSvg(i);
+    const w = 30 + Math.floor(Math.random() * 30);
+    span.style.setProperty("--nf-hp-w", `${w}px`);
+    span.style.setProperty("--nf-hp-o", String(0.1 + Math.random() * 0.1));
     const ax = 0.06 + Math.random() * 0.88;
     const ay = 0.1 + Math.random() * 0.8;
-    img.style.left = `${ax * 100}%`;
-    img.style.top = `${ay * 100}%`;
+    span.style.left = `${ax * 100}%`;
+    span.style.top = `${ay * 100}%`;
     particles.push({
-      el: img,
+      el: span,
       ax,
       ay,
       phx: Math.random() * Math.PI * 2,
@@ -9716,7 +11618,7 @@ function nfInitPremiumHeroMotion() {
       vy: 0,
       scale: 0.82 + Math.random() * 0.38,
     });
-    mount.appendChild(img);
+    mount.appendChild(span);
   }
 
   let raf = null;
@@ -9890,76 +11792,119 @@ function nfInitHomeAdvantageCardsAnimation() {
    SECTOR GATEWAY — Equipment Hub + Explorer phase navigation
 ═══════════════════════════════════════════════════════════════ */
 
+/* ── Category premium medical illustrations (ID-keyed) ──────────
+   Semi-realistic gradient vector forms. Per-category accent palette.
+   Recognisable specific medical device silhouettes, soft depth.      */
+const NF_CAT_ILLUSTRATIONS = {
+
+  /* ── Coronary stent — crimson #e05a6d ─────────────────────── */
+  "serdechno-sosudistaya-hirurgiya": `<svg viewBox="0 0 200 160" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><linearGradient id="st-bd" x1="0" y1="0" x2="0" y2="1" gradientUnits="objectBoundingBox"><stop offset="0%" stop-color="#f5a8b8"/><stop offset="45%" stop-color="#e05a6d"/><stop offset="100%" stop-color="#8c2030"/></linearGradient><radialGradient id="st-cp" cx="32%" cy="28%" r="70%"><stop offset="0%" stop-color="#fcc0cc"/><stop offset="100%" stop-color="#b83050"/></radialGradient><clipPath id="st-cl"><rect x="30" y="54" width="140" height="52"/></clipPath><filter id="st-fx" x="-10%" y="-22%" width="120%" height="168%"><feDropShadow dx="0" dy="9" stdDeviation="11" flood-color="#6c0020" flood-opacity="0.26"/></filter></defs><g filter="url(#st-fx)"><ellipse cx="170" cy="80" rx="13" ry="26" fill="#7a1828"/><rect x="30" y="54" width="140" height="52" fill="url(#st-bd)"/><g clip-path="url(#st-cl)" stroke="rgba(255,255,255,0.30)" stroke-width="1.1"><line x1="-22" y1="54" x2="30" y2="106"/><line x1="4" y1="54" x2="56" y2="106"/><line x1="30" y1="54" x2="82" y2="106"/><line x1="56" y1="54" x2="108" y2="106"/><line x1="82" y1="54" x2="134" y2="106"/><line x1="108" y1="54" x2="160" y2="106"/><line x1="134" y1="54" x2="186" y2="106"/><line x1="160" y1="54" x2="212" y2="106"/><line x1="30" y1="54" x2="-22" y2="106"/><line x1="56" y1="54" x2="4" y2="106"/><line x1="82" y1="54" x2="30" y2="106"/><line x1="108" y1="54" x2="56" y2="106"/><line x1="134" y1="54" x2="82" y2="106"/><line x1="160" y1="54" x2="108" y2="106"/><line x1="186" y1="54" x2="134" y2="106"/><line x1="212" y1="54" x2="160" y2="106"/></g><ellipse cx="30" cy="80" rx="13" ry="26" fill="url(#st-cp)"/><ellipse cx="80" cy="63" rx="44" ry="10" fill="rgba(255,255,255,0.24)"/></g></svg>`,
+
+  /* ── Neurosurgical navigation probe — amber #d4916d ────────── */
+  "neyrohirurgiya": `<svg viewBox="0 0 200 160" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><linearGradient id="nh-hd" x1="0" y1="0" x2="0" y2="1" gradientUnits="objectBoundingBox"><stop offset="0%" stop-color="#edd4bc"/><stop offset="50%" stop-color="#d4916d"/><stop offset="100%" stop-color="#8c4820"/></linearGradient><linearGradient id="nh-sh" x1="0" y1="0" x2="0" y2="1" gradientUnits="objectBoundingBox"><stop offset="0%" stop-color="#dca882"/><stop offset="100%" stop-color="#7a3814"/></linearGradient><filter id="nh-fx" x="-8%" y="-28%" width="116%" height="195%"><feDropShadow dx="2" dy="9" stdDeviation="10" flood-color="#5c2806" flood-opacity="0.26"/></filter></defs><g filter="url(#nh-fx)"><rect x="12" y="67" width="82" height="26" rx="9" fill="url(#nh-hd)"/><line x1="36" y1="67" x2="36" y2="93" stroke="rgba(255,255,255,0.22)" stroke-width="1.5"/><line x1="52" y1="67" x2="52" y2="93" stroke="rgba(255,255,255,0.22)" stroke-width="1.5"/><line x1="68" y1="67" x2="68" y2="93" stroke="rgba(255,255,255,0.22)" stroke-width="1.5"/><rect x="94" y="73" width="60" height="14" rx="3" fill="url(#nh-sh)"/><line x1="108" y1="73" x2="108" y2="70" stroke="rgba(255,255,255,0.30)" stroke-width="0.8"/><line x1="118" y1="73" x2="118" y2="70" stroke="rgba(255,255,255,0.30)" stroke-width="0.8"/><line x1="128" y1="73" x2="128" y2="70" stroke="rgba(255,255,255,0.30)" stroke-width="0.8"/><line x1="138" y1="73" x2="138" y2="70" stroke="rgba(255,255,255,0.30)" stroke-width="0.8"/><line x1="148" y1="73" x2="148" y2="70" stroke="rgba(255,255,255,0.30)" stroke-width="0.8"/><path d="M154 73 L154 87 L185 80 Z" fill="#6a3010"/><rect x="16" y="69" width="66" height="8" rx="4" fill="rgba(255,255,255,0.26)"/></g></svg>`,
+
+  /* ── Anesthesia face mask — mint #4db89b ───────────────────── */
+  "anesteziologiya-reanimaciya": `<svg viewBox="0 0 200 160" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><radialGradient id="ar-mk" cx="36%" cy="30%" r="68%"><stop offset="0%" stop-color="#9edccc"/><stop offset="55%" stop-color="#4db89b"/><stop offset="100%" stop-color="#1a7060"/></radialGradient><radialGradient id="ar-cv" cx="38%" cy="34%" r="66%"><stop offset="0%" stop-color="#6cc8b4"/><stop offset="100%" stop-color="#0e5e4a"/></radialGradient><radialGradient id="ar-pt" cx="36%" cy="34%" r="66%"><stop offset="0%" stop-color="#a8e0d0"/><stop offset="100%" stop-color="#1a7860"/></radialGradient><filter id="ar-fx" x="-14%" y="-18%" width="128%" height="162%"><feDropShadow dx="0" dy="10" stdDeviation="12" flood-color="#082e22" flood-opacity="0.26"/></filter></defs><g filter="url(#ar-fx)"><ellipse cx="100" cy="83" rx="66" ry="56" fill="url(#ar-mk)"/><ellipse cx="100" cy="85" rx="52" ry="44" fill="url(#ar-cv)"/><ellipse cx="100" cy="85" rx="30" ry="26" fill="#0e5040"/><circle cx="100" cy="82" r="17" fill="url(#ar-pt)"/><circle cx="100" cy="82" r="11" fill="#0a4030"/><circle cx="100" cy="82" r="7" fill="#1e7860"/><ellipse cx="70" cy="54" rx="28" ry="16" fill="rgba(255,255,255,0.28)"/></g></svg>`,
+
+  /* ── CT gantry bore — blue #5a8fd4 ────────────────────────── */
+  "radiologiya": `<svg viewBox="0 0 200 160" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><radialGradient id="rd-ou" cx="34%" cy="28%" r="72%"><stop offset="0%" stop-color="#a8c4ec"/><stop offset="55%" stop-color="#5a8fd4"/><stop offset="100%" stop-color="#1c3e88"/></radialGradient><radialGradient id="rd-in" cx="40%" cy="36%" r="64%"><stop offset="0%" stop-color="#6898dc"/><stop offset="100%" stop-color="#2048a0"/></radialGradient><filter id="rd-fx" x="-14%" y="-18%" width="128%" height="162%"><feDropShadow dx="0" dy="10" stdDeviation="12" flood-color="#0c1e48" flood-opacity="0.26"/></filter></defs><g filter="url(#rd-fx)"><circle cx="100" cy="80" r="68" fill="url(#rd-ou)"/><circle cx="100" cy="80" r="50" fill="#0e1e58"/><circle cx="100" cy="80" r="42" fill="url(#rd-in)"/><circle cx="100" cy="80" r="24" fill="#04091e"/><rect x="87" y="104" width="26" height="20" rx="2" fill="#04091e"/><ellipse cx="68" cy="46" rx="30" ry="16" fill="rgba(255,255,255,0.22)"/></g></svg>`,
+
+  /* ── Endoscope distal tip cross-section — teal #32b5c6 ─────── */
+  "urologiya": `<svg viewBox="0 0 200 160" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><radialGradient id="ur-ou" cx="34%" cy="28%" r="72%"><stop offset="0%" stop-color="#88d8e4"/><stop offset="55%" stop-color="#32b5c6"/><stop offset="100%" stop-color="#1a6878"/></radialGradient><radialGradient id="ur-ln" cx="38%" cy="34%" r="64%"><stop offset="0%" stop-color="#b0e8f0"/><stop offset="100%" stop-color="#0e5868"/></radialGradient><radialGradient id="ur-cm" cx="36%" cy="32%" r="66%"><stop offset="0%" stop-color="#60d0e0"/><stop offset="100%" stop-color="#0c4858"/></radialGradient><filter id="ur-fx" x="-14%" y="-18%" width="128%" height="162%"><feDropShadow dx="0" dy="10" stdDeviation="12" flood-color="#062830" flood-opacity="0.26"/></filter></defs><g filter="url(#ur-fx)"><circle cx="100" cy="80" r="66" fill="url(#ur-ou)"/><circle cx="100" cy="80" r="52" fill="#0c3848"/><circle cx="76" cy="80" r="18" fill="url(#ur-ln)"/><circle cx="76" cy="80" r="11" fill="#0a3040"/><circle cx="100" cy="80" r="14" fill="url(#ur-cm)"/><circle cx="100" cy="80" r="8" fill="#081e30"/><circle cx="100" cy="80" r="4" fill="#1a7888"/><circle cx="124" cy="58" r="8" fill="url(#ur-ln)"/><circle cx="132" cy="80" r="8" fill="url(#ur-ln)"/><circle cx="124" cy="102" r="8" fill="url(#ur-ln)"/><ellipse cx="72" cy="50" rx="24" ry="14" fill="rgba(255,255,255,0.24)"/></g></svg>`,
+
+  /* ── Medical laser handpiece — coral #e8836d ───────────────── */
+  "esteticheskaya-medicina": `<svg viewBox="0 0 200 160" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><linearGradient id="em-bd" x1="0" y1="0" x2="0" y2="1" gradientUnits="objectBoundingBox"><stop offset="0%" stop-color="#f8c0b0"/><stop offset="45%" stop-color="#e8836d"/><stop offset="100%" stop-color="#9c3820"/></linearGradient><linearGradient id="em-tp" x1="0" y1="0" x2="0" y2="1" gradientUnits="objectBoundingBox"><stop offset="0%" stop-color="#f0a898"/><stop offset="100%" stop-color="#803018"/></linearGradient><radialGradient id="em-ap" cx="36%" cy="32%" r="68%"><stop offset="0%" stop-color="#fcc8b8"/><stop offset="100%" stop-color="#b04030"/></radialGradient><filter id="em-fx" x="-10%" y="-22%" width="120%" height="168%"><feDropShadow dx="1" dy="9" stdDeviation="11" flood-color="#5c1808" flood-opacity="0.26"/></filter></defs><g filter="url(#em-fx)"><rect x="14" y="64" width="116" height="32" rx="10" fill="url(#em-bd)"/><line x1="44" y1="64" x2="44" y2="96" stroke="rgba(255,255,255,0.22)" stroke-width="1.8"/><line x1="60" y1="64" x2="60" y2="96" stroke="rgba(255,255,255,0.22)" stroke-width="1.8"/><line x1="76" y1="64" x2="76" y2="96" stroke="rgba(255,255,255,0.22)" stroke-width="1.8"/><path d="M130 66 L130 94 L152 90 L152 70 Z" fill="url(#em-tp)"/><circle cx="160" cy="80" r="16" fill="url(#em-ap)"/><circle cx="160" cy="80" r="10" fill="#3c1208"/><circle cx="160" cy="80" r="6" fill="#e07060"/><circle cx="160" cy="80" r="3" fill="#fcc0b0"/><rect x="18" y="66" width="96" height="9" rx="4" fill="rgba(255,255,255,0.26)"/></g></svg>`,
+
+  /* ── Pacemaker D-case with IS-1 header — violet #7c5cbf ────── */
+  "elektrokardiostimulyaciya": `<svg viewBox="0 0 200 160" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><radialGradient id="ek-cs" cx="34%" cy="28%" r="72%"><stop offset="0%" stop-color="#b8a0e0"/><stop offset="55%" stop-color="#7c5cbf"/><stop offset="100%" stop-color="#401880"/></radialGradient><linearGradient id="ek-hd" x1="0" y1="0" x2="0" y2="1" gradientUnits="objectBoundingBox"><stop offset="0%" stop-color="#9880cc"/><stop offset="100%" stop-color="#4c28a0"/></linearGradient><filter id="ek-fx" x="-14%" y="-14%" width="128%" height="155%"><feDropShadow dx="1" dy="9" stdDeviation="11" flood-color="#1c083e" flood-opacity="0.26"/></filter></defs><g filter="url(#ek-fx)"><path d="M30 34 L132 34 Q160 34 160 58 L160 110 Q160 134 132 134 L30 134 Q14 134 14 110 L14 58 Q14 34 30 34 Z" fill="url(#ek-cs)"/><rect x="136" y="38" width="32" height="66" rx="4" fill="url(#ek-hd)"/><circle cx="152" cy="56" r="9" fill="#200e50"/><circle cx="152" cy="56" r="5.5" fill="#130830"/><circle cx="152" cy="80" r="9" fill="#200e50"/><circle cx="152" cy="80" r="5.5" fill="#130830"/><circle cx="152" cy="104" r="9" fill="#200e50"/><circle cx="152" cy="104" r="5.5" fill="#130830"/><ellipse cx="58" cy="58" rx="36" ry="24" fill="rgba(255,255,255,0.20)"/></g></svg>`,
+
+  /* ── ECG electrode disc — sky blue #4fa3c7 ─────────────────── */
+  "functionalnaya-diagnostika": `<svg viewBox="0 0 200 160" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><radialGradient id="fd-ds" cx="34%" cy="28%" r="72%"><stop offset="0%" stop-color="#a8d4e8"/><stop offset="55%" stop-color="#4fa3c7"/><stop offset="100%" stop-color="#1868a0"/></radialGradient><radialGradient id="fd-gv" cx="36%" cy="32%" r="66%"><stop offset="0%" stop-color="#7abcdc"/><stop offset="100%" stop-color="#0e5888"/></radialGradient><radialGradient id="fd-sn" cx="36%" cy="30%" r="68%"><stop offset="0%" stop-color="#b8dced"/><stop offset="100%" stop-color="#2878b0"/></radialGradient><filter id="fd-fx" x="-18%" y="-18%" width="136%" height="162%"><feDropShadow dx="0" dy="10" stdDeviation="12" flood-color="#082038" flood-opacity="0.24"/></filter></defs><g filter="url(#fd-fx)"><circle cx="100" cy="80" r="66" fill="url(#fd-ds)"/><circle cx="100" cy="80" r="52" fill="#0e3858"/><circle cx="100" cy="80" r="40" fill="url(#fd-gv)"/><circle cx="100" cy="80" r="22" fill="#0a2848"/><circle cx="100" cy="80" r="14" fill="url(#fd-sn)"/><circle cx="100" cy="80" r="7" fill="#062038"/><circle cx="100" cy="80" r="3" fill="#2888c0"/><ellipse cx="72" cy="48" rx="28" ry="16" fill="rgba(255,255,255,0.24)"/></g></svg>`,
+
+  /* ── Hip femoral implant — green #5dac6b ───────────────────── */
+  "ortopediya": `<svg viewBox="0 0 200 160" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><radialGradient id="op-hd" cx="32%" cy="26%" r="74%"><stop offset="0%" stop-color="#a4d4b0"/><stop offset="55%" stop-color="#5dac6b"/><stop offset="100%" stop-color="#286840"/></radialGradient><linearGradient id="op-nk" x1="0" y1="0" x2="1" y2="1" gradientUnits="objectBoundingBox"><stop offset="0%" stop-color="#7ac490"/><stop offset="100%" stop-color="#1e5030"/></linearGradient><linearGradient id="op-st" x1="0" y1="0" x2="1" y2="1" gradientUnits="objectBoundingBox"><stop offset="0%" stop-color="#68b878"/><stop offset="100%" stop-color="#1a4828"/></linearGradient><filter id="op-fx" x="-20%" y="-12%" width="140%" height="155%"><feDropShadow dx="2" dy="9" stdDeviation="11" flood-color="#0a2010" flood-opacity="0.26"/></filter></defs><g filter="url(#op-fx)"><polygon points="86,98 94,148 116,148 108,98" fill="url(#op-st)"/><line x1="90" y1="112" x2="112" y2="112" stroke="rgba(255,255,255,0.20)" stroke-width="1"/><line x1="88" y1="128" x2="114" y2="128" stroke="rgba(255,255,255,0.20)" stroke-width="1"/><path d="M86 98 Q80 84 90 74 Q96 64 108 64 Q120 64 126 76 Q132 88 108 98 Z" fill="url(#op-nk)"/><circle cx="105" cy="52" r="34" fill="url(#op-hd)"/><ellipse cx="90" cy="38" rx="18" ry="12" fill="rgba(255,255,255,0.30)"/></g></svg>`,
+
+  /* ── Fallback — generic medical device ─────────────────────── */
+  "_fallback": `<svg viewBox="0 0 200 160" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><radialGradient id="fb-s" cx="34%" cy="28%" r="70%"><stop offset="0%" stop-color="#b8d0d8"/><stop offset="55%" stop-color="#6898a8"/><stop offset="100%" stop-color="#2c5060"/></radialGradient><filter id="fb-fx" x="-18%" y="-18%" width="136%" height="162%"><feDropShadow dx="0" dy="10" stdDeviation="12" flood-color="#0e2830" flood-opacity="0.24"/></filter></defs><g filter="url(#fb-fx)"><circle cx="100" cy="80" r="56" fill="url(#fb-s)"/><rect x="88" y="56" width="24" height="48" rx="4" fill="rgba(255,255,255,0.50)"/><rect x="76" y="68" width="48" height="24" rx="4" fill="rgba(255,255,255,0.50)"/><ellipse cx="82" cy="62" rx="18" ry="12" fill="rgba(255,255,255,0.28)"/></g></svg>`,
+};
+
+/* ── Per-category accent colors (distinct per specialty) ─────── */
+const NF_CAT_ACCENTS = {
+  "serdechno-sosudistaya-hirurgiya": "#e05a6d",  /* crimson  */
+  "neyrohirurgiya":                   "#d4916d",  /* amber    */
+  "anesteziologiya-reanimaciya":      "#4db89b",  /* mint     */
+  "radiologiya":                      "#5a8fd4",  /* blue     */
+  "urologiya":                        "#32b5c6",  /* teal     */
+  "esteticheskaya-medicina":          "#e8836d",  /* coral    */
+  "elektrokardiostimulyaciya":        "#7c5cbf",  /* violet   */
+  "functionalnaya-diagnostika":       "#4fa3c7",  /* sky blue */
+  "ortopediya":                       "#5dac6b",  /* green    */
+};
+
+/* ── Per-category light-thread SVG graphics (PFG system) ─────────────
+ *  Abstract stroke-only paths, stroke="currentColor", teal-tinted.
+ *  Rendered at 170×136 inside .pfg-card__thread (positioned top-right).
+ * ──────────────────────────────────────────────────────────────────── */
+const NF_CAT_THREADS = {
+  "serdechno-sosudistaya-hirurgiya": `<svg viewBox="0 0 170 136" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><g transform="translate(40 23) scale(3.75)" fill="none" stroke="currentColor" stroke-width="0.62" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.55"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></g></svg>`,
+  "neyrohirurgiya": `<svg viewBox="0 0 170 136" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><g transform="translate(40 23) scale(3.75)" fill="none" stroke="currentColor" stroke-width="0.62" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.55"><path d="M12 5a3 3 0 1 0-5.997.125 4 4 0 0 0-2.526 5.77 4 4 0 0 0 .556 6.588A4 4 0 1 0 12 18Z"/><path d="M12 5a3 3 0 1 1 5.997.125 4 4 0 0 1 2.526 5.77 4 4 0 0 1-.556 6.588A4 4 0 1 1 12 18Z"/><path d="M15 13a4.5 4.5 0 0 1-3-4 4.5 4.5 0 0 1-3 4"/><path d="M17.599 6.5a3 3 0 0 0 .399-1.375"/><path d="M6.003 5.125A3 3 0 0 0 6.401 6.5"/><path d="M3.477 10.896a4 4 0 0 1 .585-.396"/><path d="M19.938 10.5a4 4 0 0 1 .585.396"/><path d="M6 18a4 4 0 0 1-1.967-.516"/><path d="M19.967 17.484A4 4 0 0 1 18 18"/></g></svg>`,
+  "anesteziologiya-reanimaciya": `<svg viewBox="0 0 170 136" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><g transform="translate(40 23) scale(3.75)" fill="none" stroke="currentColor" stroke-width="0.62" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.55"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8"/><path d="M12 17v4"/><path d="M5 10h2.2l1.3-3 2 6 1.3-3H19"/></g></svg>`,
+  "radiologiya": `<svg viewBox="0 0 170 136" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><g transform="translate(40 23) scale(3.75)" fill="none" stroke="currentColor" stroke-width="0.62" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.55"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><circle cx="12" cy="12" r="3.5"/></g></svg>`,
+  "urologiya": `<svg viewBox="0 0 170 136" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><g transform="translate(40 23) scale(3.75)" fill="none" stroke="currentColor" stroke-width="0.62" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.55"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/></g></svg>`,
+  "esteticheskaya-medicina": `<svg viewBox="0 0 170 136" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><g transform="translate(40 23) scale(3.75)" fill="none" stroke="currentColor" stroke-width="0.62" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.55"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .962 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.962 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/></g></svg>`,
+  "elektrokardiostimulyaciya": `<svg viewBox="0 0 170 136" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><g transform="translate(40 23) scale(3.75)" fill="none" stroke="currentColor" stroke-width="0.62" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.55"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/><path d="M3.22 12H9.5l.5-1 2 4.5 2-7 1.5 3.5h5.27"/></g></svg>`,
+  "functionalnaya-diagnostika": `<svg viewBox="0 0 170 136" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><g transform="translate(40 23) scale(3.75)" fill="none" stroke="currentColor" stroke-width="0.62" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.55"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></g></svg>`,
+  "ortopediya": `<svg viewBox="0 0 170 136" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><g transform="translate(40 23) scale(3.75)" fill="none" stroke="currentColor" stroke-width="0.62" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.55"><path d="M17 10c.7-.7 1.69 0 2.5 0a2.5 2.5 0 1 0 0-5 .5.5 0 0 1-.5-.5 2.5 2.5 0 1 0-5 0c0 .81.7 1.8 0 2.5l-7 7c-.7.7-1.69 0-2.5 0a2.5 2.5 0 0 0 0 5c.28 0 .5.22.5.5a2.5 2.5 0 1 0 5 0c0-.81-.7-1.8 0-2.5Z"/></g></svg>`,
+  "_fallback": `<svg viewBox="0 0 170 136" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><circle cx="85" cy="68" r="52" stroke="currentColor" stroke-opacity="0.10" stroke-width="1.2"/><circle cx="85" cy="68" r="32" stroke="currentColor" stroke-opacity="0.14" stroke-width="1"/><circle cx="85" cy="68" r="12" stroke="currentColor" stroke-opacity="0.18" stroke-width="1.2"/><line x1="85" y1="16" x2="85" y2="120" stroke="currentColor" stroke-opacity="0.12" stroke-width="1"/><line x1="33" y1="68" x2="137" y2="68" stroke="currentColor" stroke-opacity="0.12" stroke-width="1"/></svg>`,
+};
+
 function nfRenderCatalogHub() {
   const grid = nfEl("catalogHubGrid");
   if (!grid) return;
   grid.innerHTML = "";
 
   const allProducts = NF_DATA.products || [];
-  NF_DATA.categories.forEach((c, i) => {
-    const count = allProducts.filter((p) => p.categoryId === c.id && !p.isHidden).length;
-    const card = nfCreateEl("article", "nf-sector-card nf-vp-reveal");
+  const rootCatsHub = (NF_DATA.categories || []).filter((c) => !c.parentId);
+  rootCatsHub.forEach((c, i) => {
+    const count  = allProducts.filter((p) => p.categoryId === c.id && !p.isHidden).length;
+    const thread = NF_CAT_THREADS[c.id] || NF_CAT_THREADS["_fallback"];
+    const accent = NF_CAT_ACCENTS[c.id] || "#4da6b8";
+
+    const card = nfCreateEl("article", "pfg-card");
     card.setAttribute("role", "listitem");
     card.setAttribute("tabindex", "0");
     card.setAttribute("aria-label", c.name);
-    card.setAttribute("aria-expanded", "false");
-    card.style.setProperty("--nf-vp-stagger", `${Math.min(i, 14) * 40}ms`);
+    card.style.setProperty("--cat-accent", accent);
+    card.style.setProperty("--nf-vp-stagger", `${Math.min(i, 14) * 55}ms`);
+
     card.innerHTML = `
-      <div class="nf-sector-card__top">
-        <span class="nf-sector-card__index" aria-hidden="true">${String(i + 1).padStart(2, "0")}</span>
-        <h2 class="nf-sector-card__title">${nfEscapeHtml(c.name)}</h2>
-        <span class="nf-sector-card__chevron" aria-hidden="true">
-          <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-            <path d="M4.5 6.75L9 11.25L13.5 6.75" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </span>
-      </div>
-      <div class="nf-sector-card__panel" aria-hidden="true">
-        <p class="nf-sector-card__desc">${nfEscapeHtml(c.description || "")}</p>
-        <div class="nf-sector-card__panel-footer">
-          <span class="nf-sector-card__count">${nfEscapeHtml(nfItemsCountLabel(count))}</span>
-          <button type="button" class="nf-sector-card__cta">
-            Открыть каталог
-            <svg width="13" height="13" viewBox="0 0 13 13" fill="none" aria-hidden="true">
-              <path d="M2.5 6.5H10.5M10.5 6.5L7 3M10.5 6.5L7 10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+      <div class="pfg-card__bloom" aria-hidden="true"></div>
+      <div class="pfg-card__thread" aria-hidden="true">${thread}</div>
+      <div class="pfg-card__body">
+        <h3 class="pfg-card__name">${nfEscapeHtml(c.name)}</h3>
+        ${c.description ? `<p class="pfg-card__desc">${nfEscapeHtml(c.description)}</p>` : ""}
+        <div class="pfg-card__footer">
+          <span class="pfg-card__count">${nfEscapeHtml(nfItemsCountLabel(count))}</span>
+          <span class="pfg-card__cta" aria-hidden="true">
+            ${nfEscapeHtml(nfT("common.open", "Открыть"))}
+            <svg viewBox="0 0 16 16" fill="none" width="12" height="12">
+              <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8"
+                    stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
-          </button>
+          </span>
         </div>
       </div>
     `;
 
-    const top = card.querySelector(".nf-sector-card__top");
-    const panel = card.querySelector(".nf-sector-card__panel");
-    const cta = card.querySelector(".nf-sector-card__cta");
-
-    const toggleCard = () => {
-      const isExpanded = card.classList.contains("is-expanded");
-      grid.querySelectorAll(".nf-sector-card.is-expanded").forEach((other) => {
-        if (other !== card) {
-          other.classList.remove("is-expanded");
-          other.setAttribute("aria-expanded", "false");
-          const op = other.querySelector(".nf-sector-card__panel");
-          if (op) op.setAttribute("aria-hidden", "true");
-        }
-      });
-      card.classList.toggle("is-expanded", !isExpanded);
-      card.setAttribute("aria-expanded", String(!isExpanded));
-      panel.setAttribute("aria-hidden", String(isExpanded));
-    };
-
-    top.addEventListener("click", toggleCard);
+    card.addEventListener("click", () => nfEnterCatalogExplorer(c.id, { fromHub: true }));
     card.addEventListener("keydown", (e) => {
-      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggleCard(); }
-    });
-    cta.addEventListener("click", (e) => {
-      e.stopPropagation();
-      nfEnterCatalogExplorer(c.id, { fromHub: true });
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); nfEnterCatalogExplorer(c.id, { fromHub: true }); }
     });
 
     grid.appendChild(card);
   });
 
-  nfInitViewportReveal(grid);
+  nfInitCardTilt();
 }
 
 function nfShowCatalogHub() {
@@ -9975,13 +11920,14 @@ function nfShowCatalogHub() {
 
 function nfEnterCatalogExplorer(categoryId, opts = {}) {
   const { replace = false } = opts;
-  const cat = (NF_DATA.categories || []).find((c) => c.id === categoryId);
+  const cat = (NF_DATA.categories || []).find((c) => c.id === categoryId && !c.parentId);
   if (!cat) return;
 
-  NF_STATE.filters.categoryIds = new Set([categoryId]);
-  NF_STATE.filters.partnerIds = new Set();
-  NF_STATE.filters.model = "";
-  NF_STATE.filters.page = 1;
+  NF_STATE.filters.categoryIds  = new Set([categoryId]);
+  NF_STATE.filters.subcategoryId = "";
+  NF_STATE.filters.partnerIds   = new Set();
+  NF_STATE.filters.model        = "";
+  NF_STATE.filters.page         = 1;
   NF_STATE.catalogPhase = "explorer";
 
   const newUrl = `/catalog?cat=${encodeURIComponent(categoryId)}`;
@@ -9992,6 +11938,34 @@ function nfEnterCatalogExplorer(categoryId, opts = {}) {
   }
 
   nfShowCatalogExplorer(cat);
+}
+
+function nfUpdateExplorerBreadcrumb(catId, subcatId) {
+  const bcEl = nfEl("catalogExplorerBreadcrumb");
+  if (!bcEl) return;
+  if (!subcatId) {
+    bcEl.hidden = true;
+    bcEl.innerHTML = "";
+    return;
+  }
+  const subcat = (NF_DATA.categories || []).find((c) => c.id === subcatId);
+  if (!subcat) { bcEl.hidden = true; return; }
+
+  bcEl.hidden = false;
+  bcEl.innerHTML = `
+    <button class="nf-bc__item nf-bc__item--link" type="button" id="bcCatBtn"></button>
+    <span class="nf-bc__sep" aria-hidden="true">
+      <svg viewBox="0 0 10 16" fill="none" width="6" height="10">
+        <path d="M2 2l6 6-6 6" stroke="currentColor" stroke-width="1.6"
+              stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </span>
+    <span class="nf-bc__item nf-bc__item--active"></span>
+  `;
+  const catName = (NF_DATA.categories || []).find((c) => c.id === catId)?.name || "";
+  bcEl.querySelector(".nf-bc__item--link").textContent  = catName;
+  bcEl.querySelector(".nf-bc__item--active").textContent = subcat.name;
+  bcEl.querySelector("#bcCatBtn").addEventListener("click", () => nfClearSubcategory());
 }
 
 function nfShowCatalogExplorer(cat) {
@@ -10014,58 +11988,240 @@ function nfShowCatalogExplorer(cat) {
     ogType: "website",
   });
 
-  nfRenderCatalogStrip(cat.id);
+  nfUpdateExplorerBreadcrumb(cat.id, NF_STATE.filters.subcategoryId || "");
+  nfRenderCatalogStrip(cat.id, NF_STATE.filters.subcategoryId || "");
   nfApplyCatalogFilters(NF_STATE.filters, { navigateToCatalog: false });
   nfInitCatalogExplorerControls();
 }
 
-function nfRenderCatalogStrip(activeCategoryId) {
-  const itemsEl = nfEl("catalogStripItems");
-  const backBtn = nfEl("catalogStripBack");
-  if (!itemsEl) return;
+/** Switch active main category in explorer */
+function nfSwitchCatalogCategory(catId) {
+  const newCat = (NF_DATA.categories || []).find((x) => x.id === catId && !x.parentId);
+  if (!newCat) return;
+  NF_STATE.catalogFromHome = false;
+  NF_STATE.filters.categoryIds    = new Set([catId]);
+  NF_STATE.filters.subcategoryId  = "";
+  NF_STATE.filters.partnerIds     = new Set();
+  NF_STATE.filters.model          = "";
+  NF_STATE.filters.page           = 1;
+  history.replaceState({ page: "catalog" }, "", `/catalog?cat=${encodeURIComponent(catId)}`);
+  const titleEl = nfEl("catalogExplorerTitle");
+  const descEl  = nfEl("catalogExplorerDesc");
+  if (titleEl) titleEl.textContent = newCat.name;
+  if (descEl)  descEl.textContent  = newCat.description || "";
+  nfUpdateSeo({
+    title: nfT("seo.category.title", "{name} — каталог НаноФарм", { name: newCat.name }),
+    description: newCat.description || newCat.name,
+    ogType: "website",
+  });
+  nfUpdateExplorerBreadcrumb(catId, "");
+  nfRenderCatalogStrip(catId, "");
+  nfApplyCatalogFilters(NF_STATE.filters, { navigateToCatalog: false });
+  // Scroll content area to top smoothly
+  const contentEl = nfEl("catalogExplorerHead");
+  if (contentEl) contentEl.scrollIntoView({ behavior: "smooth", block: "start" });
+}
 
-  if (backBtn) backBtn.onclick = () => nfReturnToCatalogHub();
+/** Select a subcategory — keeps parent category active, filters by subcategoryId */
+function nfSwitchSubcategory(subcatId, parentCatId) {
+  const subcat = (NF_DATA.categories || []).find((x) => x.id === subcatId);
+  if (!subcat) return;
+  NF_STATE.filters.subcategoryId = subcatId;
+  NF_STATE.filters.page          = 1;
+  nfUpdateExplorerBreadcrumb(parentCatId, subcatId);
+  nfRenderCatalogStrip(parentCatId, subcatId);
+  nfApplyCatalogFilters(NF_STATE.filters, { navigateToCatalog: false });
+}
 
-  itemsEl.innerHTML = "";
-  (NF_DATA.categories || []).forEach((c) => {
-    const isActive = c.id === activeCategoryId;
-    const btn = nfCreateEl("button", `nf-catalog-strip__item${isActive ? " is-active" : ""}`);
-    btn.type = "button";
-    btn.setAttribute("role", "listitem");
-    btn.setAttribute("aria-current", isActive ? "true" : "false");
-    btn.textContent = c.name;
-    if (!isActive) {
-      btn.addEventListener("click", () => {
-        const newCat = (NF_DATA.categories || []).find((x) => x.id === c.id);
-        if (!newCat) return;
-        NF_STATE.filters.categoryIds = new Set([c.id]);
-        NF_STATE.filters.partnerIds = new Set();
-        NF_STATE.filters.model = "";
-        NF_STATE.filters.page = 1;
-        history.replaceState({ page: "catalog" }, "", `/catalog?cat=${encodeURIComponent(c.id)}`);
-        const titleEl = nfEl("catalogExplorerTitle");
-        const descEl  = nfEl("catalogExplorerDesc");
-        if (titleEl) titleEl.textContent = newCat.name;
-        if (descEl)  descEl.textContent  = newCat.description || "";
-        nfUpdateSeo({
-          title: nfT("seo.category.title", "{name} — каталог НаноФарм", { name: newCat.name }),
-          description: newCat.description || newCat.name,
-          ogType: "website",
-        });
-        nfRenderCatalogStrip(c.id);
-        nfApplyCatalogFilters(NF_STATE.filters, { navigateToCatalog: false });
-      });
+/** Clear subcategory filter, stay in same main category */
+function nfClearSubcategory() {
+  const catId = NF_STATE.filters.categoryIds.size
+    ? [...NF_STATE.filters.categoryIds][0]
+    : "";
+  NF_STATE.filters.subcategoryId = "";
+  NF_STATE.filters.page          = 1;
+  nfUpdateExplorerBreadcrumb(catId, "");
+  nfRenderCatalogStrip(catId, "");
+  nfApplyCatalogFilters(NF_STATE.filters, { navigateToCatalog: false });
+}
+
+/** Populate the sticky strip (mobile) and the sidebar rail (desktop/tablet).
+ *  activeCategoryId  — main category currently selected
+ *  activeSubcategoryId — subcategory currently selected (or "")
+ */
+function nfRenderCatalogStrip(activeCategoryId, activeSubcategoryId) {
+  const itemsEl  = nfEl("catalogStripItems");
+  const backBtn  = nfEl("catalogStripBack");
+  const railEl   = nfEl("catalogRailItems");
+  const railBack = nfEl("catalogRailBack");
+
+  if (backBtn)  backBtn.onclick  = () => nfReturnToCatalogHub();
+  if (railBack) railBack.onclick = () => nfReturnToCatalogHub();
+
+  const allCats = NF_DATA.categories || [];
+  // Split into root categories and subcategories
+  const rootCats = allCats.filter((c) => !c.parentId);
+  // Map: parentId → [subcategories]
+  const subMap = {};
+  allCats.filter((c) => c.parentId).forEach((c) => {
+    if (!subMap[c.parentId]) subMap[c.parentId] = [];
+    subMap[c.parentId].push(c);
+  });
+
+  /* ── Mobile horizontal strip (root categories only, no accordion) ── */
+  if (itemsEl) {
+    itemsEl.innerHTML = "";
+    rootCats.forEach((c) => {
+      const isActive = c.id === activeCategoryId;
+      const btn = nfCreateEl("button", `nf-catalog-strip__item${isActive ? " is-active" : ""}`);
+      btn.type = "button";
+      btn.setAttribute("role", "listitem");
+      btn.setAttribute("aria-current", isActive ? "true" : "false");
+      btn.textContent = c.name;
+      if (!isActive) btn.addEventListener("click", () => nfSwitchCatalogCategory(c.id));
+      itemsEl.appendChild(btn);
+    });
+  }
+
+  /* ── Desktop / tablet sidebar rail with accordion ── */
+  if (!railEl) return;
+  railEl.innerHTML = "";
+
+  rootCats.forEach((c) => {
+    const subs   = subMap[c.id] || [];
+    const isActiveCat = c.id === activeCategoryId;
+    const hasActiveSub = isActiveCat && !!activeSubcategoryId;
+
+    if (subs.length === 0) {
+      // No subcategories — plain button
+      const btn = nfCreateEl("button", `nf-cat-rail__item${isActiveCat ? " is-active" : ""}`);
+      btn.type = "button";
+      btn.setAttribute("role", "listitem");
+      btn.setAttribute("aria-current", isActiveCat ? "true" : "false");
+      btn.textContent = c.name;
+      if (!isActiveCat) btn.addEventListener("click", () => nfSwitchCatalogCategory(c.id));
+      railEl.appendChild(btn);
+      return;
     }
-    itemsEl.appendChild(btn);
+
+    // Has subcategories — accordion group
+    const group = nfCreateEl("div", "nf-cat-rail__group");
+    group.dataset.catId = c.id;
+
+    // Main category trigger
+    const trigger = nfCreateEl("button", `nf-cat-rail__item nf-cat-rail__item--has-sub${isActiveCat ? " is-active" : ""}`);
+    trigger.type = "button";
+    trigger.setAttribute("role", "listitem");
+    trigger.setAttribute("aria-current", isActiveCat ? "true" : "false");
+    trigger.setAttribute("aria-expanded", isActiveCat ? "true" : "false");
+
+    const triggerText = nfCreateEl("span", "nf-cat-rail__item-text");
+    triggerText.textContent = c.name;
+    trigger.appendChild(triggerText);
+
+    // Chevron icon
+    const chevron = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    chevron.setAttribute("class", "nf-cat-rail__chevron");
+    chevron.setAttribute("viewBox", "0 0 16 16");
+    chevron.setAttribute("width", "12");
+    chevron.setAttribute("height", "12");
+    chevron.setAttribute("fill", "none");
+    chevron.setAttribute("aria-hidden", "true");
+    const chevPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    chevPath.setAttribute("d", "M6 4l4 4-4 4");
+    chevPath.setAttribute("stroke", "currentColor");
+    chevPath.setAttribute("stroke-width", "1.6");
+    chevPath.setAttribute("stroke-linecap", "round");
+    chevPath.setAttribute("stroke-linejoin", "round");
+    chevron.appendChild(chevPath);
+    trigger.appendChild(chevron);
+
+    // Sub-list panel (outer div drives grid animation)
+    const subPanel = nfCreateEl("div", `nf-cat-rail__sub${isActiveCat ? " is-open" : ""}`);
+
+    // Inner wrapper (needed for grid-template-rows collapse trick)
+    const subInner = nfCreateEl("div", "nf-cat-rail__sub-inner");
+    subInner.setAttribute("role", "list");
+    subInner.setAttribute("aria-label", `Подкатегории ${c.name}`);
+
+    // "Все" (all) button to clear subcategory filter
+    const allBtn = nfCreateEl("button", `nf-cat-rail__subitem${isActiveCat && !activeSubcategoryId ? " is-active" : ""}`);
+    allBtn.type = "button";
+    allBtn.setAttribute("role", "listitem");
+    allBtn.textContent = "Все";
+    if (isActiveCat && activeSubcategoryId) {
+      allBtn.addEventListener("click", () => nfClearSubcategory());
+    } else if (!isActiveCat) {
+      allBtn.addEventListener("click", () => nfSwitchCatalogCategory(c.id));
+    }
+    subInner.appendChild(allBtn);
+
+    // Individual subcategory buttons
+    subs.forEach((s) => {
+      const isActiveSub = s.id === activeSubcategoryId;
+      const subBtn = nfCreateEl("button", `nf-cat-rail__subitem${isActiveSub ? " is-active" : ""}`);
+      subBtn.type = "button";
+      subBtn.setAttribute("role", "listitem");
+      subBtn.textContent = s.name;
+      if (!isActiveSub) {
+        subBtn.addEventListener("click", () => {
+          // If parent not yet active, switch to it first
+          if (!isActiveCat) {
+            NF_STATE.filters.categoryIds = new Set([c.id]);
+            NF_STATE.filters.partnerIds  = new Set();
+            NF_STATE.filters.model       = "";
+            const parentCat = rootCats.find((x) => x.id === c.id);
+            const titleEl   = nfEl("catalogExplorerTitle");
+            const descEl    = nfEl("catalogExplorerDesc");
+            if (titleEl && parentCat) titleEl.textContent = parentCat.name;
+            if (descEl  && parentCat) descEl.textContent  = parentCat.description || "";
+          }
+          nfSwitchSubcategory(s.id, c.id);
+        });
+      }
+      subInner.appendChild(subBtn);
+    });
+
+    subPanel.appendChild(subInner);
+
+    // Toggle expand/collapse on trigger click
+    trigger.addEventListener("click", () => {
+      if (isActiveCat) {
+        // Just toggle expand (don't re-filter)
+        const isOpen = subPanel.classList.contains("is-open");
+        if (isOpen) {
+          subPanel.classList.remove("is-open");
+          trigger.setAttribute("aria-expanded", "false");
+        } else {
+          subPanel.classList.add("is-open");
+          trigger.setAttribute("aria-expanded", "true");
+        }
+      } else {
+        nfSwitchCatalogCategory(c.id);
+      }
+    });
+
+    group.append(trigger, subPanel);
+    railEl.appendChild(group);
   });
 }
 
 function nfReturnToCatalogHub() {
-  NF_STATE.filters.categoryIds = new Set();
-  NF_STATE.filters.partnerIds = new Set();
-  NF_STATE.filters.model = "";
-  NF_STATE.filters.page = 1;
+  NF_STATE.filters.categoryIds    = new Set();
+  NF_STATE.filters.subcategoryId  = "";
+  NF_STATE.filters.partnerIds     = new Set();
+  NF_STATE.filters.model          = "";
+  NF_STATE.filters.page           = 1;
   NF_STATE.catalogPhase = "hub";
+
+  /* If the user arrived here via a homepage category tile, take them back
+     to the homepage instead of the catalog root (which they never visited). */
+  if (NF_STATE.catalogFromHome) {
+    NF_STATE.catalogFromHome = false;
+    nfNavigate("home");
+    return;
+  }
+
   history.pushState({ page: "catalog" }, "", "/catalog");
   const explorerEl = nfEl("catalogExplorer");
   if (explorerEl) explorerEl.hidden = true;
@@ -10092,10 +12248,14 @@ function nfInitCatalogExplorerControls() {
 
   if (resetBtn) {
     resetBtn.onclick = () => {
-      NF_STATE.filters.partnerIds = new Set();
-      NF_STATE.filters.model = "";
-      NF_STATE.filters.page = 1;
+      const catId = NF_STATE.filters.categoryIds.size
+        ? [...NF_STATE.filters.categoryIds][0] : "";
+      NF_STATE.filters.partnerIds    = new Set();
+      NF_STATE.filters.subcategoryId = "";
+      NF_STATE.filters.model         = "";
+      NF_STATE.filters.page          = 1;
       if (modelInput) modelInput.value = "";
+      if (catId) nfRenderCatalogStrip(catId, "");
       nfApplyCatalogFilters(NF_STATE.filters, { navigateToCatalog: false });
     };
   }
@@ -10179,7 +12339,17 @@ function nfInitCatalogExplorerControls() {
 function nfInitCategoryPage() {
   const cat = NF_DATA.categories.find((c) => c.id === NF_STATE.categoryDetailId);
   if (!cat) { nfGoPath("/catalog"); return; }
-  nfGoPath(`/catalog?cat=${encodeURIComponent(cat.id)}`);
+
+  /* Mark that we arrived from a homepage category tile so the back button
+     can return to home rather than the catalog hub.
+     Use replaceState (not pushState) to replace the /categories/{slug} entry —
+     this prevents a browser-back bounce loop:
+       home → /categories/x → /catalog?cat=x → /categories/x → … */
+  NF_STATE.catalogFromHome = true;
+  const catUrl = `/catalog?cat=${encodeURIComponent(cat.id)}`;
+  try { history.replaceState({ page: "catalog" }, "", catUrl); } catch (_e) {}
+  nfLoadPage("catalog");
+  window.scrollTo({ top: 0, behavior: "auto" });
 }
 
 function nfBuildNewsArticleProseHtml(item) {
@@ -10483,6 +12653,379 @@ function nfClearPdpLoadingMask(pageRoot) {
   pageRoot?.querySelector("[data-nf-pdp-loading]")?.remove();
 }
 
+/* ════════════════════════════════════════════════════════════════════
+   EDITORIAL PRODUCT PAGE ("Витрина") — full rebuild
+   A data-driven, Apple-style editorial showcase rendered entirely from
+   product data. Sections appear only when their data exists; nothing is
+   faked. Markup is generated into #epdpMain (see pages/product.html).
+   ════════════════════════════════════════════════════════════════════ */
+
+function nfEpdpCheckIcon() {
+  return '<svg class="nf-epdp-ico" viewBox="0 0 16 16" fill="none" width="13" height="13" aria-hidden="true"><circle cx="8" cy="8" r="6.6" stroke="currentColor" stroke-width="1.2" opacity="0.5"/><path d="M5 8.2L7.2 10.4L11.3 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+}
+
+function nfEpdpExpandIcon() {
+  return '<svg viewBox="0 0 24 24" fill="none" width="16" height="16" aria-hidden="true"><path d="M8 3H5a2 2 0 0 0-2 2v3M21 8V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3M16 21h3a2 2 0 0 0 2-2v-3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+}
+
+function nfEpdpArrowIcon() {
+  return '<svg viewBox="0 0 16 16" fill="none" width="13" height="13" aria-hidden="true"><path d="M3 8h9M8.5 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+}
+
+function nfEpdpRelatedProducts(product) {
+  const all = Array.isArray(NF_DATA.products) ? NF_DATA.products : [];
+  const visible = (p) => p && !p.isHidden && p.id !== product.id;
+  const byId = (id) => all.find((p) => p.id === id);
+  const out = [];
+  const pushUnique = (p) => {
+    if (visible(p) && !out.some((x) => x.id === p.id)) out.push(p);
+  };
+  if (Array.isArray(product.relatedProductIds)) {
+    product.relatedProductIds.forEach((id) => {
+      const p = byId(id);
+      if (p) pushUnique(p);
+    });
+  }
+  if (out.length < 6) {
+    all.filter((p) => visible(p) && p.categoryId === product.categoryId).forEach(pushUnique);
+  }
+  if (out.length < 6) {
+    all.filter((p) => visible(p) && (p.popular || p.isPopular)).forEach(pushUnique);
+  }
+  return out.slice(0, 6);
+}
+
+function nfRenderEditorialPdp(pageRoot, product, category, partnerName) {
+  if (!pageRoot) return;
+  const main = pageRoot.querySelector("#epdpMain");
+  const crumbs = pageRoot.querySelector("#epdpCrumbs");
+  if (!main) return;
+
+  const esc = (v) => nfEscapeHtml(String(v == null ? "" : v));
+  const catName = category && category.name ? String(category.name) : "";
+  const statusLabel = nfProductStatusLabel(product.status, product.availability);
+  const statusKey = nfProductStatusKey(product.status, product.availability);
+  const priceText =
+    product.price != null ? nfFormatPrice(product.price) : nfT("common.priceOnRequest", "Цена по запросу");
+
+  // ── Resolve data ──
+  const galleryImages = nfGetProductImages(product).filter((u) => u && String(u).trim());
+  const hasRealImage = galleryImages.length > 0;
+  const heroImg = hasRealImage ? galleryImages[0] : nfProductPlaceholderSvg();
+
+  const description =
+    product.description && String(product.description).trim() ? String(product.description).trim() : "";
+  const shortDesc =
+    product.shortDesc && String(product.shortDesc).trim()
+      ? String(product.shortDesc).trim()
+      : nfT("product.defaultShortDesc", "Профессиональное медицинское оборудование.");
+
+  const useCases = Array.isArray(product.useCases)
+    ? product.useCases.filter((u) => u && (u.title || u.description))
+    : [];
+
+  const specPairs = (Array.isArray(product.specs) ? product.specs : [])
+    .map((s) => String(s || "").trim())
+    .filter(Boolean)
+    .map((s) => nfPdpParseKV(s));
+
+  const { roomList, engineerList } = nfProductRequirementLists(product);
+  const allSteps = nfProductServiceSteps(product);
+  const { install: installSteps, maintenance: maintenanceSteps } = nfSplitInstallMaintenanceSteps(allSteps);
+  const related = nfEpdpRelatedProducts(product);
+
+  // ── Breadcrumbs ──
+  if (crumbs) {
+    crumbs.innerHTML =
+      '<button type="button" class="nf-epdp-crumb" data-page="home">НаноФарм</button>' +
+      '<span class="nf-epdp-crumb__sep" aria-hidden="true">/</span>' +
+      '<button type="button" class="nf-epdp-crumb" data-page="catalog">Каталог</button>' +
+      (catName
+        ? '<span class="nf-epdp-crumb__sep" aria-hidden="true">/</span>' +
+          '<span class="nf-epdp-crumb nf-epdp-crumb--current">' +
+          esc(catName) +
+          "</span>"
+        : "");
+  }
+
+  const html = [];
+
+  // ── HERO ──
+  html.push(
+    '<header class="nf-epdp-hero" data-pdp-reveal-scroll>' +
+      '<div class="nf-epdp-hero__grid">' +
+      '<div class="nf-epdp-hero__text">' +
+      (catName ? '<p class="nf-epdp-kicker">' + esc(catName) + "</p>" : "") +
+      '<h1 class="nf-epdp-title">' +
+      esc(product.name) +
+      "</h1>" +
+      '<p class="nf-epdp-lead">' +
+      esc(shortDesc) +
+      "</p>" +
+      '<div class="nf-epdp-hero__chips">' +
+      (product.model ? '<span class="nf-epdp-chip">' + esc(product.model) + "</span>" : "") +
+      '<span class="nf-epdp-status-glow nf-epdp-status-glow--' + statusKey + '" role="status">' +
+      esc(statusLabel) +
+      "</span>" +
+      "</div>" +
+      '<div class="nf-epdp-hero__price">' +
+      '<span class="nf-epdp-price__label">Стоимость</span>' +
+      '<span class="nf-epdp-price__value">' +
+      esc(priceText) +
+      "</span>" +
+      "</div>" +
+      '<div class="nf-epdp-hero__ctas">' +
+      '<button type="button" id="epdpPrimaryBtn" class="nf-btn nf-btn-primary nf-epdp-cta"></button>' +
+      '<button type="button" id="epdpQuoteBtn" class="nf-epdp-cta nf-epdp-cta--ghost">Запросить цену</button>' +
+      "</div>" +
+      '<p class="nf-epdp-hero__trust">' +
+      nfEpdpCheckIcon() +
+      "Консультация специалиста в течение рабочего дня</p>" +
+      "</div>" +
+      '<div class="nf-epdp-hero__media">' +
+      '<figure class="nf-epdp-stage' +
+      (hasRealImage ? "" : " is-placeholder") +
+      '" id="epdpStage">' +
+      '<img id="epdpHeroImg" class="nf-epdp-stage__img" src="' +
+      esc(heroImg) +
+      '" alt="' +
+      esc(product.name) +
+      '" />' +
+      (hasRealImage
+        ? '<button type="button" class="nf-epdp-stage__zoom" id="epdpZoomBtn" aria-label="Открыть на весь экран">' +
+          nfEpdpExpandIcon() +
+          "</button>"
+        : '<span class="nf-epdp-stage__hint">Фото по запросу</span>') +
+      "</figure>" +
+      (galleryImages.length > 1
+        ? '<div class="nf-epdp-thumbs" id="epdpThumbs">' +
+          galleryImages
+            .slice(0, 6)
+            .map(
+              (src, i) =>
+                '<button type="button" class="nf-epdp-thumb' +
+                (i === 0 ? " is-active" : "") +
+                '" data-epdp-thumb="' +
+                i +
+                '" aria-label="Фото ' +
+                (i + 1) +
+                '"><img src="' +
+                esc(src) +
+                '" alt="" loading="lazy" /></button>'
+            )
+            .join("") +
+          "</div>"
+        : "") +
+      "</div>" +
+      "</div>" +
+      "</header>"
+  );
+
+  // ── STATEMENT (description as editorial lead) ──
+  if (description) {
+    html.push(
+      '<section class="nf-epdp-statement" data-pdp-reveal-scroll>' +
+        '<p class="nf-epdp-statement__eyebrow">О решении</p>' +
+        '<p class="nf-epdp-statement__lead">' +
+        esc(description) +
+        "</p>" +
+        "</section>"
+    );
+  }
+
+  // vitals strip removed
+
+  // ── STORY BANDS (alternating visual/text) — only when use-cases exist ──
+  if (useCases.length) {
+    const bands = useCases
+      .map((uc, i) => {
+        const mirror = i % 2 === 1;
+        const num = String(i + 1).padStart(2, "0");
+        return (
+          '<section class="nf-epdp-band' +
+          (mirror ? " nf-epdp-band--mirror" : "") +
+          '" data-pdp-reveal-scroll>' +
+          '<div class="nf-epdp-band__visual"><span class="nf-epdp-band__num">' +
+          num +
+          "</span></div>" +
+          '<div class="nf-epdp-band__text">' +
+          '<p class="nf-epdp-band__eyebrow">Применение</p>' +
+          (uc.title ? '<h2 class="nf-epdp-band__title">' + esc(uc.title) + "</h2>" : "") +
+          (uc.description ? '<p class="nf-epdp-band__desc">' + esc(uc.description) + "</p>" : "") +
+          "</div>" +
+          "</section>"
+        );
+      })
+      .join("");
+    html.push('<div class="nf-epdp-bands">' + bands + "</div>");
+  }
+
+  // ── SPECS table — only when specs exist ──
+  if (specPairs.length) {
+    html.push(
+      '<section class="nf-epdp-specs" data-pdp-reveal-scroll>' +
+        '<div class="nf-epdp-sechead"><p class="nf-epdp-eyebrow">Параметры</p><h2 class="nf-epdp-h2">Технические характеристики</h2></div>' +
+        '<div class="nf-epdp-spectable">' +
+        specPairs
+          .map(
+            (kv) =>
+              '<div class="nf-epdp-specrow">' +
+              '<span class="nf-epdp-specrow__icon">' +
+              nfPdpGetPdpStrokeIcon(nfPdpSpecIconSlug(kv.label || kv.value)) +
+              "</span>" +
+              '<span class="nf-epdp-specrow__k">' +
+              esc(kv.label || "Параметр") +
+              "</span>" +
+              '<span class="nf-epdp-specrow__v">' +
+              esc(kv.value) +
+              "</span>" +
+              "</div>"
+          )
+          .join("") +
+        "</div>" +
+        "</section>"
+    );
+  }
+
+  // ── REQUIREMENTS (two columns) ──
+  const reqCol = (title, list, iconKind) => {
+    const items = (list || [])
+      .map((line) => {
+        const kv = nfPdpParseKV(line);
+        const icon = nfPdpGetPdpStrokeIcon(nfPdpSpecIconSlug(kv.label || kv.value));
+        return (
+          '<li class="nf-epdp-req">' +
+          '<span class="nf-epdp-req__icon">' +
+          icon +
+          "</span>" +
+          '<span class="nf-epdp-req__body">' +
+          (kv.label ? '<span class="nf-epdp-req__k">' + esc(kv.label) + "</span>" : "") +
+          '<span class="nf-epdp-req__v">' +
+          esc(kv.value) +
+          "</span>" +
+          "</span>" +
+          "</li>"
+        );
+      })
+      .join("");
+    return (
+      '<div class="nf-epdp-reqcard">' +
+      '<h3 class="nf-epdp-reqcard__h">' +
+      nfPdpGetPdpStrokeIcon(iconKind) +
+      "<span>" +
+      esc(title) +
+      "</span></h3>" +
+      '<ul class="nf-epdp-reqlist">' +
+      items +
+      "</ul>" +
+      "</div>"
+    );
+  };
+  // Подготовка, Внедрение, Сервис — removed
+
+  // ── RELATED ──
+  if (related.length) {
+    html.push(
+      '<section class="nf-epdp-related" data-pdp-reveal-scroll>' +
+        '<div class="nf-epdp-sechead"><p class="nf-epdp-eyebrow">Каталог</p><h2 class="nf-epdp-h2">Смотрите также</h2></div>' +
+        '<div class="nf-epdp-related__grid">' +
+        related
+          .map((rp) => {
+            const rImgs = nfGetProductImages(rp).filter((u) => u && String(u).trim());
+            const rImg = rImgs.length ? rImgs[0] : nfProductPlaceholderSvg();
+            const rCat = NF_DATA.categories.find((c) => c.id === rp.categoryId);
+            return (
+              '<button type="button" class="nf-epdp-relcard" data-epdp-related="' +
+              esc(rp.id) +
+              '">' +
+              '<span class="nf-epdp-relcard__media"><img src="' +
+              esc(rImg) +
+              '" alt="' +
+              esc(rp.name) +
+              '" loading="lazy" /></span>' +
+              '<span class="nf-epdp-relcard__body">' +
+              (rCat && rCat.name ? '<span class="nf-epdp-relcard__cat">' + esc(rCat.name) + "</span>" : "") +
+              '<span class="nf-epdp-relcard__name">' +
+              esc(rp.name) +
+              "</span>" +
+              '<span class="nf-epdp-relcard__more">Подробнее ' +
+              nfEpdpArrowIcon() +
+              "</span>" +
+              "</span>" +
+              "</button>"
+            );
+          })
+          .join("") +
+        "</div>" +
+        "</section>"
+    );
+  }
+
+  main.innerHTML = html.join("");
+
+  // ════ Wire interactivity ════
+  const bindQuoteClick = (btn) => {
+    if (!btn) return;
+    btn.onclick = () => {
+      nfOpenQuickQuote();
+      const quickForm = nfEl("quickQuoteForm");
+      const itemsField = quickForm?.elements?.items || quickForm?.querySelector?.('[name="items"]');
+      if (quickForm && itemsField && !itemsField.value) {
+        itemsField.value = `${product.name} (${product.article || product.model || ""})`;
+      }
+    };
+  };
+
+  ["epdpPrimaryBtn"].forEach((id) => {
+    const btn = pageRoot.querySelector("#" + id);
+    if (!btn) return;
+    nfInitAddToRequestControl(btn, product.id, nfT("common.addToRequest", "В запрос"), {});
+    btn.onclick = () => nfToggleCartItem(product.id, 1, { sourceButton: btn });
+  });
+
+  bindQuoteClick(pageRoot.querySelector("#epdpQuoteBtn"));
+  bindQuoteClick(pageRoot.querySelector("#epdpKpBtn"));
+
+  // Gallery: lightbox + thumbnails
+  let currentIndex = 0;
+  const heroImgEl = pageRoot.querySelector("#epdpHeroImg");
+  const openLightbox = () => {
+    if (hasRealImage) nfOpenProductLightbox(galleryImages, currentIndex, product.name);
+  };
+  if (hasRealImage && heroImgEl) {
+    heroImgEl.style.cursor = "zoom-in";
+    heroImgEl.onclick = openLightbox;
+  }
+  const zoomBtn = pageRoot.querySelector("#epdpZoomBtn");
+  if (zoomBtn) zoomBtn.onclick = openLightbox;
+
+  if (galleryImages.length > 1) {
+    const thumbBtns = pageRoot.querySelectorAll("[data-epdp-thumb]");
+    thumbBtns.forEach((tb) => {
+      tb.onclick = () => {
+        const idx = parseInt(tb.getAttribute("data-epdp-thumb"), 10) || 0;
+        currentIndex = idx;
+        if (heroImgEl) heroImgEl.src = galleryImages[idx];
+        thumbBtns.forEach((x) => x.classList.toggle("is-active", x === tb));
+      };
+    });
+  }
+
+  // Related cards → open product
+  pageRoot.querySelectorAll("[data-epdp-related]").forEach((card) => {
+    card.onclick = () => {
+      const rid = card.getAttribute("data-epdp-related");
+      if (rid) nfOpenProductPage(rid);
+    };
+  });
+
+  // Reveal-on-scroll (reuses the PDP IntersectionObserver helper)
+  const revealStop = nfPdpMountRevealScroll(pageRoot);
+  pageRoot._nfPdpCleanup = () => {
+    if (typeof revealStop === "function") revealStop();
+  };
+}
+
 function nfInitProductPage() {
   const pageRoot = document.querySelector(".nf-pdp");
   if (!pageRoot) return;
@@ -10597,325 +13140,10 @@ function nfInitProductPage() {
 
   pageRoot.classList.remove("nf-pdp--ready");
 
-  nfSafeText("productPageTitle", product.name);
-  nfSafeText(
-    "productPageShortDesc",
-    product.shortDesc ||
-      nfT("product.defaultShortDesc", "Профессиональное медицинское оборудование.")
-  );
-
-  const heroKicker = nfEl("productPageHeroKicker");
-  if (heroKicker) {
-    heroKicker.textContent = category?.name ? String(category.name).toUpperCase() : "";
-    heroKicker.hidden = !category?.name;
-  }
-
-  nfFillPdpHeroBadges(nfEl("productPageHeroBadges"), product);
-  nfFillPdpHeroSpecGrid(nfEl("productPageHeroSpecGrid"), product, category, partnerName);
-
-  const skuEl = nfEl("productPageSku");
-  if (skuEl) {
-    skuEl.textContent = product.article ? nfT("product.article", "Артикул: {value}", { value: product.article }) : "";
-    skuEl.hidden = !product.article;
-  }
-
-  const brandEl = nfEl("productPageBrand");
-  if (brandEl) {
-    const parts = [];
-    if (partnerName) parts.push(nfT("product.partner", "Партнёр: {value}", { value: partnerName }));
-    if (product.model) parts.push(nfT("product.model", "Модель: {value}", { value: product.model }));
-    brandEl.textContent = parts.join(" · ");
-    brandEl.hidden = parts.length === 0;
-  }
-  const heroMeta = pageRoot.querySelector(".nf-pdp-meta-compact");
-  if (heroMeta) {
-    const skuHidden = !skuEl || skuEl.hidden;
-    const brandHidden = !brandEl || brandEl.hidden;
-    heroMeta.hidden = skuHidden && brandHidden;
-  }
-
-  const descHost = nfEl("productPageDescription");
-  const calloutEl = nfEl("productPageDescCallout");
-  nfFillPdpDescriptionRich(descHost, calloutEl, product, category);
-
-  const descSection = document.getElementById("pdp-description");
-  if (descSection) {
-    const hasDesc = !!(product.description && String(product.description).trim());
-    const hasCallout = !!(category?.name);
-    descSection.hidden = !hasDesc && !hasCallout;
-  }
-
-  nfFillPdpSpecsGrid(nfEl("productPageSpecsGrid"), product);
-
-  nfFillPdpKitSection(nfEl("productPageKitBody"), product);
-
-  const docsSec = document.getElementById("pdp-docs");
-  const docsBody = nfEl("productPageDocsBody");
-  const hasDocFiles = Array.isArray(product.docs) && product.docs.length > 0;
-  if (docsSec) docsSec.hidden = !hasDocFiles;
-  if (hasDocFiles) nfFillPdpDocsSection(docsBody, product);
-  else if (docsBody) docsBody.innerHTML = "";
-
-  nfFillPdpInstallSection(product);
-  nfFillPdpMaintenanceSection(product);
-
-  const galleryImages = nfGetProductImages(product);
-  let currentImageIndex = 0;
-
-  const img = nfEl("productPageImage");
-  const hintEl = pageRoot.querySelector(".nf-pdp-media-hint");
-  const counterEl = nfEl("productPageImageCounter");
-  const navPrev = nfEl("productPageNavPrev");
-  const navNext = nfEl("productPageNavNext");
-  const multi = galleryImages.length > 1;
-
-  if (navPrev) navPrev.hidden = !multi;
-  if (navNext) navNext.hidden = !multi;
-  if (counterEl) {
-    counterEl.hidden = !multi;
-    if (!multi) counterEl.textContent = "";
-  }
-
-  const updateCounter = () => {
-    if (!counterEl || !multi) return;
-    counterEl.textContent = `${currentImageIndex + 1} / ${galleryImages.length}`;
-  };
-
-  const setMainImageSrc = (src, options) => {
-    if (!img) return;
-    const opts = options || {};
-    const fallbackSvg = nfProductPlaceholderSvg();
-    const safeSrc = src && String(src).trim() ? src : fallbackSvg;
-
-    if (opts.immediate) {
-      img.style.opacity = "1";
-      img.classList.remove("nf-product-img-swapping");
-      img.src = safeSrc;
-      return;
-    }
-
-    img.classList.add("nf-product-img-swapping");
-    window.setTimeout(
-      () => {
-        img.src = safeSrc;
-        img.classList.remove("nf-product-img-swapping");
-        img.style.opacity = "1";
-      },
-      nfPrefersReducedMotion() ? 0 : 200
-    );
-  };
-
-  const thumbs = nfEl("productPageThumbs");
-  const galleryRoot = pageRoot.querySelector(".nf-pdp-gallery--product");
-  if (galleryRoot) galleryRoot.classList.toggle("nf-pdp-gallery--single", !multi);
-
-  if (thumbs) {
-    thumbs.hidden = !multi;
-    thumbs.innerHTML = "";
-  }
-
-  const showImageAt = (nextIndex, options) => {
-    if (!galleryImages.length) return;
-    const total = galleryImages.length;
-    let idx = nextIndex;
-    if (idx < 0) idx = total - 1;
-    if (idx >= total) idx = 0;
-    currentImageIndex = idx;
-
-    setMainImageSrc(galleryImages[idx], options);
-
-    if (thumbs && multi) {
-      const thumbNodes = thumbs.querySelectorAll(".nf-pdp-thumb");
-      thumbNodes.forEach((el, i) => {
-        el.classList.toggle("nf-pdp-thumb--active", i === idx);
-      });
-    }
-
-    updateCounter();
-  };
-
-  if (navPrev) navPrev.onclick = () => showImageAt(currentImageIndex - 1);
-  if (navNext) navNext.onclick = () => showImageAt(currentImageIndex + 1);
-
-  if (img) {
-    img.alt = product.name;
-    nfConfigureImageElement(img, {
-      loading: "eager",
-      decoding: "async",
-      fetchPriority: "high",
-      width: 1200,
-      height: 900,
-    });
-    if (galleryImages.length && String(galleryImages[0]).trim()) {
-      setMainImageSrc(galleryImages[0], { immediate: true });
-      img.onerror = () => {
-        setMainImageSrc(null, { immediate: true });
-      };
-      if (hintEl) hintEl.hidden = true;
-      updateCounter();
-    } else {
-      setMainImageSrc(null, { immediate: true });
-      img.onerror = null;
-      if (hintEl) hintEl.hidden = false;
-    }
-    const canClickLightbox = () => galleryImages.length > 0;
-    img.style.cursor = canClickLightbox() ? "zoom-in" : "default";
-    img.onclick = () => {
-      if (canClickLightbox()) {
-        nfOpenProductLightbox(galleryImages, currentImageIndex, product.name);
-      }
-    };
-  }
-
-  const imgWrap = pageRoot.querySelector(".nf-pdp-media-imgwrap");
-  nfAttachPdpImageZoom({
-    viewport: imgWrap,
-    img,
-    scale: 1.38,
-    isAllowed: () =>
-      galleryImages.length > 0 &&
-      !!img?.src &&
-      !String(img.src).startsWith("data:image/svg+xml"),
-  });
-
-  if (thumbs && multi) {
-    galleryImages.slice(0, 6).forEach((src, idx) => {
-      const t = nfCreateEl("button", "nf-pdp-thumb" + (idx === 0 ? " nf-pdp-thumb--active" : ""), "");
-      t.type = "button";
-      t.setAttribute("aria-label", `Миниатюра фото ${idx + 1}`);
-      const ti = document.createElement("img");
-      ti.src = src;
-      ti.alt = "";
-      nfConfigureImageElement(ti, {
-        loading: "lazy",
-        decoding: "async",
-        fetchPriority: "low",
-        width: 80,
-        height: 80,
-      });
-      t.appendChild(ti);
-      t.addEventListener("click", () => {
-        showImageAt(idx);
-      });
-      thumbs.appendChild(t);
-    });
-  }
-
-  const mainImageWrap = pageRoot.querySelector(".nf-pdp-media-stage");
-  if (mainImageWrap && multi) {
-    let touchStartXMain = null;
-    mainImageWrap.addEventListener(
-      "touchstart",
-      (e) => {
-        touchStartXMain = e.touches[0]?.clientX ?? null;
-      },
-      { passive: true }
-    );
-    mainImageWrap.addEventListener(
-      "touchend",
-      (e) => {
-        if (touchStartXMain == null) return;
-        const dx = (e.changedTouches[0]?.clientX ?? touchStartXMain) - touchStartXMain;
-        if (Math.abs(dx) > 40) {
-          if (dx < 0) showImageAt(currentImageIndex + 1);
-          else showImageAt(currentImageIndex - 1);
-        }
-        touchStartXMain = null;
-      },
-      { passive: true }
-    );
-  }
-
-  const qtyInput = nfEl("productPageQty");
-  if (qtyInput) qtyInput.value = 1;
-
-  const priceEl = nfEl("productPagePrice");
-  const totalEl = nfEl("productPageTotal");
-  const primaryBtn = nfEl("productPagePrimaryBtn");
-  const secondaryBtn = nfEl("productPageSecondaryBtn");
-
-  if (primaryBtn) {
-    nfInitAddToRequestControl(primaryBtn, product.id, nfT("common.addToRequest", "В запрос"), {});
-  }
-  if (secondaryBtn) secondaryBtn.textContent = nfT("product.requestPriceShort", "Запросить цену");
-
-  const updateTotal = () => {
-    if (!qtyInput) return;
-    const qty = Math.max(1, Number(qtyInput.value) || 1);
-    qtyInput.value = qty;
-    if (product.price != null && totalEl) {
-      totalEl.textContent = nfT("product.total", "Итого: {value}", { value: nfFormatPrice(product.price * qty) });
-    }
-  };
-
-  if (product.price != null) {
-    if (priceEl) priceEl.textContent = nfT("product.unitPrice", "Цена за единицу: {value}", { value: nfFormatPrice(product.price) });
-    updateTotal();
-  } else {
-    if (priceEl) priceEl.textContent = nfT("common.priceOnRequest", "Цена по запросу");
-    if (totalEl) totalEl.textContent = "";
-  }
-
-  if (qtyInput) {
-    qtyInput.oninput = updateTotal;
-
-    const minus = pageRoot.querySelector('[data-role="qty-minus"]');
-    const plus = pageRoot.querySelector('[data-role="qty-plus"]');
-
-    const changeBy = (delta) => {
-      const current = Math.max(1, Number(qtyInput.value) || 1);
-      qtyInput.value = current + delta > 1 ? current + delta : 1;
-      updateTotal();
-    };
-
-    if (minus) minus.addEventListener("click", () => changeBy(-1));
-    if (plus) plus.addEventListener("click", () => changeBy(1));
-  }
-
-  if (primaryBtn) {
-    primaryBtn.onclick = () => {
-      const qty = Number(qtyInput?.value) || 1;
-      nfAddToCart(product.id, qty, { sourceButton: primaryBtn });
-    };
-  }
-
-  const bindQuoteClick = (btn) => {
-    if (!btn) return;
-    btn.onclick = () => {
-      nfOpenQuickQuote();
-      const quickForm = nfEl("quickQuoteForm");
-      const itemsField =
-        quickForm?.elements?.items || quickForm?.querySelector?.('[name="items"]');
-      if (quickForm && itemsField && !itemsField.value) {
-        itemsField.value = `${product.name} (${product.article || product.model || ""})`;
-      }
-    };
-  };
-  bindQuoteClick(secondaryBtn);
-
-  const mobilePrimary = nfEl("productPageMobilePrimaryBtn");
-  const mobileSecondary = nfEl("productPageMobileSecondaryBtn");
-  if (mobilePrimary) {
-    nfInitAddToRequestControl(mobilePrimary, product.id, nfT("common.addToRequest", "В запрос"), {});
-    mobilePrimary.onclick = () => {
-      const qty = Number(qtyInput?.value) || 1;
-      nfAddToCart(product.id, qty, { sourceButton: mobilePrimary });
-    };
-  }
-  if (mobileSecondary) {
-    mobileSecondary.textContent = nfT("product.requestPriceShort", "Запросить цену");
-    bindQuoteClick(mobileSecondary);
-  }
-
-  nfPdpSyncSubnav(pageRoot);
-  const spyStop = nfPdpMountScrollSpy(pageRoot);
-  const revealStop = nfPdpMountRevealScroll(pageRoot);
-  const anchorStop = nfPdpMountSmoothAnchors(pageRoot);
-  pageRoot._nfPdpCleanup = () => {
-    if (typeof spyStop === "function") spyStop();
-    if (typeof revealStop === "function") revealStop();
-    if (typeof anchorStop === "function") anchorStop();
-  };
+  // Editorial "Витрина" product page — full rebuild. All section markup is
+  // generated by the renderer below into #epdpMain; the page shell (product.html)
+  // only carries the back bar + breadcrumbs container.
+  nfRenderEditorialPdp(pageRoot, product, category, partnerName);
 
   requestAnimationFrame(() => {
     requestAnimationFrame(() => {
@@ -11232,7 +13460,126 @@ function nfInitNewsModalSheetDrag() {
   /* motion-free: sheet drag disabled */
 }
 
-function nfOpenQuickQuote() {
+// ── Quick Quote product picker state ──────────────────────────────────────
+let NF_QQ_SELECTED = new Set();
+let NF_QQ_FROM_CART = false; // true when opened via "Запросить цену" from cart panel
+
+function nfRenderQQPicker(filterText) {
+  const list = nfEl("qqPickerList");
+  const countEl = nfEl("qqPickerCount");
+  if (!list) return;
+  const q = (filterText || "").toLowerCase().trim();
+  let products = NF_DATA.products || [];
+  if (q) {
+    products = products.filter((p) =>
+      p.name.toLowerCase().includes(q) ||
+      (p.article || "").toLowerCase().includes(q) ||
+      nfGetPartnerName(p.partnerId).toLowerCase().includes(q)
+    );
+  }
+  if (countEl) countEl.textContent = products.length ? `${products.length} позиций` : "";
+  list.innerHTML = "";
+  if (!products.length) {
+    list.innerHTML = `<div class="nf-qq-picker-empty">Ничего не найдено</div>`;
+    return;
+  }
+  const checkSvg = `<svg viewBox="0 0 16 16" fill="none" width="13" height="13" aria-hidden="true"><path d="M3 8.5l3.5 3L13 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+  const plusSvg  = `<svg viewBox="0 0 16 16" fill="none" width="13" height="13" aria-hidden="true"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>`;
+  products.forEach((p) => {
+    const selected = NF_QQ_SELECTED.has(p.id);
+    const catName = NF_DATA.categories.find((c) => c.id === p.categoryId)?.name || "";
+    const row = nfCreateEl("div", "nf-qq-item" + (selected ? " nf-qq-item--sel" : ""));
+    row.dataset.qqProductId = p.id;
+    row.innerHTML = `
+      <div class="nf-qq-item-thumb"></div>
+      <div class="nf-qq-item-info">
+        <div class="nf-qq-item-name">${nfEscapeHtml(p.name)}</div>
+        <div class="nf-qq-item-meta">${nfEscapeHtml(nfGetPartnerName(p.partnerId))}${catName ? ` · ${nfEscapeHtml(catName)}` : ""}</div>
+      </div>
+      <button type="button" class="nf-qq-item-toggle" aria-label="${selected ? "Убрать" : "Добавить"}" aria-pressed="${selected}">
+        ${selected ? checkSvg : plusSvg}
+      </button>`;
+    row.querySelector(".nf-qq-item-toggle").onclick = () => {
+      const wasSelected = NF_QQ_SELECTED.has(p.id);
+      if (wasSelected) NF_QQ_SELECTED.delete(p.id);
+      else NF_QQ_SELECTED.add(p.id);
+      // Sync back to cart if opened from cart panel
+      if (NF_QQ_FROM_CART) {
+        if (wasSelected) {
+          NF_STATE.cart = NF_STATE.cart.filter((x) => x.productId !== p.id);
+          const sel = `[data-nf-add-product="${nfCssEscapeSelector(p.id)}"]`;
+          document.querySelectorAll(sel).forEach((b) => nfPlayAddToRequestReset(b));
+        } else {
+          if (!nfGetCartItem(p.id)) NF_STATE.cart.push({ productId: p.id, qty: 1 });
+          const sel = `[data-nf-add-product="${nfCssEscapeSelector(p.id)}"]`;
+          document.querySelectorAll(sel).forEach((b) => nfSyncAddToRequestButton(b));
+        }
+        nfSaveCartToStorage();
+        nfUpdateCartBadge();
+        nfRenderCart();
+      }
+      nfRenderQQPicker(filterText);
+      nfRenderQQChips();
+      nfSyncQQItemsInput();
+    };
+    list.appendChild(row);
+  });
+}
+
+function nfRenderQQChips() {
+  const wrap = nfEl("qqSelectedChips");
+  const countEl = nfEl("qqSelectedCount");
+  if (countEl) {
+    countEl.textContent = NF_QQ_SELECTED.size ? `${NF_QQ_SELECTED.size} выбрано` : "";
+    countEl.hidden = !NF_QQ_SELECTED.size;
+  }
+  if (!wrap) return;
+  wrap.innerHTML = "";
+  if (!NF_QQ_SELECTED.size) { wrap.hidden = true; return; }
+  wrap.hidden = false;
+  NF_QQ_SELECTED.forEach((id) => {
+    const p = (NF_DATA.products || []).find((x) => x.id === id);
+    if (!p) return;
+    const chip = nfCreateEl("div", "nf-qq-chip");
+    chip.innerHTML = `<span class="nf-qq-chip-name">${nfEscapeHtml(p.name)}</span>
+      <button type="button" class="nf-qq-chip-rm" aria-label="Убрать ${nfEscapeHtml(p.name)}">
+        <svg viewBox="0 0 10 10" fill="none" width="9" height="9" aria-hidden="true"><path d="M2 2l6 6M8 2l-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </button>`;
+    chip.querySelector(".nf-qq-chip-rm").onclick = () => {
+      NF_QQ_SELECTED.delete(id);
+      if (NF_QQ_FROM_CART) {
+        NF_STATE.cart = NF_STATE.cart.filter((x) => x.productId !== id);
+        const sel = `[data-nf-add-product="${nfCssEscapeSelector(id)}"]`;
+        document.querySelectorAll(sel).forEach((b) => nfPlayAddToRequestReset(b));
+        nfSaveCartToStorage();
+        nfUpdateCartBadge();
+        nfRenderCart();
+      }
+      nfRenderQQChips();
+      nfRenderQQPicker(nfEl("qqPickerSearch")?.value || "");
+      nfSyncQQItemsInput();
+    };
+    wrap.appendChild(chip);
+  });
+}
+
+function nfSyncQQItemsInput() {
+  const input = nfEl("qqItemsHidden");
+  if (!input) return;
+  const lines = [...NF_QQ_SELECTED].map((id) => {
+    const p = (NF_DATA.products || []).find((x) => x.id === id);
+    return p ? `${p.name}${p.article ? ` (арт. ${p.article})` : ""}` : id;
+  });
+  input.value = lines.join("\n");
+}
+
+function nfOpenQuickQuoteWithCart() {
+  const productIds = NF_STATE.cart.map((i) => i.productId);
+  nfCloseCartPanel();
+  nfOpenQuickQuote({ preselect: productIds, fromCart: true });
+}
+
+function nfOpenQuickQuote(opts) {
   const modal = nfEl("quickQuoteModal");
   const backdrop = nfEl("quickQuoteBackdrop");
   if (!modal || !backdrop) return;
@@ -11241,6 +13588,28 @@ function nfOpenQuickQuote() {
   modal.setAttribute("aria-hidden", "false");
   backdrop.setAttribute("aria-hidden", "false");
   nfUpdateOverlayBody();
+
+  // Init product picker
+  const preselect = (opts && opts.preselect) ? opts.preselect : [];
+  NF_QQ_SELECTED = new Set(preselect);
+  NF_QQ_FROM_CART = !!(opts && opts.fromCart);
+
+  // Reset search input
+  const searchInput = nfEl("qqPickerSearch");
+  if (searchInput) {
+    searchInput.value = "";
+    // Wire search input (only once via flag)
+    if (!searchInput._qqWired) {
+      searchInput._qqWired = true;
+      searchInput.addEventListener("input", () => {
+        nfRenderQQPicker(searchInput.value);
+      });
+    }
+  }
+
+  nfRenderQQPicker("");
+  nfRenderQQChips();
+  nfSyncQQItemsInput();
 }
 
 function nfCloseQuickQuote() {
@@ -11249,9 +13618,74 @@ function nfCloseQuickQuote() {
   if (!modal || !backdrop) return;
   modal.classList.remove("nf-modal-visible");
   backdrop.classList.remove("nf-backdrop-visible");
+  // Hide success message on close
+  const quickSuccess = nfEl("quickQuoteSuccess");
+  if (quickSuccess) quickSuccess.hidden = true;
   modal.setAttribute("aria-hidden", "true");
   backdrop.setAttribute("aria-hidden", "true");
   nfUpdateOverlayBody();
+}
+
+/* ====== MAGNETIC BUTTONS ====== */
+function nfInitMagBtns() {
+  const SEL = ".nf-btn:not(:disabled):not([disabled]), .nf-hero--brand .nf-hero-btn";
+  const PRIM = ".nf-btn-primary, .nf-hero-btn--primary";
+  let cur = null;
+  let raf = null;
+
+  function apply(btn, e) {
+    const r = btn.getBoundingClientRect();
+    const cx = r.left + r.width / 2;
+    const cy = r.top + r.height / 2;
+    const dx = e.clientX - cx;
+    const dy = e.clientY - cy;
+    const isHero = btn.classList.contains("nf-hero-btn");
+    const magStr = isHero ? 0.28 : 0.18;
+    const tiltStr = isHero ? 11 : 8;
+    const sc = isHero ? 1.05 : 1.04;
+
+    const mx = dx * magStr;
+    const my = dy * magStr;
+    const rx = (dy / (r.height / 2 || 1)) * -tiltStr;
+    const ry = (dx / (r.width / 2 || 1)) * tiltStr;
+
+    btn.style.transition = "box-shadow 0.1s ease";
+    btn.style.transform = `translate(${mx}px,${my}px) perspective(600px) rotateX(${rx}deg) rotateY(${ry}deg) scale(${sc})`;
+    btn.style.setProperty("--nfbx", `${50 + (dx / r.width) * 70}%`);
+    btn.style.setProperty("--nfby", `${50 + (dy / r.height) * 70}%`);
+
+    if (btn.matches(PRIM)) {
+      const sx = (mx * 0.35).toFixed(1);
+      const sy = (8 + my * 0.35).toFixed(1);
+      btn.style.boxShadow = `${sx}px ${sy}px 28px rgba(var(--nf-accent-rgb),0.38), 0 0 0 1px rgba(var(--nf-accent-rgb),0.14)`;
+    }
+  }
+
+  function release(btn) {
+    btn.style.transition = "transform 0.5s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.35s ease";
+    btn.style.transform = "";
+    btn.style.boxShadow = "";
+    btn.style.removeProperty("--nfbx");
+    btn.style.removeProperty("--nfby");
+    setTimeout(() => { try { btn.style.transition = ""; } catch (_) {} }, 540);
+  }
+
+  document.addEventListener("mousemove", (e) => {
+    if (raf) return;
+    raf = requestAnimationFrame(() => {
+      raf = null;
+      const btn = e.target.closest(SEL);
+      if (btn !== cur) {
+        if (cur) release(cur);
+        cur = btn || null;
+      }
+      if (cur) apply(cur, e);
+    });
+  }, { passive: true });
+
+  document.addEventListener("mouseleave", () => {
+    if (cur) { release(cur); cur = null; }
+  });
 }
 
 /* ====== BOOT ====== */
@@ -11376,19 +13810,9 @@ document.addEventListener("DOMContentLoaded", () => {
   if (mobileMenuBackdrop) mobileMenuBackdrop.onclick = () => nfToggleMobileNav(false);
 
   if (cartRequestBtn) {
-    cartRequestBtn.onclick = async () => {
-      const base = nfApiBase();
-      if (base && NF_STATE.cart.length) {
-        try {
-          await fetch(base + "/api/requests", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ type: "cart", cart: NF_STATE.cart }),
-          });
-        } catch (_err) {}
-      }
-      nfShowToast(nfT("toast.equipmentRequestSent", "Запрос на оборудование отправлен."));
-      nfCloseCartPanel();
+    cartRequestBtn.onclick = () => {
+      if (!NF_STATE.cart.length) return;
+      nfOpenQuickQuoteWithCart();
     };
   }
 
@@ -11396,6 +13820,7 @@ document.addEventListener("DOMContentLoaded", () => {
     cartClearBtn.onclick = () => {
       if (!NF_STATE.cart.length) return;
       NF_STATE.cart = [];
+      nfSaveCartToStorage();
       nfRenderCart();
       nfUpdateCartBadge();
       nfShowToast(nfT("toast.requestListCleared", "Список запросов очищен."));
@@ -11447,14 +13872,18 @@ document.addEventListener("DOMContentLoaded", () => {
     quickForm.onsubmit = async (e) => {
       e.preventDefault();
       if (!nfValidateForm(quickForm)) return;
+      // Collect selected products from picker
+      nfSyncQQItemsInput();
+      const itemsValue = nfEl("qqItemsHidden")?.value?.trim() || "";
       const base = nfApiBase();
       const payload = {
         type: "quick_quote",
-        name: quickForm.name?.value?.trim() || "",
-        company: quickForm.company?.value?.trim() || "",
-        phone: quickForm.phone?.value?.trim() || "",
-        email: quickForm.email?.value?.trim() || "",
-        items: quickForm.items?.value?.trim() || "",
+        name: quickForm.elements.name?.value?.trim() || "",
+        company: quickForm.elements.company?.value?.trim() || "",
+        phone: quickForm.elements.phone?.value?.trim() || "",
+        email: quickForm.elements.email?.value?.trim() || "",
+        items: itemsValue,
+        productIds: [...NF_QQ_SELECTED],
       };
       if (base) {
         try {
@@ -11467,6 +13896,16 @@ document.addEventListener("DOMContentLoaded", () => {
       }
       if (quickSuccess) quickSuccess.hidden = false;
       nfShowToast(nfT("toast.requestSent", "Запрос отправлен."));
+      // Reset form & picker after short delay
+      setTimeout(() => {
+        quickForm.reset();
+        NF_QQ_SELECTED = new Set();
+        nfRenderQQChips();
+        nfRenderQQPicker("");
+        nfSyncQQItemsInput();
+        if (quickSuccess) quickSuccess.hidden = true;
+        nfCloseQuickQuote();
+      }, 2400);
     };
   }
 
@@ -11547,7 +13986,7 @@ document.addEventListener("DOMContentLoaded", () => {
         nfInitAddToRequestControl(cta, p.id, nfT("common.addToRequest", "В запрос"), { compact: true });
         cta.addEventListener("click", (e) => {
           e.stopPropagation();
-          nfAddToCart(p.id, 1, { sourceButton: cta });
+          nfToggleCartItem(p.id, 1, { sourceButton: cta });
         });
 
         item.append(thumb, main, cta);
@@ -11677,9 +14116,12 @@ document.addEventListener("DOMContentLoaded", () => {
     return "home";
   }
 
+  nfInitMagBtns();
+
   void (async () => {
     await nfLoadTranslationsForLang(NF_STATE.lang || "ru");
     nfApplyTranslations();
+    nfLoadCartFromStorage();
     nfLoadPage(nfBootInitialPage());
     nfUpdateCartBadge();
     nfLoadCatalogFromApi();

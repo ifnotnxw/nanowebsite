@@ -37,8 +37,8 @@
     <div class="nf-contacts-hub">
       <div class="nf-contacts-hub-primary">
         <div class="nf-contacts-hub-head">
-          <h2 class="nf-contacts-hub-title">Связаться с нами</h2>
-          <p class="nf-contacts-hub-desc">Три основных способа — в зависимости от срочности и формата переписки.</p>
+          <h2 class="nf-contacts-hub-title" data-i18n="contacts.hub.title">Связаться с нами</h2>
+          <p class="nf-contacts-hub-desc" data-i18n="contacts.hub.desc">Три основных способа — в зависимости от срочности и формата переписки.</p>
         </div>
 
         <div class="nf-contacts-cards nf-contacts-cards--hub">
@@ -102,7 +102,7 @@
         </div>
 
         <div class="nf-contacts-when">
-          <h3 class="nf-contacts-when-title">По каким вопросам к нам обращаются</h3>
+          <h3 class="nf-contacts-when-title" data-i18n="contacts.when.title">По каким вопросам к нам обращаются</h3>
           <ul class="nf-contacts-when-list">
             <li><strong>Закупки и КП</strong> — подбор моделей, комплектации, условия и сроки поставки.</li>
             <li><strong>Сервис и гарантия</strong> — обслуживание, запчасти, выезд специалиста, консультации.</li>
@@ -135,14 +135,14 @@
 
     <section class="nf-contacts-guides" aria-label="Информация для клиентов">
       <div class="nf-contacts-guides-intro">
-        <h2 class="nf-contacts-guides-title">Как мы работаем с клиентами</h2>
-        <p class="nf-contacts-guides-lead">Заказ, сервис, гарантия и короткий блок ответов — без лишнего текста.</p>
+        <h2 class="nf-contacts-guides-title" data-i18n="contacts.guides.title">Как мы работаем с клиентами</h2>
+        <p class="nf-contacts-guides-lead" data-i18n="contacts.guides.lead">Заказ, сервис, гарантия и короткий блок ответов — без лишнего текста.</p>
       </div>
       <div class="nf-contacts-tabs nf-contacts-tabs--premium" role="tablist" aria-label="Разделы для клиентов">
-        <button type="button" class="nf-tab-btn nf-tab-btn-active" role="tab" aria-selected="true" data-clients-tab="order">Как заказать</button>
-        <button type="button" class="nf-tab-btn" role="tab" aria-selected="false" data-clients-tab="support">Сервис и поддержка</button>
-        <button type="button" class="nf-tab-btn" role="tab" aria-selected="false" data-clients-tab="warranty">Гарантийные условия</button>
-        <button type="button" class="nf-tab-btn" role="tab" aria-selected="false" data-clients-tab="faq">Ответы на вопросы</button>
+        <button type="button" class="nf-tab-btn nf-tab-btn-active" role="tab" aria-selected="true" data-clients-tab="order" data-i18n="contacts.tab.order">Как заказать</button>
+        <button type="button" class="nf-tab-btn" role="tab" aria-selected="false" data-clients-tab="support" data-i18n="contacts.tab.support">Сервис и поддержка</button>
+        <button type="button" class="nf-tab-btn" role="tab" aria-selected="false" data-clients-tab="warranty" data-i18n="contacts.tab.warranty">Гарантийные условия</button>
+        <button type="button" class="nf-tab-btn" role="tab" aria-selected="false" data-clients-tab="faq" data-i18n="contacts.tab.faq">Ответы на вопросы</button>
       </div>
       <div class="nf-contacts-info-extra">
         <article class="nf-contacts-info-panel nf-tab-active" data-clients-panel="order">
@@ -188,74 +188,5 @@
       </div>
     </section>
 
-    <section class="nf-contacts-form-section" aria-label="Форма обращения">
-      <div class="nf-contacts-form-shell">
-        <header class="nf-contacts-form-head">
-          <h2 class="nf-contacts-form-title">Запрос в компанию</h2>
-          <p class="nf-contacts-form-desc">
-            Опишите задачу — подготовим КП или свяжемся для уточнений. Все поля ниже нужны, чтобы быстрее обработать
-            обращение.
-          </p>
-        </header>
-
-        <form id="contactForm" class="nf-form nf-form-contacts nf-form-contacts--premium" novalidate>
-          <fieldset class="nf-form-fieldset">
-            <legend class="nf-form-legend">Организация и контакт</legend>
-            <div class="nf-form-grid nf-form-grid--2">
-              <label class="nf-form-field">
-                Имя
-                <input name="name" type="text" class="nf-input" required autocomplete="name" placeholder="Имя и фамилия" />
-                <span class="nf-field-error"></span>
-              </label>
-              <label class="nf-form-field">
-                Компания
-                <input name="company" type="text" class="nf-input" required autocomplete="organization" placeholder="Наименование организации" />
-                <span class="nf-field-error"></span>
-              </label>
-            </div>
-          </fieldset>
-
-          <fieldset class="nf-form-fieldset">
-            <legend class="nf-form-legend">Связь</legend>
-            <div class="nf-form-grid nf-form-grid--2">
-              <label class="nf-form-field">
-                Телефон
-                <input name="phone" type="tel" class="nf-input" required autocomplete="tel" placeholder="+7 (___) ___-__-__" />
-                <span class="nf-field-error"></span>
-              </label>
-              <label class="nf-form-field">
-                Email
-                <input name="email" type="email" class="nf-input" required autocomplete="email" placeholder="name@company.com" />
-                <span class="nf-field-error"></span>
-              </label>
-            </div>
-          </fieldset>
-
-          <fieldset class="nf-form-fieldset">
-            <legend class="nf-form-legend">Суть обращения</legend>
-            <label class="nf-form-field nf-form-field--full">
-              <span data-i18n="contacts.form.typeLabel">Тип запроса</span>
-              <select name="type" class="nf-select">
-                <option value="kp" data-i18n="contacts.form.typeQuote">Запрос коммерческого предложения</option>
-                <option value="tech" data-i18n="contacts.form.typeTech">Техническая консультация</option>
-                <option value="service" data-i18n="contacts.form.typeService">Сервисное обслуживание</option>
-              </select>
-              <span class="nf-field-error"></span>
-            </label>
-            <label class="nf-form-field nf-form-field--full">
-              Сообщение
-              <textarea name="message" class="nf-textarea" rows="5" placeholder="Оборудование, количество, сроки, особые условия…" required></textarea>
-              <span class="nf-field-error"></span>
-            </label>
-          </fieldset>
-
-          <div class="nf-form-actions">
-            <button type="submit" class="nf-btn nf-btn-primary nf-contacts-submit">Отправить запрос</button>
-            <p class="nf-form-footnote">Нажимая кнопку, вы передаёте данные в НаноФарм для обработки запроса. Без рассылки и передачи третьим лицам сверх цели обращения.</p>
-          </div>
-          <div id="contactFormSuccess" class="nf-form-success" hidden>Заявка отправлена. Мы свяжемся с вами в ближайшее время.</div>
-        </form>
-      </div>
-    </section>
   </div>
 </section>

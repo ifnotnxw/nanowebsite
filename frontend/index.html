@@ -23,7 +23,7 @@
   </script>
 
   <!-- Основные стили. Параметр версии помогает обойти кэш браузера. -->
-  <link rel="stylesheet" href="/styles.css?v=69" />
+  <link rel="stylesheet" href="/styles.css?v=86" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
 
   <script>
@@ -129,6 +129,11 @@
           <button type="button" class="nf-mobile-menu__link" data-page="contacts" data-i18n="nav.contacts">Контакты</button>
         </nav>
         <div class="nf-mobile-menu__extras">
+          <div class="nf-mobile-menu__lang nf-lang-switcher" role="radiogroup" aria-label="Выбор языка">
+            <button type="button" class="nf-lang-btn nf-lang-btn-active" data-lang="ru" aria-checked="true">RU</button>
+            <button type="button" class="nf-lang-btn" data-lang="kz" aria-checked="false">KZ</button>
+            <button type="button" class="nf-lang-btn" data-lang="en" aria-checked="false">EN</button>
+          </div>
           <button type="button" class="nf-mobile-menu__quick-quote nf-js-quick-quote" data-i18n="header.quickQuote">
             Быстрый запрос цены
           </button>
@@ -143,11 +148,14 @@
     <aside id="cartPanel" class="nf-cart-panel" aria-label="Список запросов" aria-hidden="true">
       <div class="nf-cart-header">
         <div class="nf-cart-header-text">
-          <h2 data-i18n="cart.panel.title">Список запросов</h2>
-          <p class="nf-cart-header-subtitle" data-i18n="cart.panel.subtitle">Все добавленные позиции для единого запроса.</p>
+          <div class="nf-cart-header-row">
+            <h2 data-i18n="cart.panel.title">Список запросов</h2>
+            <span id="cartHeaderCount" class="nf-cart-header-count" aria-hidden="true"></span>
+          </div>
+          <p class="nf-cart-header-subtitle" data-i18n="cart.panel.subtitle">Добавленные позиции для единого КП</p>
         </div>
         <button type="button" id="cartCloseBtn" class="nf-icon-btn nf-cart-close-btn" aria-label="Закрыть">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg>
         </button>
       </div>
 
@@ -156,11 +164,13 @@
       <div class="nf-cart-footer">
         <div id="cartTotals" class="nf-cart-totals"></div>
         <div class="nf-cart-actions">
-          <button type="button" id="cartClearBtn" class="nf-btn nf-btn-secondary nf-cart-clear-btn" disabled>
+          <button type="button" id="cartClearBtn" class="nf-btn nf-btn-ghost nf-cart-clear-btn" disabled>
+            <svg viewBox="0 0 16 16" fill="none" width="13" height="13" aria-hidden="true"><path d="M3 3h10M5 3V2h6v1M5.5 6v5M8 6v5M10.5 6v5M4 3l.5 10h7L12 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
             <span data-i18n="cart.panel.clear">Очистить</span>
           </button>
           <button type="button" id="cartRequestBtn" class="nf-btn nf-btn-primary nf-cart-submit-btn" disabled>
-            <span data-i18n="cart.panel.requestAll">Запросить цену на всё</span>
+            <svg viewBox="0 0 16 16" fill="none" width="13" height="13" aria-hidden="true"><path d="M2 3h12l-1 8H3L2 3zm4 4v3m4-3v3M6 3V2h4v1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span data-i18n="cart.panel.requestAll">Запросить цену</span>
           </button>
         </div>
       </div>
@@ -255,48 +265,58 @@
           <svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
         </button>
 
-        <div class="nf-partner-modal-grid">
-          <div class="nf-partner-modal-left">
-            <div class="nf-partner-modal-head">
-              <div class="nf-partner-modal-logo" aria-hidden="true">
-                <img id="partnerModalLogo" src="" alt="" />
-              </div>
-              <div class="nf-partner-modal-titles">
-                <h2 id="partnerModalTitle"></h2>
-                <div id="partnerModalMeta" class="nf-partner-modal-meta"></div>
+        <div class="nf-pm-wrap">
+
+          <!-- ══ HERO ══ -->
+          <div class="nf-pm-hero">
+            <div class="nf-pm-hero__logo">
+              <img id="partnerModalLogo" src="" alt="" />
+            </div>
+            <div class="nf-pm-hero__body">
+              <h2 id="partnerModalTitle" class="nf-pm-title"></h2>
+              <div id="partnerModalMeta" class="nf-pm-meta"></div>
+              <p id="partnerModalDesc" class="nf-pm-desc"></p>
+              <div class="nf-pm-hero__stats">
+                <div class="nf-pm-chip">
+                  <svg viewBox="0 0 14 14" fill="none" width="12" height="12" aria-hidden="true"><circle cx="7" cy="7" r="6" stroke="currentColor" stroke-width="1.2"/><path d="M7 2v5M4 9Q5.5 7.5 7 9t3-0" stroke="currentColor" stroke-width="1"/></svg>
+                  <span id="partnerModalCountry"></span>
+                </div>
+                <div class="nf-pm-chip">
+                  <svg viewBox="0 0 14 14" fill="none" width="12" height="12" aria-hidden="true"><rect x="2" y="3" width="10" height="8" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M5 3V2M9 3V2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+                  <span id="partnerModalEquip"></span>
+                </div>
+                <div class="nf-pm-chip nf-pm-chip--count">
+                  <span id="partnerModalCount"></span>
+                  <span> товаров</span>
+                </div>
               </div>
             </div>
-
-            <p id="partnerModalDesc" class="nf-partner-modal-desc"></p>
-
-            <div class="nf-partner-modal-stats">
-              <div class="nf-stat">
-                <div class="nf-stat-k" data-i18n="partners.stat.country">Страна</div>
-                <div id="partnerModalCountry" class="nf-stat-v"></div>
-              </div>
-              <div class="nf-stat">
-                <div class="nf-stat-k" data-i18n="partners.stat.equipment">Оборудование</div>
-                <div id="partnerModalEquip" class="nf-stat-v"></div>
-              </div>
-              <div class="nf-stat">
-                <div class="nf-stat-k" data-i18n="partners.stat.products">Товаров</div>
-                <div id="partnerModalCount" class="nf-stat-v"></div>
-              </div>
-            </div>
-
-            <div class="nf-partner-modal-actions">
-              <button id="partnerModalAddAll" class="nf-btn nf-btn-primary" data-i18n="common.addToRequest">В запрос</button>
-              <button id="partnerModalToCatalog" class="nf-btn nf-btn-secondary" data-i18n="common.open">Открыть</button>
+            <div class="nf-pm-hero__actions">
+              <button id="partnerModalAddAll" class="nf-btn nf-btn-primary">
+                <svg viewBox="0 0 16 16" fill="none" width="14" height="14" aria-hidden="true"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                Все в запрос
+              </button>
+              <button id="partnerModalToCatalog" class="nf-btn nf-btn-ghost-dark">
+                <svg viewBox="0 0 16 16" fill="none" width="14" height="14" aria-hidden="true"><rect x="2" y="2" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.5"/><rect x="9" y="2" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.5"/><rect x="2" y="9" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.5"/><rect x="9" y="9" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.5"/></svg>
+                Каталог
+              </button>
             </div>
           </div>
 
-          <div class="nf-partner-modal-right">
-            <div class="nf-partner-modal-right-head">
-              <h3 data-i18n="partners.productsTitle">Товары партнёра</h3>
-              <input id="partnerModalSearch" class="nf-input" type="search" placeholder="Поиск по товарам партнёра…" data-i18n="partners.searchPlaceholder" data-i18n-attr="placeholder" />
+          <!-- ══ TOOLBAR ══ -->
+          <div class="nf-pm-toolbar">
+            <span class="nf-pm-toolbar__title">Товары партнёра</span>
+            <div class="nf-pm-toolbar__right">
+              <div class="nf-pm-search-wrap">
+                <svg class="nf-pm-search-icon" viewBox="0 0 16 16" fill="none" width="14" height="14" aria-hidden="true"><circle cx="6.5" cy="6.5" r="4" stroke="currentColor" stroke-width="1.5"/><path d="M11 11l2.5 2.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                <input id="partnerModalSearch" class="nf-pm-search" type="search" placeholder="Поиск по товарам…" />
+              </div>
             </div>
-            <div id="partnerModalProducts" class="nf-partner-modal-products"></div>
           </div>
+
+          <!-- ══ PRODUCTS GRID ══ -->
+          <div id="partnerModalProducts" class="nf-pm-grid"></div>
+
         </div>
       </div>
     </div>
@@ -330,6 +350,7 @@
               <div class="nf-news-modal-header">
                 <div id="newsModalMeta" class="nf-news-modal-meta"></div>
                 <h2 id="newsModalTitle" class="nf-news-modal-title"></h2>
+                <div class="nf-news-modal-divider" aria-hidden="true"></div>
               </div>
               <div id="newsModalBody" class="nf-news-modal-body" aria-label="Текст новости"></div>
             </section>
@@ -370,83 +391,84 @@
       aria-labelledby="quickQuoteTitle"
       aria-hidden="true"
     >
-      <div class="nf-modal-inner nf-modal-form nf-modal-ds">
-        <button type="button" id="quickQuoteClose" class="nf-icon-btn nf-modal-close nf-modal-ds-close" aria-label="Закрыть">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg>
-        </button>
+      <div class="nf-modal-inner nf-modal-form nf-modal-ds nf-qq-shell">
 
-        <header class="nf-modal-ds-head">
-          <p class="nf-modal-shell-kicker">Коммерческий отдел</p>
-          <h2 id="quickQuoteTitle" data-i18n="quick.title">Быстрый запрос цены</h2>
-          <p class="nf-modal-ds-lead" data-i18n="quick.text">
-            Укажите контакты и интересующие модели — подготовим предложение.
-          </p>
-        </header>
+        <!-- ═══ ФОРМА ═══ -->
+        <div class="nf-qq-right">
+          <button type="button" id="quickQuoteClose" class="nf-icon-btn nf-modal-close nf-modal-ds-close nf-qq-close-btn" aria-label="Закрыть">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg>
+          </button>
 
-        <form id="quickQuoteForm" class="nf-form nf-form-modal-ds" novalidate>
-          <fieldset class="nf-form-fieldset nf-form-fieldset--tight">
-            <legend class="nf-form-legend">Контакт</legend>
-            <div class="nf-form-grid nf-form-grid--2">
-              <label class="nf-form-field">
-                <span data-i18n="form.name">Имя</span>
-                <input name="name" type="text" class="nf-input" required autocomplete="name" />
-                <span class="nf-field-error"></span>
-              </label>
-              <label class="nf-form-field">
-                <span data-i18n="form.company">Компания</span>
-                <input name="company" type="text" class="nf-input" required autocomplete="organization" />
-                <span class="nf-field-error"></span>
-              </label>
-            </div>
-          </fieldset>
+          <div class="nf-qq-right-scroll">
+            <header class="nf-qq-right-head">
+              <h2 id="quickQuoteTitle" class="nf-qq-right-title">Контактные данные</h2>
+              <p class="nf-qq-right-sub">Заполните форму, и мы подготовим персональное предложение</p>
+            </header>
 
-          <fieldset class="nf-form-fieldset nf-form-fieldset--tight">
-            <legend class="nf-form-legend">Связь</legend>
-            <div class="nf-form-grid nf-form-grid--2">
-              <label class="nf-form-field">
-                <span data-i18n="form.phone">Телефон</span>
-                <input
-                  name="phone"
-                  type="tel"
-                  class="nf-input"
-                  required
-                  autocomplete="tel"
-                  placeholder="+7 (___) ___-__-__"
-                  data-i18n="form.phonePlaceholder"
-                  data-i18n-attr="placeholder"
-                />
-                <span class="nf-field-error"></span>
-              </label>
-              <label class="nf-form-field">
-                Email
-                <input name="email" type="email" class="nf-input" required autocomplete="email" placeholder="name@company.com" />
-                <span class="nf-field-error"></span>
-              </label>
-            </div>
-          </fieldset>
+            <form id="quickQuoteForm" class="nf-form nf-form-modal-ds" novalidate>
 
-          <fieldset class="nf-form-fieldset nf-form-fieldset--tight">
-            <legend class="nf-form-legend">Интересующие позиции</legend>
-            <label class="nf-form-field nf-form-field--full">
-              <span data-i18n="form.items">Модели и артикулы</span>
-              <textarea
-                name="items"
-                class="nf-textarea"
-                rows="4"
-                placeholder="Например: анализатор X1000, микроскоп M-200, внутренние коды…"
-                required
-              ></textarea>
-              <span class="nf-field-error"></span>
-            </label>
-          </fieldset>
+              <div class="nf-qq-form-grid">
+                <label class="nf-qq-field">
+                  <span class="nf-qq-label">Имя <em>*</em></span>
+                  <input name="name" type="text" class="nf-input nf-qq-input" required autocomplete="name" placeholder="Иван Петров"/>
+                  <span class="nf-field-error"></span>
+                </label>
+                <label class="nf-qq-field">
+                  <span class="nf-qq-label">Компания <em>*</em></span>
+                  <input name="company" type="text" class="nf-input nf-qq-input" required autocomplete="organization" placeholder="ООО Медцентр"/>
+                  <span class="nf-field-error"></span>
+                </label>
+                <label class="nf-qq-field">
+                  <span class="nf-qq-label">Телефон <em>*</em></span>
+                  <input name="phone" type="tel" class="nf-input nf-qq-input" required autocomplete="tel" placeholder="+7 (___) ___-__-__"/>
+                  <span class="nf-field-error"></span>
+                </label>
+                <label class="nf-qq-field">
+                  <span class="nf-qq-label">Email <em>*</em></span>
+                  <input name="email" type="email" class="nf-input nf-qq-input" required autocomplete="email" placeholder="name@company.com"/>
+                  <span class="nf-field-error"></span>
+                </label>
+              </div>
 
-          <div class="nf-modal-ds-actions">
-            <button type="submit" class="nf-btn nf-btn-primary nf-modal-ds-submit" data-i18n="form.submit">Отправить запрос</button>
-            <div id="quickQuoteSuccess" class="nf-form-success" hidden data-i18n="form.success">
-              Запрос отправлен. Мы свяжемся с вами в ближайшее время.
-            </div>
+              <div class="nf-qq-picker-section">
+                <div class="nf-qq-picker-header">
+                  <span class="nf-qq-picker-title">Оборудование</span>
+                  <span id="qqSelectedCount" class="nf-qq-sel-count"></span>
+                </div>
+
+                <!-- Выбранные товары -->
+                <div id="qqSelectedChips" class="nf-qq-chips" role="list" aria-label="Выбранные позиции" hidden></div>
+
+                <!-- Поиск + список -->
+                <div class="nf-qq-picker-wrap">
+                  <div class="nf-qq-picker-search-row">
+                    <svg class="nf-qq-picker-search-icon" viewBox="0 0 16 16" fill="none" width="14" height="14" aria-hidden="true">
+                      <circle cx="6.5" cy="6.5" r="4" stroke="currentColor" stroke-width="1.5"/>
+                      <path d="M10 10l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                    </svg>
+                    <input type="text" id="qqPickerSearch" class="nf-qq-picker-search" placeholder="Найти оборудование…" autocomplete="off" aria-label="Поиск товаров">
+                    <span id="qqPickerCount" class="nf-qq-picker-count"></span>
+                  </div>
+                  <div id="qqPickerList" class="nf-qq-picker-list" role="list" aria-label="Список товаров"></div>
+                </div>
+                <input type="hidden" name="items" id="qqItemsHidden">
+              </div>
+
+              <div class="nf-qq-actions">
+                <button type="submit" class="nf-btn nf-btn-primary nf-qq-submit">
+                  <svg viewBox="0 0 16 16" fill="none" width="14" height="14" aria-hidden="true"><path d="M2 8h12M9 4l5 4-5 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  Отправить запрос
+                </button>
+                <div id="quickQuoteSuccess" class="nf-qq-success" hidden>
+                  <svg viewBox="0 0 16 16" fill="none" width="15" height="15" aria-hidden="true"><path d="M3 8l3.5 3.5L13 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  Запрос отправлен — мы свяжемся с вами в ближайшее время.
+                </div>
+              </div>
+
+            </form>
           </div>
-        </form>
+        </div>
+
       </div>
     </div>
 
@@ -603,6 +625,6 @@
   </script>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-  <script src="/app.js" defer></script>
+  <script src="/app.js?v=13" defer></script>
 </body>
 </html>

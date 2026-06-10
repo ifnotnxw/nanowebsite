@@ -3,6 +3,10 @@
   <!-- ═══ PHASE 1 · EQUIPMENT HUB ═══ -->
   <div class="nf-catalog-hub" id="catalogHub" hidden>
     <div class="nf-container nf-catalog-hub__container">
+      <header class="nf-catalog-hub__header">
+        <h1 class="nf-catalog-hub__h1" data-i18n="catalog.hub.h1">Каталог оборудования</h1>
+        <p class="nf-catalog-hub__sub" data-i18n="catalog.hub.sub">Выберите клиническое направление</p>
+      </header>
       <div class="nf-catalog-hub__grid" id="catalogHubGrid" role="list" aria-label="Клинические направления"></div>
     </div>
   </div>
@@ -10,7 +14,16 @@
   <!-- ═══ PHASE 2 · EXPLORER ═══ -->
   <div class="nf-catalog-explorer" id="catalogExplorer" hidden>
 
-    <!-- Context strip: back + category pills -->
+    <!-- ① Category heading — scrolls with page, sits above the sticky strip -->
+    <div class="nf-catalog-explorer__head" id="catalogExplorerHead">
+      <div class="nf-container nf-page-container--wide nf-catalog-explorer__head-inner">
+        <nav class="nf-catalog-explorer__breadcrumb" id="catalogExplorerBreadcrumb" aria-label="Путь" hidden></nav>
+        <h2 class="nf-catalog-explorer__title" id="catalogExplorerTitle"></h2>
+        <p class="nf-catalog-explorer__desc" id="catalogExplorerDesc"></p>
+      </div>
+    </div>
+
+    <!-- ② Sticky nav strip — sticks to top as user scrolls into products -->
     <div class="nf-catalog-strip" id="catalogStrip" role="navigation" aria-label="Навигация по направлениям">
       <div class="nf-container nf-catalog-strip__inner">
         <button type="button" class="nf-catalog-strip__back" id="catalogStripBack">
@@ -26,82 +39,59 @@
       </div>
     </div>
 
-    <!-- Sidebar + product grid -->
+    <!-- ③ Products area -->
     <div class="nf-catalog-explorer__content">
       <div class="nf-container nf-catalog-layout nf-page-container--wide">
 
-        <aside id="nf-catalog-filters-aside" class="nf-filters">
-          <div class="nf-filters-header">
-            <h2 data-i18n="catalog.filters.title">Фильтры</h2>
-          </div>
-          <div class="nf-filter-block">
-            <label class="nf-filter-label" for="filterPartnerSelect" data-i18n="catalog.filter.brandLabel">Бренд</label>
-            <select id="filterPartnerSelect" class="nf-select">
-              <option value="">Все бренды</option>
-            </select>
-          </div>
-          <div class="nf-filter-block">
-            <label class="nf-filter-label" for="filterModelInput" data-i18n="catalog.filter.modelLabel">Поиск по модели</label>
-            <input id="filterModelInput" class="nf-input" type="search"
-              placeholder="Введите модель…"
-              data-i18n="catalog.filter.modelPlaceholder"
-              data-i18n-attr="placeholder" />
-          </div>
-          <button type="button" id="filtersResetBtn" class="nf-btn nf-btn-secondary nf-filters-reset-btn" data-i18n="catalog.resetFilters">
-            Сбросить фильтры
+        <!-- Category rail — desktop/tablet sidebar; hidden on mobile via CSS -->
+        <nav class="nf-cat-rail" id="catalogCatRail" aria-label="Категории каталога">
+          <button type="button" class="nf-cat-rail__back" id="catalogRailBack" aria-label="Назад к каталогу">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <path d="M10 12L6 8L10 4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span data-i18n="catalog.hub.title">Каталог</span>
           </button>
-        </aside>
+          <p class="nf-cat-rail__label" aria-hidden="true" data-i18n="catalog.rail.directions">Направления</p>
+          <div class="nf-cat-rail__list" id="catalogRailItems" role="list"></div>
+        </nav>
 
         <section class="nf-catalog-main nf-content-visibility-section">
 
-          <div class="nf-catalog-explorer__head" id="catalogExplorerHead">
-            <h2 class="nf-catalog-explorer__title" id="catalogExplorerTitle"></h2>
-            <p class="nf-catalog-explorer__desc" id="catalogExplorerDesc"></p>
-          </div>
-
           <div class="nf-catalog-toolbar">
-            <div>
+            <div class="nf-toolbar-left">
               <span id="catalogCountLabel" class="nf-catalog-count"></span>
-              <div id="catalogActiveFilters" class="nf-active-filters"></div>
+              <div id="catalogActiveFilters" class="nf-active-filters" role="list" aria-label="Активные фильтры"></div>
             </div>
-            <div class="catalog-toolbar">
-              <button type="button" id="catalogFiltersSheetBtn" class="catalog-filter-toggle"
-                aria-expanded="false" aria-controls="nf-catalog-filters-aside">
-                <span data-i18n="catalog.filters.button">Фильтры</span>
-                <span class="catalog-filter-toggle__arrow" aria-hidden="true">
-                  <svg viewBox="0 0 20 20" fill="none" width="12" height="12">
-                    <path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-                  </svg>
-                </span>
-              </button>
-              <div class="catalog-sort">
-                <span id="catalogSortLabel" class="catalog-sort__label" data-i18n="catalog.sort.label">Сортировка</span>
-                <div class="catalog-sort__control">
-                  <select id="catalogSort" class="catalog-sort__select" aria-labelledby="catalogSortLabel">
-                    <option value="popular"    data-i18n="catalog.sort.popular">По популярности</option>
-                    <option value="name-asc"   data-i18n="catalog.sort.nameAsc">По названию (А–Я)</option>
-                    <option value="name-desc"  data-i18n="catalog.sort.nameDesc">По названию (Я–А)</option>
-                    <option value="price-asc"  data-i18n="catalog.sort.priceAsc">По цене (возр.)</option>
-                    <option value="price-desc" data-i18n="catalog.sort.priceDesc">По цене (убыв.)</option>
-                  </select>
-                </div>
+            <div class="nf-toolbar-right">
+              <div class="nf-toolbar-sort">
+                <svg viewBox="0 0 16 16" fill="none" width="13" height="13" aria-hidden="true" class="nf-toolbar-sort__icon">
+                  <path d="M2 4h12M4 8h8M6 12h4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                </svg>
+                <select id="catalogSort" class="nf-toolbar-sort__select" aria-label="Сортировка">
+                  <option value="popular"    data-i18n="catalog.sort.popular">По популярности</option>
+                  <option value="name-asc"   data-i18n="catalog.sort.nameAsc">По названию (А–Я)</option>
+                  <option value="name-desc"  data-i18n="catalog.sort.nameDesc">По названию (Я–А)</option>
+                  <option value="price-asc"  data-i18n="catalog.sort.priceAsc">По цене (возр.)</option>
+                  <option value="price-desc" data-i18n="catalog.sort.priceDesc">По цене (убыв.)</option>
+                </select>
+                <svg class="nf-toolbar-sort__chevron" viewBox="0 0 10 10" fill="none" width="10" height="10" aria-hidden="true">
+                  <path d="M2 3.5L5 6.5L8 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
               </div>
-              <div class="catalog-view-toggle" aria-label="Вид каталога" data-i18n="catalog.view.aria" data-i18n-attr="aria-label">
-                <button type="button" class="catalog-view-toggle__btn nf-view-switch-btn nf-view-switch-btn-active is-active"
-                  data-viewmode="grid" aria-label="Сетка" data-i18n="catalog.view.gridAria" data-i18n-attr="aria-label">
-                  <svg viewBox="0 0 20 20" fill="none">
-                    <rect x="3"  y="3"  width="5" height="5" rx="1.2" fill="currentColor"/>
-                    <rect x="12" y="3"  width="5" height="5" rx="1.2" fill="currentColor"/>
-                    <rect x="3"  y="12" width="5" height="5" rx="1.2" fill="currentColor"/>
-                    <rect x="12" y="12" width="5" height="5" rx="1.2" fill="currentColor"/>
+              <div class="nf-toolbar-view" aria-label="Вид каталога">
+                <button type="button" class="nf-toolbar-view__btn nf-view-switch-btn is-active" data-viewmode="grid" aria-label="Сетка">
+                  <svg viewBox="0 0 16 16" fill="none" width="14" height="14">
+                    <rect x="2"  y="2"  width="5" height="5" rx="1.2" fill="currentColor"/>
+                    <rect x="9"  y="2"  width="5" height="5" rx="1.2" fill="currentColor"/>
+                    <rect x="2"  y="9"  width="5" height="5" rx="1.2" fill="currentColor"/>
+                    <rect x="9"  y="9"  width="5" height="5" rx="1.2" fill="currentColor"/>
                   </svg>
                 </button>
-                <button type="button" class="catalog-view-toggle__btn nf-view-switch-btn"
-                  data-viewmode="list" aria-label="Список" data-i18n="catalog.view.listAria" data-i18n-attr="aria-label">
-                  <svg viewBox="0 0 20 20" fill="none">
-                    <rect x="4" y="5"    width="12" height="1.8" rx="0.9" fill="currentColor"/>
-                    <rect x="4" y="9.1"  width="12" height="1.8" rx="0.9" fill="currentColor"/>
-                    <rect x="4" y="13.2" width="12" height="1.8" rx="0.9" fill="currentColor"/>
+                <button type="button" class="nf-toolbar-view__btn nf-view-switch-btn" data-viewmode="list" aria-label="Список">
+                  <svg viewBox="0 0 16 16" fill="none" width="14" height="14">
+                    <rect x="2" y="3.5"  width="12" height="1.8" rx="0.9" fill="currentColor"/>
+                    <rect x="2" y="7.1"  width="12" height="1.8" rx="0.9" fill="currentColor"/>
+                    <rect x="2" y="10.7" width="12" height="1.8" rx="0.9" fill="currentColor"/>
                   </svg>
                 </button>
               </div>
